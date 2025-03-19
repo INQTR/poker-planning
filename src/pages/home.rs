@@ -1,8 +1,8 @@
 use leptos::prelude::*;
 
-use crate::components::{Button, ButtonSize, ButtonVariant};
+use crate::components::{Button, ButtonSize};
 
-/// Renders the home page of your application.
+/// Renders the home page of the application.
 #[component]
 pub fn HomePage() -> impl IntoView {
     view! {
@@ -55,7 +55,6 @@ pub fn HomePage() -> impl IntoView {
                   <Button
                     size=ButtonSize::Lg
                     class="h-12"
-                    variant=ButtonVariant::Secondary
                     // TODO: Implement loading state
                     // disabled={loading}
                     on_click=move |_| {

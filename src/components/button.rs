@@ -24,24 +24,12 @@ impl Display for ButtonVariant {
     }
 }
 
-impl Default for ButtonVariant {
-    fn default() -> Self {
-        ButtonVariant::Default
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ButtonSize {
     Default,
     Sm,
     Lg,
     Icon,
-}
-
-impl Default for ButtonSize {
-    fn default() -> Self {
-        ButtonSize::Default
-    }
 }
 
 impl Display for ButtonSize {
