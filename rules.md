@@ -1,0 +1,31 @@
+# Cursor Project Rules: Rust 2024 + Leptos 0.8.0-alpha + Axum 0.8.1 + TailwindCSS 4.0
+
+A concise guide for building a Rust 2024 full-stack Leptos project with cargo-leptos.
+
+## Dependencies
+
+- `leptos = "0.8.0-alpha"`
+- `axum = "0.8.1"`
+- `cargo-leptos = ">=0.2.31"`
+- `rust-edition = "2024"`
+
+## Updated APIs
+
+| Component            | Old API/Pattern                                   | Updated API/Pattern                                        | Notes                                         |
+|----------------------|---------------------------------------------------|------------------------------------------------------------|-----------------------------------------------|
+| **Axum Routing**     | `/users/:id`                                      | `/users/{id}`                                              | Use braces for dynamic segments               |
+|                      | `/files/*path`                                    | `/files/{*path}`                                           | Updated wildcard syntax                         |
+| **Axum Server**      | `axum::Server::bind(addr).serve(router)`          | `axum::serve(listener, router.into_make_service())`        | Use `TcpListener` with `axum::serve`            |
+| **Axum Extractors**  | Implicit `Option<T>` without explicit support     | Ensure `T` implements `OptionalFromRequest`                | Update custom extractors if needed              |
+| **Server Functions** | Custom error handling with manual conversions     | Use `FromServerFnError` or `ServerFnError::ServerError`      | Implement conversions for custom errors         |
+
+## General Rules
+
+- **Rust 2024 Best Practices:**
+  - We are using nightly Rust 1.87.0 `rust-edition = "2024"` features.
+  - Eliminate unnecessary `#[async_trait]` where possible.
+
+- **Leptos Best Practices:**
+  - Rust nightly features are used for the project.
+  - Prelude `use leptos::prelude::*;`.
+
