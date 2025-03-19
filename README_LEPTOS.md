@@ -33,8 +33,7 @@ Addtionally, Cargo.toml may need updating as new versions of the dependencies ar
 ## Running your project
 
 ```bash
-cargo leptos watch
-cargo-leptos watch --hot-reload
+cargo leptos watch --hot-reload
 ```
 
 ## Installing Additional Tools

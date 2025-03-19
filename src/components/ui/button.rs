@@ -88,11 +88,7 @@ pub fn Button(
     let classes = move || button_variants(variant.clone(), size.clone(), class);
 
     view! {
-        <button
-            class={classes()}
-            disabled={disabled}
-            on:click=on_click
-        >
+        <button class=classes() disabled=disabled on:click=on_click>
             {children()}
         </button>
     }
