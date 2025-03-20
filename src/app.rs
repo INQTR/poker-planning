@@ -5,12 +5,15 @@ use leptos_router::{
     StaticSegment,
 };
 
-use crate::pages::{HomePage, NotFoundPage};
+use crate::{
+    components::provide_theme_context,
+    pages::{HomePage, NotFoundPage},
+};
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
         <!DOCTYPE html>
-        <html lang="en">
+        <html lang="en" class="dark">
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -35,6 +38,8 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
 pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
+
+    provide_theme_context("theme");
 
     view! {
         // injects a stylesheet into the document <head>

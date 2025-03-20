@@ -16,6 +16,8 @@ leptos_meta = { version = "0.8.0-alpha" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
 leptos-use = "=0.16.0-alpha"
+serde = "1.0.219"
+codee = "0.3.0"
 
 [features]
 hydrate = ["leptos/hydrate", "dep:console_error_panic_hook", "dep:wasm-bindgen"]
@@ -26,6 +28,7 @@ ssr = [
     "leptos/ssr",
     "leptos_meta/ssr",
     "leptos_router/ssr",
+    "leptos-use/ssr",
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode
