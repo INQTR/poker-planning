@@ -1,6 +1,8 @@
 use leptos::prelude::*;
 
+use crate::components::Layout;
+
 #[component]
 pub fn RoomPage() -> impl IntoView {
-    view! { <div>Room</div> }
+    view! { <Layout>Room</Layout> }
 }
