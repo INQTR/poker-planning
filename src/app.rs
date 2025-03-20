@@ -2,12 +2,12 @@ use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, Link, MetaTags, Stylesheet, Title};
 use leptos_router::{
     components::{Route, Router, Routes},
-    StaticSegment,
+    path, StaticSegment,
 };
 
 use crate::{
     components::provide_theme_context,
-    pages::{HomePage, NotFoundPage},
+    pages::{HomePage, NotFoundPage, RoomPage},
 };
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
@@ -53,6 +53,7 @@ pub fn App() -> impl IntoView {
         <Router>
             <Routes fallback=NotFoundPage>
                 <Route path=StaticSegment("") view=HomePage />
+                <Route path=path!("room/:room_id") view=RoomPage />
             </Routes>
         </Router>
     }

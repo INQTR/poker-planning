@@ -1,5 +1,6 @@
 use feature_sections::FeatureSections;
 use leptos::prelude::*;
+use leptos_router::hooks::use_navigate;
 
 mod banner;
 mod feature_sections;
@@ -9,6 +10,8 @@ use crate::pages::home::banner::Banner;
 /// Renders the home page of the application.
 #[component]
 pub fn HomePage() -> impl IntoView {
+    let navigate = use_navigate();
+
     view! {
         <div class="bg-white dark:bg-gray-900">
             <Banner />
@@ -25,7 +28,6 @@ pub fn HomePage() -> impl IntoView {
                             <span class="text-2xl font-bold">Planning poker</span>
                         </a>
                     </div>
-                    // <ModeToggle />
                     <div class="flex lg:flex-1 justify-end"></div>
                 </nav>
             </header>
@@ -57,7 +59,9 @@ pub fn HomePage() -> impl IntoView {
                                 class="h-12"
                                 // TODO: Implement loading state
                                 // disabled={loading}
-                                on_click=move |_| {}
+                                on_click=move |_| {
+                                    navigate("/room/123", Default::default());
+                                }
                             >
                                 Start New Game
                             </Button>
