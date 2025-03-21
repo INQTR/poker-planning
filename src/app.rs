@@ -13,7 +13,7 @@ use crate::{
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
         <!DOCTYPE html>
-        <html lang="en" class="dark">
+        <html lang="en" class="dark h-full">
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,7 +27,7 @@ pub fn shell(options: LeptosOptions) -> impl IntoView {
                 <HydrationScripts options />
                 <MetaTags />
             </head>
-            <body>
+            <body class="h-full">
                 <App />
             </body>
         </html>
