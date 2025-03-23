@@ -1,5 +1,7 @@
-use leptos::{ev::MouseEvent, prelude::*};
+use leptos::{ev, prelude::*};
 use std::fmt::{self, Display};
+
+use crate::utils::BoxOneCallback;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ButtonVariant {
@@ -83,9 +85,16 @@ pub fn Button(
     #[prop(optional, default = ButtonVariant::Default)] variant: ButtonVariant,
     #[prop(optional, default = ButtonSize::Default)] size: ButtonSize,
     #[prop(optional, default = false)] disabled: bool,
-    on_click: impl FnMut(MouseEvent) + 'static,
+    #[prop(optional, into)] on_click: Option<BoxOneCallback<ev::MouseEvent>>,
 ) -> impl IntoView {
     let classes = move || button_variants(variant.clone(), size.clone(), class);
+
+    let on_click = move |e| {
+        let Some(on_click) = on_click.as_ref() else {
+            return;
+        };
+        on_click(e);
+    };
 
     view! {
         <button class=classes() disabled=disabled on:click=on_click>
