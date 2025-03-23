@@ -18,6 +18,10 @@ wasm-bindgen = { version = "=0.2.100", optional = true }
 leptos-use = "=0.16.0-alpha"
 serde = "1.0.219"
 codee = "0.3.0"
+uuid = { version = "1.16.0", features = ["js", "v4", "serde"] }
+futures-util = "0.3.31"
+axum-macros = "0.5.0"
+cfg-if = "1.0.0"
 
 [features]
 hydrate = ["leptos/hydrate", "dep:console_error_panic_hook", "dep:wasm-bindgen"]

@@ -7,7 +7,7 @@
       // optional:
       // "component",
       "server"
-    ],
+    ]
   },
   // if code that is cfg-gated for the `ssr` feature is shown as inactive,
   // you may want to tell rust-analyzer to enable the `ssr` feature by default

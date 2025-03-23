@@ -1,11 +1,14 @@
 use feature_sections::FeatureSections;
+use leptos::logging::log;
 use leptos::prelude::*;
+use leptos::task::spawn_local;
 use leptos_router::hooks::use_navigate;
 
 mod banner;
 mod feature_sections;
 use crate::components::{Button, ButtonSize, Footer};
 use crate::pages::home::banner::Banner;
+use crate::server_fns::create_room;
 
 /// Renders the home page of the application.
 #[component]
@@ -61,6 +64,10 @@ pub fn HomePage() -> impl IntoView {
                                 // disabled={loading}
                                 on_click=move |_| {
                                     navigate("/room/123", Default::default());
+                                    spawn_local(async {
+                                        let room = create_room().await;
+                                        log!("Room created: {:?}", room);
+                                    });
                                 }
                             >
                                 Start New Game
