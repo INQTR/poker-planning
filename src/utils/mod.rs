@@ -1,3 +1,5 @@
+pub mod simple_broker;
+
 use std::ops::Deref;
 
 pub struct BoxOneCallback<A, Return = ()>(Box<dyn Fn(A) -> Return + Send + Sync + 'static>);

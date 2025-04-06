@@ -5,8 +5,13 @@ async fn main() {
     use leptos::config::get_configuration;
     use leptos::logging::log;
     use leptos::prelude::provide_context;
-    use leptos_axum::{generate_route_list, LeptosRoutes};
-    use poker_planning::{app::{shell, App}, domain::room::Room, state::AppState, types::Storage};
+    use leptos_axum::{LeptosRoutes, generate_route_list};
+    use poker_planning::{
+        app::{App, shell},
+        domain::room::Room,
+        state::AppState,
+        types::Storage,
+    };
     use uuid::Uuid;
 
     let conf = get_configuration(None).unwrap();
@@ -15,7 +20,7 @@ async fn main() {
     // Generate the list of routes in your Leptos App
     let routes = generate_route_list(App);
     let storage: Storage = Storage::default();
-    
+
     let room = Room::new(None);
     let room = Room {
         id: Uuid::default(),
@@ -44,10 +49,7 @@ async fn main() {
                 }
             },
         )
-        .fallback(leptos_axum::file_and_error_handler::<
-            AppState,
-            _,
-        >(shell))
+        .fallback(leptos_axum::file_and_error_handler::<AppState, _>(shell))
         .with_state(app_state);
 
     // run our app with hyper

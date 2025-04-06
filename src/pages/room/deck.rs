@@ -1,9 +1,10 @@
-use leptos::{logging::log, prelude::*};
+use leptos::{logging::log, prelude::*, task::spawn_local};
+use uuid::Uuid;
 
-use crate::{domain::room::Room, pages::room::card::Card};
+use crate::{domain::room::Room, pages::room::card::Card, server_fns::pick_card};
 
 #[component]
-pub fn Deck(room: Room) -> impl IntoView {
+pub fn Deck(room: Room, user_id: Uuid) -> impl IntoView {
     let (selected_card, set_selected_card) = signal::<Option<String>>(None);
     let is_game_over = room.is_game_over;
     let cards = room.deck.cards.clone();
@@ -35,9 +36,18 @@ pub fn Deck(room: Room) -> impl IntoView {
                             <div class=class()>
                                 <Card
                                     {..}
-                                    on:click=move |_| set_selected_card(
-                                        Some(card_for_click.clone()),
-                                    )
+                                    on:click=move |_| {
+                                        let card_to_pick = card_for_click.clone();
+                                        set_selected_card(Some(card_for_click.clone()));
+                                        spawn_local(async move {
+                                            pick_card(
+                                                user_id,
+                                                room.id,
+                                                card_to_pick,
+                                            )
+                                            .await;
+                                        });
+                                    }
                                     disabled=is_game_over
                                 >
                                     <>{card}</>

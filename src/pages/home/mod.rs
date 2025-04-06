@@ -65,7 +65,7 @@ pub fn HomePage() -> impl IntoView {
                                 on_click=move |_| {
                                     navigate("/room/123", Default::default());
                                     spawn_local(async {
-                                        let room = create_room().await;
+                                        let room = create_room(None).await;
                                         log!("Room created: {:?}", room);
                                     });
                                 }

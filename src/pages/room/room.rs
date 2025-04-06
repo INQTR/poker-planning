@@ -9,7 +9,7 @@ pub fn Room(room: Room) -> impl IntoView {
     view! {
         <div class="flex flex-col items-center justify-center w-full h-[calc(100vh-120px)]">
             <div class="relative">
-                <Table />
+                <Table room=room />
             </div>
         </div>
     }
