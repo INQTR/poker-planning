@@ -1,10 +1,15 @@
-# Cursor Project Rules: Rust 2024 + Leptos 0.8.0-alpha + Axum 0.8.1 + TailwindCSS 4.0
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Cursor Project Rules: Rust 2024 + Leptos 0.8.0-beta + Axum 0.8.1 + TailwindCSS 4.0
 
 A concise guide for building a Rust 2024 full-stack Leptos project with cargo-leptos.
 
 ## Dependencies
 
-- `leptos = "0.8.0-alpha"`
+- `leptos = "0.8.0-beta"`
 - `axum = "0.8.1"`
 - `cargo-leptos = ">=0.2.31"`
 - `rust-edition = "2024"`
