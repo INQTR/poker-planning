@@ -4,7 +4,7 @@ use room::Room;
 use uuid::Uuid;
 
 use crate::{
-    components::Layout,
+    components::{Button, ButtonVariant, Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DialogFooter, DialogHeader, DialogAction, Layout},
     domain::user::User,
     server_fns::{join_room, subscribe_to_rooms},
 };
@@ -62,6 +62,7 @@ pub fn RoomPage() -> impl IntoView {
                             <>
                                 <Room room=data.clone() />
                                 <div class="absolute left-0 right-0 bottom-4 mx-auto my-0 max-w-4xl overflow-auto">
+                                    <TestDialog />
                                     <Deck room=data user_id=user_id />
                                 </div>
                             </>
@@ -73,4 +74,38 @@ pub fn RoomPage() -> impl IntoView {
             </Suspense>
         </Layout>
     }
+}
+
+#[component]
+pub fn TestDialog() -> impl IntoView{
+    let (open, set_open) = signal(true);
+
+    Effect::new(move || {
+        log!("open: {:?}", open.get());
+    });
+
+  view! {
+      <Dialog open=open.into()>
+          <DialogTrigger class="text-blue-500 hover:text-blue-700 cursor-pointer z-10">
+              "Room Info"
+          </DialogTrigger>
+          <DialogPortal>
+              <DialogOverlay />
+              <DialogContent>
+                  <DialogHeader>
+                      <DialogTitle>"Are you absolutely sure?"</DialogTitle>
+                      <DialogDescription>
+                          "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
+                      </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                      <DialogClose>"Cancel"</DialogClose>
+                      <DialogAction on:click=move |_| {
+                          set_open(false);
+                      }>"Continue"</DialogAction>
+                  </DialogFooter>
+              </DialogContent>
+          </DialogPortal>
+      </Dialog>
+  }
 }
