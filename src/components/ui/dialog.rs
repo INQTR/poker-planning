@@ -43,8 +43,6 @@ pub fn Dialog(
     #[prop(optional, default = true)]
     modal: bool,
 ) -> impl IntoView {
-    // log!("Dialog open {:?}", open());
-    // Create local state if no controlled state is provided
     let (internal_open, set_internal_open) = signal(open.get_untracked());
 
     Effect::new(move || {
@@ -54,10 +52,6 @@ pub fn Dialog(
     Effect::new(move || {
         log!("internal_open {}", internal_open());
     });
-
-    // // Use either provided signal or internal signal
-    // let open_signal =
-    //     Signal::derive(move || open.map(|o| o.get()).unwrap_or_else(|| internal_open.get()));
 
     // Create a callback to update the open state
     let set_open = Callback::new(move |value: bool| {
@@ -156,25 +150,20 @@ pub fn DialogTrigger(
 
 /// Portal component that renders dialog content in a portal
 #[component]
-pub fn DialogPortal<C>(children: TypedChildrenFn<C>) -> impl IntoView
-where
-    C: IntoView + 'static,
-{
+pub fn DialogPortal(children: ChildrenFn) -> impl IntoView {
     let context = use_context::<DialogContext>().expect("DialogPortal must be used within Dialog");
 
     let context_clone = context.clone();
     Effect::new(move || {
         log!("DialogPortal open {:?}", context_clone.open.get());
     });
-    let children = children.into_inner();
+    let children = StoredValue::new(children);
 
     view! {
         <Show when=context.open>
-            <div>
-                // <Portal mount=document().body().unwrap()>
-                <div class="dialog-portal">{children()}</div>
-            // </Portal>
-            </div>
+            <Portal mount=document().body().unwrap()>
+                <div class="dialog-portal">{children.read_value()()}</div>
+            </Portal>
         </Show>
     }
 }
@@ -344,24 +333,12 @@ pub fn DialogDescription(
 
 /// Close button for the dialog
 #[component]
-pub fn DialogClose(
-    children: Children,
-    /// Additional class names
-    #[prop(optional)]
-    class: Option<&'static str>,
-) -> impl IntoView {
+pub fn DialogClose(children: Children) -> impl IntoView {
     let context = use_context::<DialogContext>().expect("DialogClose must be used within Dialog");
-
-    // Clone context to avoid move issues
-    let context_clone = context.clone();
-    Effect::new(move || {
-        log!("context {:?}", context_clone);
-    });
 
     // Create a separate clone for the click handler
     let context_click = context.clone();
     let on_click = move |_: ev::MouseEvent| {
-        log!("DialogClose clicked");
         context_click.set_open.run(false);
     };
 

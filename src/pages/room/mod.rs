@@ -1,10 +1,10 @@
 use deck::Deck;
-use leptos::{logging::log, prelude::*, task::spawn_local};
+use leptos::{ logging::log, prelude::*, task::spawn_local};
 use room::Room;
 use uuid::Uuid;
 
 use crate::{
-    components::{Button, ButtonVariant, Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, DialogFooter, DialogHeader, DialogAction, Layout},
+    components::{ Dialog, DialogAction, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, Input, Label, Layout},
     domain::user::User,
     server_fns::{join_room, subscribe_to_rooms},
 };
@@ -78,10 +78,12 @@ pub fn RoomPage() -> impl IntoView {
 
 #[component]
 pub fn TestDialog() -> impl IntoView{
-    let (open, set_open) = signal(true);
+    let (open, set_open) = signal(false);
+    let (username, set_username) = signal("".to_string());
+
 
     Effect::new(move || {
-        log!("open: {:?}", open.get());
+        log!("username: {:?}", username.get());
     });
 
   view! {
@@ -93,13 +95,22 @@ pub fn TestDialog() -> impl IntoView{
               <DialogOverlay />
               <DialogContent>
                   <DialogHeader>
-                      <DialogTitle>"Are you absolutely sure?"</DialogTitle>
-                      <DialogDescription>
-                          "This action cannot be undone. This will permanently delete your account and remove your data from our servers."
-                      </DialogDescription>
+                      <DialogTitle>"Enter your username"</DialogTitle>
+                      <DialogDescription>"Enter your username to join the room."</DialogDescription>
                   </DialogHeader>
+
+                  <div class="grid gap-3">
+                      <Label for_="username">"Username"</Label>
+                      <Input
+                          attr:id="username"
+                          attr:value=username
+                          on:input=move |ev| {
+                              set_username(event_target_value(&ev));
+                          }
+                      />
+                  </div>
+
                   <DialogFooter>
-                      <DialogClose>"Cancel"</DialogClose>
                       <DialogAction on:click=move |_| {
                           set_open(false);
                       }>"Continue"</DialogAction>
@@ -107,5 +118,5 @@ pub fn TestDialog() -> impl IntoView{
               </DialogContent>
           </DialogPortal>
       </Dialog>
-  }
+  }.into_any()
 }
