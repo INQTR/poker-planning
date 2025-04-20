@@ -7,15 +7,15 @@ edition = "2024"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.8.0-beta", features = ["nightly"] }
-leptos_router = { version = "0.8.0-beta", features = ["nightly"] }
-axum = { version = "0.8.1", optional = true }
+leptos = { version = "0.8.0-rc2", features = ["nightly"] }
+leptos_router = { version = "0.8.0-rc2", features = ["nightly"] }
+axum = { version = "0.8.3", optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }
-leptos_axum = { version = "0.8.0-beta", optional = true }
-leptos_meta = { version = "0.8.0-beta" }
+leptos_axum = { version = "0.8.0-rc2", optional = true }
+leptos_meta = { version = "0.8.0-rc2" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
-leptos-use = "=0.16.0-alpha"
+leptos-use = "0.16.0-beta"
 serde = "1.0.219"
 codee = "0.3.0"
 uuid = { version = "1.16.0", features = ["js", "v4", "serde"] }

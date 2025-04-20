@@ -1,4 +1,5 @@
 use deck::Deck;
+use join_room_dialog::JoinRoomDialog;
 use leptos::{ logging::log, prelude::*, task::spawn_local};
 use room::Room;
 use uuid::Uuid;
@@ -13,6 +14,7 @@ mod card;
 mod deck;
 mod room;
 mod table;
+mod join_room_dialog;
 
 #[component]
 pub fn RoomPage() -> impl IntoView {
@@ -62,7 +64,7 @@ pub fn RoomPage() -> impl IntoView {
                             <>
                                 <Room room=data.clone() />
                                 <div class="absolute left-0 right-0 bottom-4 mx-auto my-0 max-w-4xl overflow-auto">
-                                    <TestDialog />
+                                    <JoinRoomDialog />
                                     <Deck room=data user_id=user_id />
                                 </div>
                             </>
@@ -76,47 +78,3 @@ pub fn RoomPage() -> impl IntoView {
     }
 }
 
-#[component]
-pub fn TestDialog() -> impl IntoView{
-    let (open, set_open) = signal(false);
-    let (username, set_username) = signal("".to_string());
-
-
-    Effect::new(move || {
-        log!("username: {:?}", username.get());
-    });
-
-  view! {
-      <Dialog open=open.into()>
-          <DialogTrigger class="text-blue-500 hover:text-blue-700 cursor-pointer z-10">
-              "Room Info"
-          </DialogTrigger>
-          <DialogPortal>
-              <DialogOverlay />
-              <DialogContent>
-                  <DialogHeader>
-                      <DialogTitle>"Enter your username"</DialogTitle>
-                      <DialogDescription>"Enter your username to join the room."</DialogDescription>
-                  </DialogHeader>
-
-                  <div class="grid gap-3">
-                      <Label for_="username">"Username"</Label>
-                      <Input
-                          attr:id="username"
-                          attr:value=username
-                          on:input=move |ev| {
-                              set_username(event_target_value(&ev));
-                          }
-                      />
-                  </div>
-
-                  <DialogFooter>
-                      <DialogAction on:click=move |_| {
-                          set_open(false);
-                      }>"Continue"</DialogAction>
-                  </DialogFooter>
-              </DialogContent>
-          </DialogPortal>
-      </Dialog>
-  }.into_any()
-}
