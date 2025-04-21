@@ -5,9 +5,6 @@ use leptos::prelude::*;
 pub fn Label(
     /// The content of the label.
     children: Children,
-    /// The ID of the input element this label is associated with.
-    #[prop(optional, into)]
-    for_: Option<String>,
     /// Additional classes to merge with the base classes.
     #[prop(optional, into)]
     class: Option<String>,
@@ -23,13 +20,5 @@ pub fn Label(
         )
     };
 
-    view! {
-        <label
-            class=merged_class
-            // Use prop:for because 'for' is a reserved keyword in Rust.
-            prop:for_=for_
-        >
-            {children()}
-        </label>
-    }
+    view! { <label class=merged_class>{children()}</label> }
 }

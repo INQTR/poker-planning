@@ -33,7 +33,7 @@ pub fn JoinRoomDialog() -> impl IntoView {
                     </DialogHeader>
 
                     <div class="grid gap-3">
-                        <Label for_="username">"Username"</Label>
+                        <Label attr:r#for="username">"Username"</Label>
                         <Input
                             attr:id="username"
                             attr:value=username
