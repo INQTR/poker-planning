@@ -6,7 +6,7 @@ use leptos_router::{
 };
 
 use crate::{
-    components::provide_theme_context,
+    components::{provide_auth_context, provide_theme_context},
     pages::{HomePage, NotFoundPage, RoomPage},
 };
 
@@ -40,6 +40,7 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     provide_theme_context("theme");
+    provide_auth_context();
 
     view! {
         // injects a stylesheet into the document <head>
