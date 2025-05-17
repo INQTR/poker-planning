@@ -1,6 +1,8 @@
 use deck::Deck;
 use join_room_dialog::JoinRoomDialog;
 use leptos::{ logging::log, prelude::*, task::spawn_local};
+use leptos_router::hooks::{use_params};
+use leptos_router::params::Params;
 use room::Room;
 use uuid::Uuid;
 
@@ -16,15 +18,24 @@ mod room;
 mod table;
 mod join_room_dialog;
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Params)]
+struct RoomParams {
+    room_id: Uuid,
+}
+
+
 #[component]
 pub fn RoomPage() -> impl IntoView {
-    let test_room_id = Uuid::default();
+    let params = use_params::<RoomParams>();
+    let room_id = move || params.get().map(|params| params.room_id);
+    let test_room_id = room_id().unwrap_or_default();
+    log!("Room ID: {:?}", &test_room_id);
     let AuthContext { user, .. } = use_auth();
     
     // TODO: Find a better way to handle conditional resource creation
     // This source signal correctly produces Some((uuid, user)) only when logged in.
     let resource_source = move || user.get().map(|user_instance| (test_room_id, user_instance));
-    let room = Resource::new(
+    let room_first = Resource::new(
         resource_source,
         move |input| async move {
             match input {
@@ -43,6 +54,10 @@ pub fn RoomPage() -> impl IntoView {
     use futures::channel::mpsc;
     let (_, rx) = mpsc::channel(1);
     let room_latest = RwSignal::new(None);
+
+    let room = Signal::derive(move || {
+        room_latest.get().or_else(|| room_first.get())
+    });
 
     // we'll only listen for websocket messages on the client
     if cfg!(feature = "hydrate") {
