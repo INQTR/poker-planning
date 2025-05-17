@@ -13,7 +13,22 @@ use crate::server_fns::create_room;
 /// Renders the home page of the application.
 #[component]
 pub fn HomePage() -> impl IntoView {
-    let navigate = use_navigate();
+
+    async fn handle_create_room_and_navigate() {
+        let navigate = use_navigate();
+        let room = create_room(None).await;
+        log!("Room created: {:?}", room);
+        match room {
+            Ok(room) => {
+                let room_id = room.id.to_string();
+                let room_url = format!("/room/{}", room_id);
+                navigate(&room_url, Default::default());
+            }
+            Err(e) => {
+                log!("Error creating room: {:?}", e);
+            }
+        }
+    }
 
     view! {
         <div class="bg-white dark:bg-gray-900">
@@ -63,11 +78,7 @@ pub fn HomePage() -> impl IntoView {
                                 // TODO: Implement loading state
                                 // disabled={loading}
                                 on_click=move |_| {
-                                    navigate("/room/123", Default::default());
-                                    spawn_local(async {
-                                        let room = create_room(None).await;
-                                        log!("Room created: {:?}", room);
-                                    });
+                                    spawn_local(handle_create_room_and_navigate());
                                 }
                             >
                                 Start New Game
