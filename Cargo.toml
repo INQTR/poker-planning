@@ -15,7 +15,7 @@ leptos_axum = { version = "0.8.2", optional = true }
 leptos_meta = { version = "0.8.2" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
-leptos-use = "0.16.0-beta"
+leptos-use = "0.16.0-beta2"
 serde = "1.0.219"
 codee = "0.3.0"
 uuid = { version = "1.16.0", features = ["js", "v4", "serde"] }
@@ -72,10 +72,10 @@ tailwind-input-file = "style/tailwind.css"
 assets-dir = "public"
 
 # The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
-site-addr = "127.0.0.1:3000"
+site-addr = "127.0.0.1:8000"
 
 # The port to use for automatic reload monitoring
-reload-port = 3001
+reload-port = 8001
 
 # [Optional] Command to use when running end2end tests. It will run in the end2end dir.
 #   [Windows] for non-WSL use "npx.cmd playwright test"

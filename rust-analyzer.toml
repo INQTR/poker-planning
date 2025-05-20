@@ -1,2 +1,3 @@
 [rustfmt]
-overrideCommand = ["leptosfmt", "--stdin", "--rustfmt"]
+# rustfmt is not working for me if uncommented
+# overrideCommand = ["leptosfmt", "--stdin", "--rustfmt"]

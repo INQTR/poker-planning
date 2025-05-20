@@ -13,7 +13,7 @@ pub fn Table(room: Room) -> impl IntoView {
             <Button
                 on_click=move |_| {
                     spawn_local(async move {
-                        show_cards(room.id).await;
+                        let _ = show_cards(room.id).await;
                     });
                 }
                 class="w-36"

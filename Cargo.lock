@@ -1203,9 +1203,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-use"
-version = "0.16.0-beta"
+version = "0.16.0-beta2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46cf32bdd1bbf6ef2154427b54a70c2eba1b693d47c5a6087ed8554cb3463880"
+checksum = "68e9c37c9c2e5e01567b2f88b70a7cde9fe48b975318339ad5a0f2f386b81553"
 dependencies = [
  "cfg-if",
  "chrono",

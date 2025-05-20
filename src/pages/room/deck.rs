@@ -40,12 +40,7 @@ pub fn Deck(room: Room, user_id: Uuid) -> impl IntoView {
                                         let card_to_pick = card_for_click.clone();
                                         set_selected_card(Some(card_for_click.clone()));
                                         spawn_local(async move {
-                                            pick_card(
-                                                user_id,
-                                                room.id,
-                                                card_to_pick,
-                                            )
-                                            .await;
+                                            let _ = pick_card(user_id, room.id, card_to_pick).await;
                                         });
                                     }
                                     disabled=is_game_over

@@ -7,8 +7,7 @@ use room::Room;
 use uuid::Uuid;
 
 use crate::{
-    components::{ use_auth, AuthContext, Dialog, DialogAction, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, Input, Label, Layout},
-    domain::user::User,
+    components::{ use_auth, AuthContext, Layout},
     server_fns::{join_room, subscribe_to_rooms},
 };
 

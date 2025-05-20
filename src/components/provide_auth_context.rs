@@ -1,9 +1,6 @@
 use codee::string::JsonSerdeCodec;
 use leptos::prelude::*;
-use leptos_use::storage::{
-    use_local_storage, use_storage_with_options, StorageType, UseStorageOptions,
-};
-use serde::{Deserialize, Serialize};
+use leptos_use::storage::use_local_storage;
 
 use crate::domain::user::User;
 

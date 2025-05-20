@@ -1,15 +1,10 @@
-use leptos::{
-    ev::{Event, MouseEvent},
-    logging::log,
-    prelude::*,
-};
+use leptos::{logging::log, prelude::*};
 use uuid::Uuid;
 
 use crate::{
     components::{
         use_auth, AuthContext, Dialog, DialogAction, DialogContent, DialogDescription,
-        DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger, Input,
-        Label, Layout,
+        DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, Input, Label,
     },
     domain::user::User,
 };
@@ -19,6 +14,8 @@ pub fn JoinRoomDialog() -> impl IntoView {
     let AuthContext { user, login, .. } = use_auth();
     let (open, set_open) = signal(false);
     let (username, set_username) = signal("".to_string());
+
+    log!("user: {:?}", user.get());
 
     Effect::new(move || {
         if cfg!(feature = "hydrate") {
