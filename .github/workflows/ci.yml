@@ -3,14 +3,17 @@ name: CI
 on:
   pull_request:
     branches: [ main, develop ]
+    types: [ opened, synchronize, reopened, labeled ]
   push:
     branches: [ main, develop ]
 
 jobs:
-  # Fast checks that always run (PR and push)
+  # Fast checks that always run (PR and push, but skip on just label events)
   lint-and-test:
     name: Lint & Test
     runs-on: ubuntu-latest
+    # Skip lint-and-test if this is just a label event and we've already run it
+    if: github.event.action != 'labeled'
     
     steps:
     - name: Checkout code
@@ -75,7 +78,7 @@ jobs:
 
     # Upload server binary for E2E tests (only if we're going to run them)
     - name: Upload server binary
-      if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'run-e2e')
+      if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'run-e2e') || github.event.label.name == 'run-e2e'
       uses: actions/upload-artifact@v4
       with:
         name: server-binary
@@ -83,14 +86,56 @@ jobs:
         retention-days: 1
 
   # E2E tests (only run on main branch pushes or when specifically requested)
+  # Build server for E2E tests when triggered by label (since lint-and-test is skipped)
+  build-server-for-e2e:
+    name: Build Server for E2E
+    runs-on: ubuntu-latest
+    if: github.event.action == 'labeled' && github.event.label.name == 'run-e2e'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          server/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('server/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
+    - name: Build server (release)
+      run: cargo build --release
+      working-directory: ./server
+
+    - name: Upload server binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-binary
+        path: server/target/release/poker-planning
+        retention-days: 1
+
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
-    needs: lint-and-test
-    # Only run E2E tests on push to main/develop or when PR has 'run-e2e' label
-    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'run-e2e')
+    needs: [lint-and-test, build-server-for-e2e]
+    # Run if either lint-and-test succeeded OR build-server-for-e2e succeeded
+    if: always() && (needs.lint-and-test.result == 'success' || needs.build-server-for-e2e.result == 'success')
 
     steps:
+    - name: Debug - Show event info
+      run: |
+        echo "Event name: ${{ github.event_name }}"
+        echo "Event action: ${{ github.event.action }}"
+        echo "Label name: ${{ github.event.label.name }}"
+        echo "PR labels: ${{ join(github.event.pull_request.labels.*.name, ', ') }}"
+        
     - name: Checkout code
       uses: actions/checkout@v4
 
