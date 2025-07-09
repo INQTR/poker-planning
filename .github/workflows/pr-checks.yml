@@ -40,20 +40,20 @@ jobs:
 
     # Server checks
     - name: Setup Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
         components: rustfmt, clippy
-        override: true
 
     - name: Cache Rust dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.cargo/registry
           ~/.cargo/git
           server/target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        key: ${{ runner.os }}-cargo-${{ hashFiles('server/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
 
     - name: Check Rust formatting
       run: cargo fmt -- --check

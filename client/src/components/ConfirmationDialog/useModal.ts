@@ -23,8 +23,8 @@ export const useModal = (
     throw new Error("useModal must be used within a ModalProvider");
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const memoizedOptions = useMemo(() => options, deps);
+  // eslint-disable-next-line react-compiler/react-compiler, react-hooks/exhaustive-deps
+  const memoizedOptions = useMemo(() => options, [options, ...deps]);
 
   const closeModalHandler = useCallback(() => {
     handlers.close?.(id);

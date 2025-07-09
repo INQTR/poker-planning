@@ -10,7 +10,7 @@ use crate::{
     types::{EntityId, Storage},
 };
 use async_graphql::*;
-use futures_util::{lock::MutexGuard, Stream, StreamExt};
+use futures_util::{Stream, StreamExt, lock::MutexGuard};
 use uuid::Uuid;
 
 async fn get_storage<'a>(ctx: &'a Context<'_>) -> MutexGuard<'a, HashMap<Uuid, Room>> {
