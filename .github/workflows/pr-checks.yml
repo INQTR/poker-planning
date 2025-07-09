@@ -59,10 +59,14 @@ jobs:
       run: cargo fmt -- --check
       working-directory: ./server
 
-    - name: Run Clippy
+    - name: Run Clippy (Rust linter)
       run: cargo clippy -- -D warnings
       working-directory: ./server
 
     - name: Run Rust tests
       run: cargo test
+      working-directory: ./server
+
+    - name: Build server (debug for speed)
+      run: cargo build
       working-directory: ./server

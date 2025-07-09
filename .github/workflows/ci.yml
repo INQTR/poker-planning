@@ -41,9 +41,9 @@ jobs:
     - name: Run test coverage
       run: npm run coverage
 
-  # Server-side checks (Backend)
+  # Server-side checks (Backend) + Build
   server-checks:
-    name: Server Tests & Linting
+    name: Server Tests, Linting & Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -78,8 +78,16 @@ jobs:
     - name: Run Rust tests
       run: cargo test
 
-    - name: Build server
+    - name: Build server (release)
       run: cargo build --release
+
+    # Upload the built server binary for reuse in E2E tests
+    - name: Upload server binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-binary
+        path: server/target/release/poker-planning
+        retention-days: 1
 
   # E2E tests (requires both client and server)
   e2e-tests:
@@ -98,19 +106,15 @@ jobs:
         cache: 'npm'
         cache-dependency-path: client/package-lock.json
 
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-
-    - name: Cache Rust dependencies
-      uses: actions/cache@v4
+    # Download the pre-built server binary instead of rebuilding
+    - name: Download server binary
+      uses: actions/download-artifact@v4
       with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          server/target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('server/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-
+        name: server-binary
+        path: server/target/release/
+
+    - name: Make server binary executable
+      run: chmod +x server/target/release/poker-planning
 
     - name: Install client dependencies
       run: npm ci
@@ -120,10 +124,6 @@ jobs:
       run: npm run build
       working-directory: ./client
 
-    - name: Build server
-      run: cargo build --release
-      working-directory: ./server
-
     - name: Install Playwright browsers
       run: npx playwright install --with-deps chromium
       working-directory: ./client
@@ -131,21 +131,26 @@ jobs:
     - name: Start server in background
       run: |
         cd server
-        cargo run --release &
+        ./target/release/poker-planning &
         echo $! > server.pid
-        sleep 10
+        sleep 5
 
     - name: Start client in background
       run: |
         cd client
         npm run preview &
         echo $! > client.pid
-        sleep 10
+        sleep 5
 
     - name: Wait for services to be ready
       run: |
-        timeout 30 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do echo "Waiting for client..."; sleep 2; done'
-        timeout 30 bash -c 'until curl -f http://localhost:8000/health > /dev/null 2>&1; do echo "Waiting for server..."; sleep 2; done'
+        echo "Waiting for client on port 4173..."
+        timeout 60 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do echo "Waiting for client..."; sleep 2; done'
+        echo "Client is ready!"
+        
+        echo "Waiting for server health check on port 8000..."
+        timeout 60 bash -c 'until curl -f http://localhost:8000/health_check > /dev/null 2>&1; do echo "Waiting for server..."; sleep 2; done'
+        echo "Server is ready!"
 
     - name: Run Playwright tests
       run: npm run test:e2e
