@@ -131,30 +131,33 @@ jobs:
     - name: Start server in background
       run: |
         cd server
-        ./target/release/poker-planning &
+        nohup ./target/release/poker-planning > server.log 2>&1 &
         echo $! > server.pid
-        sleep 5
+        echo "Server started with PID $(cat server.pid)"
 
     - name: Start client in background
       run: |
         cd client
-        npm run preview &
+        nohup npm run preview > client.log 2>&1 &
         echo $! > client.pid
-        sleep 5
+        echo "Client started with PID $(cat client.pid)"
+        sleep 10
 
     - name: Wait for services to be ready
       run: |
-        echo "Waiting for client on port 4173..."
-        timeout 60 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do echo "Waiting for client..."; sleep 2; done'
-        echo "Client is ready!"
-        
         echo "Waiting for server health check on port 8000..."
-        timeout 60 bash -c 'until curl -f http://localhost:8000/health_check > /dev/null 2>&1; do echo "Waiting for server..."; sleep 2; done'
+        timeout 120 bash -c 'until curl -f http://localhost:8000/health_check > /dev/null 2>&1; do echo "Waiting for server..."; sleep 3; done'
         echo "Server is ready!"
+        
+        echo "Waiting for client on port 4173..."
+        timeout 120 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do echo "Waiting for client..."; sleep 3; done'
+        echo "Client is ready!"
 
     - name: Run Playwright tests
       run: npm run test:e2e
       working-directory: ./client
+      env:
+        PLAYWRIGHT_BASE_URL: http://localhost:4173
 
     - name: Stop background processes
       if: always()
@@ -173,3 +176,13 @@ jobs:
         name: playwright-report
         path: client/playwright-report/
         retention-days: 30
+
+    - name: Upload service logs
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: service-logs
+        path: |
+          server/server.log
+          client/client.log
+        retention-days: 7

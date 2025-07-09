@@ -48,7 +48,7 @@ test.describe("Room Account Menu Functionality", () => {
 });
 
 async function createRoomAndJoin(page: Page, username: string) {
-  await page.goto("http://localhost:5173");
+  await page.goto("/");
   await page.getByRole("button", { name: "Start New Game" }).click();
   await page.getByLabel("Username", { exact: true }).fill(username);
   await page.getByRole("button", { name: "Join room" }).click();

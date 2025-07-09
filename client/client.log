@@ -1,0 +1,11 @@
+nohup: ignoring input
+
+> poker-planning@0.1.0 preview
+> vite preview
+
+GRAPHQL_ENDPOINT undefined
+
+♻️  Generating routes...
+✅ Processed routes in 106ms
+  ➜  Local:   http://localhost:4173/
+  ➜  Network: use --host to expose

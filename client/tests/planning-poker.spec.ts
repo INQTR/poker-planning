@@ -34,7 +34,7 @@ test.describe("Planning Poker Estimation", () => {
 });
 
 async function createRoom(page: Page): Promise<string> {
-  await page.goto("http://localhost:5173");
+  await page.goto("/");
   await page.getByRole("button", { name: "Start New Game" }).click();
   await expect(page.getByLabel("Username", { exact: true })).toBeVisible();
   return page.url();

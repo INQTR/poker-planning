@@ -1,0 +1,6 @@
+nohup: ignoring input
+Hello, world! This is the server for pokerplanning.org
+Playground: http://127.0.0.1:8000
+[2025-07-09T21:36:29Z TRACE actix_web::middleware::logger] Access log format: %a "%r" %s %b "%{Referer}i" "%{User-Agent}i" %T
+[2025-07-09T21:36:29Z TRACE actix_web::middleware::logger] Access log format: %a "%r" %s %b "%{Referer}i" "%{User-Agent}i" %T
+[2025-07-09T21:36:49Z INFO  actix_web::middleware::logger] 127.0.0.1 "GET /health_check HTTP/1.1" 200 0 "-" "curl/8.12.1" 0.000044

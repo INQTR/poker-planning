@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("home page has correct elements", async ({ page }) => {
-  await page.goto("http://localhost:5173/");
+  await page.goto("/");
   await expect(
     page.getByRole("link", { name: "PokerPlanning.org Logo" }),
   ).toBeVisible();
