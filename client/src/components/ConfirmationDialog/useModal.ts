@@ -23,8 +23,13 @@ export const useModal = (
     throw new Error("useModal must be used within a ModalProvider");
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const memoizedOptions = useMemo(() => options, deps);
+  // Create a stable reference for options based on provided deps
+  // If no deps provided, options reference is used as-is
+  const memoizedOptions = useMemo(
+    () => options,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    deps || [options],
+  );
 
   const closeModalHandler = useCallback(() => {
     handlers.close?.(id);

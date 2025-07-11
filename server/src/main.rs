@@ -7,9 +7,8 @@ use crate::{
 use actix_cors::Cors;
 
 use actix_web::{
-    guard, middleware,
+    App, HttpServer, guard, middleware,
     web::{self, Data},
-    App, HttpServer,
 };
 use async_graphql::Schema;
 use env_logger::Env;
@@ -37,7 +36,7 @@ async fn main() -> std::io::Result<()> {
         .data(storage.clone())
         .finish();
 
-    println!("Playground: http://{}", server_address);
+    println!("Playground: http://{server_address}");
 
     HttpServer::new(move || {
         App::new()
