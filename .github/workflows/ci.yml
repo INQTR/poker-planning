@@ -226,6 +226,14 @@ jobs:
           npm run dev &
           echo $! > ../frontend.pid
           npx wait-on http://localhost:5173 --timeout 30000
+          # Verify backend is responding
+          echo "Checking backend health..."
+          curl -f http://localhost:8000/health_check || exit 1
+          # Verify GraphQL endpoint
+          echo "Checking GraphQL endpoint..."
+          curl -f http://localhost:8000/graphql -H "Content-Type: application/json" -d '{"query":"{ __typename }"}' || exit 1
+          # Give frontend a moment to fully initialize
+          sleep 5
           npx playwright test --reporter=list,html
         env:
           CI: true
