@@ -65,9 +65,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate GraphQL types
-        run: npm run codegen
-
       - name: Run unit tests
         run: npm test -- --run
 
@@ -171,10 +168,6 @@ jobs:
         run: |
           echo "VITE_GRAPHQL_ENDPOINT=http://127.0.0.1:8000/" > .env.local
           echo "VITE_GRAPHQL_WS_ENDPOINT=ws://127.0.0.1:8000/" >> .env.local
-
-      - name: Generate GraphQL types
-        working-directory: ./client
-        run: npm run codegen
 
       - name: Build backend
         working-directory: ./server
