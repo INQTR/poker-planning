@@ -191,8 +191,8 @@ jobs:
       - name: Setup environment variables
         working-directory: ./client
         run: |
-          echo "VITE_GRAPHQL_ENDPOINT=http://127.0.0.1:8000/" > .env.local
-          echo "VITE_GRAPHQL_WS_ENDPOINT=ws://127.0.0.1:8000/" >> .env.local
+          echo "VITE_GRAPHQL_ENDPOINT=http://localhost:8000/" > .env.local
+          echo "VITE_GRAPHQL_WS_ENDPOINT=ws://localhost:8000/" >> .env.local
 
       - name: Install Playwright browsers
         working-directory: ./client
@@ -225,7 +225,21 @@ jobs:
           npm run dev &
           echo $! > ../frontend.pid
           npx wait-on http://localhost:5173 --timeout 30000
-          npm run test:e2e
+          # Verify backend is responding
+          echo "Checking backend health..."
+          curl -f http://localhost:8000/health_check || exit 1
+          # Test GraphQL endpoint directly
+          echo "Testing GraphQL endpoint..."
+          curl -X POST http://localhost:8000/ \
+            -H "Content-Type: application/json" \
+            -d '{"query":"{ __typename }"}' \
+            -v || exit 1
+          # Give frontend a moment to fully initialize
+          sleep 5
+          # Show environment variables for debugging
+          echo "Environment variables:"
+          cat .env.local
+          npx playwright test --reporter=list,html
         env:
           CI: true
           VITE_GRAPHQL_ENDPOINT: http://localhost:8000/graphql
