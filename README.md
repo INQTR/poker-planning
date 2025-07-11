@@ -1,5 +1,7 @@
 # PokerPlanning.org
 
+[![Build & Tests](https://github.com/INQTR/poker-planning/actions/workflows/ci.yml/badge.svg)](https://github.com/INQTR/poker-planning/actions/workflows/ci.yml)
+
 PokerPlanning.org is an open-source, user-friendly online planning poker tool designed to enhance Scrum team collaboration and improve estimation accuracy. Our mission is to provide a free, accessible, and enjoyable planning poker experience for teams worldwide 🌍🌎🌏!
 
 ![PokerPlanning.org Room demo](client/public/poker-planning-demo.png "Room Screen")
