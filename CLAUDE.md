@@ -4,11 +4,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-PokerPlanning.org is an open-source online planning poker tool for Scrum teams. It features real-time collaboration with a Rust/GraphQL backend and React/TypeScript frontend.
+PokerPlanning.org is an open-source online planning poker tool for Scrum teams. The project is currently undergoing a migration from a React/TypeScript frontend with GraphQL backend to a Leptos/Rust-based full-stack implementation.
+
+## Current Architecture Status
+
+The repository contains **two implementations**:
+- **React Frontend + GraphQL Backend** (`/client` + `/server`): The original implementation
+- **Leptos Full-Stack** (`/src`): The new Rust-based implementation using Leptos server functions (no GraphQL)
+
+Both exist during the migration period on the `rewrite-frontend-to-rust` branch.
+
+## Leptos Resources
+
+For detailed information about Leptos server functions and the latest Leptos patterns, use the **Context7 MCP server** which provides comprehensive Leptos documentation and best practices for v0.8.2.
 
 ## Development Commands
 
-### Frontend (Client)
+### Leptos Implementation (New)
+
+```bash
+# Development with auto-reload
+cargo leptos watch
+
+# Production build
+cargo leptos build --release
+
+# Run production server
+cargo leptos serve --release
+
+# Format code
+cargo fmt
+
+# Run lints
+cargo clippy
+
+# Run tests
+cargo test
+```
+
+The Leptos development server runs on http://localhost:4000
+
+### React Frontend (Original)
 
 ```bash
 cd client
@@ -21,41 +57,65 @@ npm run checkTs            # TypeScript type checking
 npm test                   # Run unit tests with Vitest
 npm run coverage           # Run tests with coverage report
 npm run codegen            # Generate GraphQL types from schema
-npm run test:e2e           # Run Playwright end-to-end tests
-npm run test:e2e:ui        # Run Playwright tests with UI
-npm run test:e2e:headless   # Run Playwright tests in headless mode
 ```
 
-### Backend (Server)
+### GraphQL Backend (Original - Used by React Frontend Only)
 
 ```bash
 cd server
 cargo build                # Build the project
-cargo run                  # Run the server
+cargo run                  # Run the server (http://localhost:8000)
 cargo watch -x run         # Run with auto-reload (requires cargo-watch)
 cargo check                # Check for compilation errors
 cargo test                 # Run tests
 ```
 
+### End-to-End Tests
+
+```bash
+cd end2end
+npm install
+npm run test:headless      # Run Playwright tests in headless mode
+npm run test:ui            # Run Playwright tests with UI
+```
+
 ## Architecture Overview
 
-### Frontend Architecture
+### Leptos Architecture (New)
 
-- **Framework**: React 19 with TypeScript in strict mode
+- **Framework**: Leptos 0.8.2 with SSR and hydration
+- **Backend**: Integrated Leptos server functions (no separate GraphQL backend)
+- **Language**: Rust with wasm-bindgen for client-side
+- **Routing**: Leptos Router with nested routes
+- **State Management**: Leptos reactive signals and resources
+- **Server Functions**: Direct server function calls with `#[server]` macro
+- **Styling**: Tailwind CSS with Rust view macros
+- **Real-time**: Server-sent events or WebSockets via Leptos
+- **Components**: Located in `/src/components/`
+- **Pages**: Located in `/src/pages/`
+
+### React + GraphQL Architecture (Original)
+
+- **Frontend**: React 19 with TypeScript in strict mode
+- **Backend**: Separate Actix Web server with async-graphql
 - **Routing**: TanStack Router with file-based routing in `/routes`
 - **State Management**: Apollo Client for GraphQL state, React Context for auth
 - **UI Components**: Custom components using shadcn/ui and Radix UI primitives
 - **Styling**: Tailwind CSS with custom theme configuration
 - **Real-time**: GraphQL subscriptions via WebSocket
 
-### Backend Architecture
+## Key Patterns
 
-- **Framework**: Actix Web with async-graphql
-- **Pattern**: Domain-driven design with models in `/domain`
-- **Real-time**: SimpleBroker for pub/sub messaging
-- **Configuration**: Environment-based YAML configs (base, local, production)
+### Leptos Development
 
-### Key Patterns
+1. **Server Functions**: Use `#[server]` macro for backend logic - replaces GraphQL endpoints
+2. **Components**: Use `#[component]` macro with reactive signals
+3. **Routing**: Define routes in `App` component with `<Route>` components
+4. **State**: Use `create_signal`, `create_resource`, and `create_action`
+5. **Styling**: Use Tailwind classes directly in view! macros
+6. **No GraphQL**: All server communication via Leptos server functions
+
+### React Development (Original)
 
 1. **GraphQL Operations**: All GraphQL queries/mutations/subscriptions are in `client/src/api/operations.graphql`
 2. **Type Generation**: Run `npm run codegen` after modifying GraphQL operations
@@ -67,48 +127,51 @@ cargo test                 # Run tests
 
 ### Unit Tests
 
-- Use Vitest with Testing Library for React components
-- Test files co-located with components (\*.test.tsx)
-- Run specific test: `npm test -- path/to/test`
+- **Leptos**: Rust tests using `#[cfg(test)]` modules
+- **React**: Vitest with Testing Library for React components
+- Test files co-located with components
 
 ### E2E Tests
 
-- Playwright tests in `/client/tests/`
+- Playwright tests in `/end2end/tests/`
 - Test real user flows: creating rooms, joining, voting
-- Must have both frontend and backend running
-- **IMPORTANT**: Always run e2e tests in headless mode: `npm run test:e2e:headless`
+- Must have appropriate frontend running (React on 5173 or Leptos on 4000)
+- **IMPORTANT**: Always run e2e tests in headless mode: `npm run test:headless`
 
 ## Common Development Tasks
 
-### Adding a New GraphQL Operation
+### Working with Leptos
+
+1. **Creating a Component**: Add to `/src/components/` with `#[component]` macro
+2. **Adding a Route**: Define in `App` component's router configuration
+3. **Server Functions**: Use `#[server]` for backend logic, accessible from client
+4. **Reactive State**: Use signals for client-side state management
+5. **Consult Context7**: Use Context7 MCP server for Leptos best practices and patterns
+
+### Working with React/GraphQL (Original)
 
 1. Add query/mutation/subscription to `client/src/api/operations.graphql`
 2. Run `npm run codegen` to generate types
 3. Import and use generated hooks from `src/api/operations.generated.ts`
 
-### Creating a New Component
-
-1. Create directory under `src/components/`
-2. Follow existing patterns (see Card, Player, Room components)
-3. Export from `index.tsx` and re-export from `src/components/index.ts`
-
-### Adding a New Route
-
-1. Create file in `src/routes/` following naming convention
-2. Use `.lazy.tsx` suffix for code splitting
-3. Route params available via `useParams()` hook
-
 ## Deployment
 
 The app deploys to DigitalOcean App Platform:
 
-- Frontend: Static site build
-- Backend: Dockerized Rust server
-- Configuration: `spec.yaml` in root directory
+- **Configuration**: `spec.yaml` in root directory
+- **Frontend**: Static site build (currently React, will switch to Leptos)
+- **Backend**: Dockerized Rust server (GraphQL for React, integrated for Leptos)
+- **Region**: Frankfurt (fra)
 
 ## Important Notes
 
-- Node.js version must be >=20 (check `.nvmrc`)
-- Frontend proxies `/graphql` requests to backend in development
-- WebSocket endpoint for subscriptions: `ws://localhost:8000/graphql`
-- All environment variables in frontend must be prefixed with `VITE_`
+- **Migration Status**: Actively migrating from React+GraphQL to Leptos with server functions
+- **Port Configuration**:
+  - Leptos: 4000 (includes both frontend and backend)
+  - React: 5173 (frontend only)
+  - GraphQL Backend: 8000 (for React frontend only)
+- **Node.js**: Version must be >=20 for React frontend
+- **Rust**: Uses edition 2024 for Leptos implementation
+- **Environment Variables**: React frontend variables must be prefixed with `VITE_`
+- **WebSocket**: GraphQL subscriptions endpoint at `ws://localhost:8000/graphql` (React only)
+- **Server Functions**: Leptos uses integrated server functions, not GraphQL

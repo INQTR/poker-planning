@@ -11,5 +11,8 @@
     "@playwright/test": "^1.44.1",
     "@types/node": "^20.12.12",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "axe-playwright": "2.1.0"
   }
 }
