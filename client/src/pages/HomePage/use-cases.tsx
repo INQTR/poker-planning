@@ -4,7 +4,7 @@ export function UseCases() {
   return (
     <div className="bg-gray-50 py-24 sm:py-32 dark:bg-gray-900">
       <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-        <h2 className="text-center text-base/7 font-semibold text-primary dark:text-primary/90">
+        <h2 className="text-center text-base/7 font-semibold text-gray-700 dark:text-gray-300">
           For Every Team
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-5xl dark:text-white">
