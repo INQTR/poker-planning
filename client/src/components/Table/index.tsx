@@ -4,7 +4,7 @@ import { ReactElement } from "react";
 import { useResetGameMutation, useShowCardsMutation } from "@/api";
 import { useModal } from "@/components";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 
 interface TableProps {
   roomId: string;
@@ -19,8 +19,6 @@ export function Table({
   isGameOver,
   innerRef,
 }: TableProps): ReactElement {
-  const { toast } = useToast();
-
   // Confirm before starting a new game.
   const startNewGame = useModal({
     title: "Are you sure you want to start a new game?",
@@ -32,22 +30,14 @@ export function Table({
   const [showCardsMutation, { loading: showCardLoading }] =
     useShowCardsMutation({
       onError: (error) => {
-        toast({
-          title: "Error",
-          description: `Show cards: ${error.message}`,
-          variant: "destructive",
-        });
+        toast.error(`Show cards: ${error.message}`);
       },
     });
 
   const [resetGameMutation, { loading: resetGameLoading }] =
     useResetGameMutation({
       onError: (error) => {
-        toast({
-          title: "Error",
-          description: `Reset game: ${error.message}`,
-          variant: "destructive",
-        });
+        toast.error(`Reset game: ${error.message}`);
       },
     });
 

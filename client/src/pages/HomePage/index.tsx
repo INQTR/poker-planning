@@ -6,7 +6,7 @@ import { useCreateRoomMutation } from "@/api";
 import { ModeToggle, FeaturesSection, ElevateSection } from "@/components";
 import { Footer } from "@/components/footer";
 import { useCopyRoomUrlToClipboard } from "@/hooks";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 
 import { Banner } from "./banner";
 import { CallToAction } from "./call-to-action";
@@ -17,7 +17,6 @@ import { WhyChooseUs } from "./why-choose-us";
 
 export const HomePage: FC = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { copyRoomUrlToClipboard } = useCopyRoomUrlToClipboard();
 
   const [createRoomMutation, { loading }] = useCreateRoomMutation({
@@ -26,11 +25,7 @@ export const HomePage: FC = () => {
       copyRoomUrlToClipboard(data.createRoom.id);
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Create room: ${error.message}`,
-        variant: "destructive",
-      });
+      toast.error(`Create room: ${error.message}`);
     },
   });
 

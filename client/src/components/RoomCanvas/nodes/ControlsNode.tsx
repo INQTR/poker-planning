@@ -5,7 +5,7 @@ import { ReactElement, memo } from "react";
 import { useResetGameMutation, useShowCardsMutation } from "@/api";
 import { useModal } from "@/components";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 
 type ControlsNodeData = {
   roomId: string;
@@ -18,7 +18,6 @@ type ControlsNodeType = Node<ControlsNodeData, "controls">;
 export const ControlsNode = memo(
   ({ data }: NodeProps<ControlsNodeType>): ReactElement => {
     const { roomId, isCardsPicked, isGameOver } = data;
-    const { toast } = useToast();
 
     // Confirm before starting a new game.
     const startNewGame = useModal({
@@ -31,22 +30,14 @@ export const ControlsNode = memo(
     const [showCardsMutation, { loading: showCardLoading }] =
       useShowCardsMutation({
         onError: (error) => {
-          toast({
-            title: "Error",
-            description: `Show cards: ${error.message}`,
-            variant: "destructive",
-          });
+          toast.error(`Show cards: ${error.message}`);
         },
       });
 
     const [resetGameMutation, { loading: resetGameLoading }] =
       useResetGameMutation({
         onError: (error) => {
-          toast({
-            title: "Error",
-            description: `Reset game: ${error.message}`,
-            variant: "destructive",
-          });
+          toast.error(`Reset game: ${error.message}`);
         },
       });
 

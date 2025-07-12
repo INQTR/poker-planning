@@ -2,7 +2,7 @@ import { NodeProps } from "@xyflow/react";
 import { ReactElement, memo, useCallback, useMemo } from "react";
 
 import { usePickCardMutation } from "@/api";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 import type { VotingCardNodeType } from "../types";
@@ -10,15 +10,10 @@ import type { VotingCardNodeType } from "../types";
 export const VotingCardNode = memo(
   ({ data, selected }: NodeProps<VotingCardNodeType>): ReactElement => {
     const { card, userId, roomId, isSelectable } = data;
-    const { toast } = useToast();
 
     const [pickCardMutation] = usePickCardMutation({
       onError(error) {
-        toast({
-          title: "Error",
-          description: `Pick card: ${error.message}`,
-          variant: "destructive",
-        });
+        toast.error(`Pick card: ${error.message}`);
       },
     });
 

@@ -6,13 +6,12 @@ import { PageLayout } from "@/components";
 import { CreateUserDialog } from "@/components/CreateUserDialog";
 import { RoomCanvas } from "@/components/RoomCanvas";
 import { useAuth } from "@/contexts";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 import { User } from "@/types";
 
 export function RoomPage(): ReactElement {
   const { roomId } = useParams({ from: "/room/$roomId" });
   const { user } = useAuth();
-  const { toast } = useToast();
   const isJoinRoomCalledRef = useRef(false);
 
   const { data: subscriptionData, error: roomSubscriptionError } =
@@ -22,21 +21,13 @@ export function RoomPage(): ReactElement {
 
   useEffect(() => {
     if (roomSubscriptionError) {
-      toast({
-        title: "Error",
-        description: `Room subscription: ${roomSubscriptionError.message}`,
-        variant: "destructive",
-      });
+      toast.error(`Room subscription: ${roomSubscriptionError.message}`);
     }
-  }, [roomSubscriptionError, toast]);
+  }, [roomSubscriptionError]);
 
   const [joinRoomMutation, { data: joinRoomData }] = useJoinRoomMutation({
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Join room: ${error.message}`,
-        variant: "destructive",
-      });
+      toast.error(`Join room: ${error.message}`);
     },
   });
 

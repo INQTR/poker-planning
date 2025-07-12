@@ -5,7 +5,7 @@ import { createRoot } from "react-dom/client";
 
 import { client } from "@/api";
 import { ConfirmationDialogProvider, ThemeProvider } from "@/components";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts";
 import { NotFoundPage } from "@/pages";
 
@@ -30,8 +30,12 @@ const root = createRoot(container);
 
 root.render(
   <StrictMode>
-    <Toaster />
     <ThemeProvider defaultTheme="dark">
+      <Toaster
+        position="top-center"
+        visibleToasts={9}
+        toastOptions={{ duration: 5000 }}
+      />
       <ApolloProvider client={client}>
         <TooltipProvider>
           <AuthProvider>

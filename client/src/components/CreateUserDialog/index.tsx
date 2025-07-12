@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 import { User } from "@/types";
 
 interface CreateUserDialogProps {
@@ -24,7 +24,6 @@ export const CreateUserDialog: FC<CreateUserDialogProps> = ({
   handleJoinRoomMutation,
 }) => {
   const { user, login } = useAuth();
-  const { toast } = useToast();
   const [username, setUsername] = useState("");
   const [open, setOpen] = useState<boolean>(!user);
 
@@ -40,27 +39,16 @@ export const CreateUserDialog: FC<CreateUserDialogProps> = ({
       });
       setOpen(false);
       handleJoinRoomMutation(data.createUser);
-      toast({
-        title: "User created successfully",
-        variant: "default",
-      });
+      toast.success("User created successfully");
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to create user: ${error.message}`,
-        variant: "destructive",
-      });
+      toast.error(`Failed to create user: ${error.message}`);
     },
   });
 
   const handleSubmit = async () => {
     if (!username.trim()) {
-      toast({
-        title: "Error",
-        description: "Username cannot be empty",
-        variant: "destructive",
-      });
+      toast.error("Username cannot be empty");
       return;
     }
 

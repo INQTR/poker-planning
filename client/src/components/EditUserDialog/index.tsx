@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/lib/toast";
 
 interface EditUserDialogProps {
   open: boolean;
@@ -22,7 +22,6 @@ interface EditUserDialogProps {
 
 export const EditUserDialog: FC<EditUserDialogProps> = ({ open, setOpen }) => {
   const { user, login } = useAuth();
-  const { toast } = useToast();
   const [username, setUsername] = useState("");
 
   const [editUserMutation, { loading }] = useEditUserMutation({
@@ -32,27 +31,16 @@ export const EditUserDialog: FC<EditUserDialogProps> = ({ open, setOpen }) => {
         username: data.editUser.username,
       });
       setOpen(false);
-      toast({
-        title: "Your username has been updated",
-        variant: "default",
-      });
+      toast.success("Your username has been updated");
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: `Failed to update your username: ${error.message}`,
-        variant: "destructive",
-      });
+      toast.error(`Failed to update your username: ${error.message}`);
     },
   });
 
   const handleSubmit = async () => {
     if (!username.trim()) {
-      toast({
-        title: "Error",
-        description: "Username cannot be empty",
-        variant: "destructive",
-      });
+      toast.error("Username cannot be empty");
       return;
     }
 
