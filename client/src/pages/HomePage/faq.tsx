@@ -1,5 +1,9 @@
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const faqs = [
   {
@@ -54,45 +58,6 @@ const faqs = [
   },
 ];
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border-b border-gray-200 dark:border-gray-700 py-6">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-start justify-between text-left"
-        aria-expanded={isOpen}
-        aria-controls={`faq-answer-${question
-          .replace(/\s+/g, "-")
-          .toLowerCase()}`}
-      >
-        <span className="text-base font-semibold leading-7 text-gray-900 dark:text-white">
-          {question}
-        </span>
-        <span className="ml-6 flex h-7 items-center">
-          <ChevronDown
-            className={`h-6 w-6 transform transition-transform ${
-              isOpen ? "rotate-180" : ""
-            } text-gray-400`}
-            aria-hidden="true"
-          />
-        </span>
-      </button>
-      {isOpen && (
-        <div
-          className="mt-2 pr-12"
-          id={`faq-answer-${question.replace(/\s+/g, "-").toLowerCase()}`}
-        >
-          <p className="text-base leading-7 text-gray-600 dark:text-gray-300">
-            {answer}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function FAQ() {
   return (
     <div className="bg-white dark:bg-gray-900">
@@ -109,15 +74,22 @@ export function FAQ() {
               Everything you need to know about planning poker and our tool
             </p>
           </div>
-          <div className="mt-10">
-            {faqs.map((faq) => (
-              <FAQItem
+          <Accordion type="single" collapsible className="mt-10">
+            {faqs.map((faq, index) => (
+              <AccordionItem
                 key={faq.question}
-                question={faq.question}
-                answer={faq.answer}
-              />
+                value={`item-${index}`}
+                className="border-gray-200 dark:border-gray-700"
+              >
+                <AccordionTrigger className="text-base font-semibold leading-7 text-gray-900 dark:text-white hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-base leading-7 text-gray-600 dark:text-gray-300">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
           <div className="mt-16 text-center">
             <p className="text-base font-semibold text-gray-900 dark:text-white">
               Still have questions?
