@@ -45,7 +45,7 @@ export function HowItWorks() {
       {/* Background pattern */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <svg
-          className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+          className="absolute left-[max(50%,25rem)] top-0 h-256 w-512 -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 mask-[radial-gradient(64rem_64rem_at_top,white,transparent)]"
           aria-hidden="true"
         >
           <defs>
@@ -92,7 +92,7 @@ export function HowItWorks() {
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
             How
             <span className="relative">
-              <span className="relative bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              <span className="relative bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 {" "}
                 Planning Poker{" "}
               </span>
@@ -127,16 +127,16 @@ export function HowItWorks() {
                 <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-8 shadow-lg ring-1 ring-gray-200 dark:ring-gray-700 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                   {/* Gradient overlay */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-5 dark:opacity-10`}
+                    className={`absolute inset-0 bg-linear-to-br ${step.gradient} opacity-5 dark:opacity-10`}
                   />
 
                   {/* Step number */}
                   <div className="absolute top-3 right-3">
                     <div className="relative">
-                      <div className="text-5xl font-bold bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 bg-clip-text text-transparent select-none">
+                      <div className="text-5xl font-bold bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 bg-clip-text text-transparent select-none">
                         {step.id}
                       </div>
-                      <div className="absolute inset-0 text-5xl font-bold text-gray-300/30 dark:text-gray-600/30 blur-sm select-none">
+                      <div className="absolute inset-0 text-5xl font-bold text-gray-300/30 dark:text-gray-600/30 blur-xs select-none">
                         {step.id}
                       </div>
                     </div>
@@ -145,7 +145,7 @@ export function HowItWorks() {
                   {/* Icon */}
                   <div className="relative mb-4">
                     <div
-                      className={`inline-flex rounded-2xl bg-gradient-to-br ${step.gradient} p-3 shadow-lg ${step.shadowColor}`}
+                      className={`inline-flex rounded-2xl bg-linear-to-br ${step.gradient} p-3 shadow-lg ${step.shadowColor}`}
                     >
                       <step.icon
                         className="h-8 w-8 text-white"
@@ -165,7 +165,7 @@ export function HowItWorks() {
                   {/* Hover effect indicator */}
                   <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div
-                      className={`h-2 w-2 rounded-full bg-gradient-to-r ${step.gradient} animate-pulse`}
+                      className={`h-2 w-2 rounded-full bg-linear-to-r ${step.gradient} animate-pulse`}
                     />
                   </div>
                 </div>

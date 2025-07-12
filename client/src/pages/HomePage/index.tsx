@@ -47,7 +47,7 @@ export const HomePage: FC = () => {
         Skip to main content
       </a>
       <Banner />
-      <header className="relative z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-800/50">
+      <header className="relative z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xs border-b border-gray-200/50 dark:border-gray-800/50">
         <nav
           aria-label="Global"
           className="flex items-center justify-between p-6 lg:px-8"
@@ -60,7 +60,7 @@ export const HomePage: FC = () => {
                 className="h-8 w-8 mr-2"
               />
               <span className="sr-only">Planning poker / Scrum Poker</span>
-              <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                 Planning poker
               </span>
             </Link>
@@ -78,7 +78,7 @@ export const HomePage: FC = () => {
         {/* Background gradient effects */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <svg
-            className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+            className="absolute left-[max(50%,25rem)] top-0 h-256 w-512 -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 mask-[radial-gradient(64rem_64rem_at_top,white,transparent)]"
             aria-hidden="true"
           >
             <defs>
@@ -115,7 +115,7 @@ export const HomePage: FC = () => {
             aria-hidden="true"
           >
             <div
-              className="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-primary/30 to-purple-600/30 opacity-20 dark:from-primary/20 dark:to-purple-600/20"
+              className="aspect-1108/632 w-277 bg-linear-to-r from-primary/30 to-purple-600/30 opacity-20 dark:from-primary/20 dark:to-purple-600/20"
               style={{
                 clipPath:
                   "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
@@ -137,7 +137,7 @@ export const HomePage: FC = () => {
             <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
               Estimate stories with
               <span className="relative">
-                <span className="relative bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                <span className="relative bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                   {" "}
                   Planning Poker
                 </span>
@@ -179,7 +179,7 @@ export const HomePage: FC = () => {
               <button
                 onClick={onCreateRoom}
                 disabled={loading}
-                className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Start New Game
@@ -193,7 +193,7 @@ export const HomePage: FC = () => {
                 href="https://github.com/INQTR/poker-planning"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-gray-800 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-xs transition-all duration-200 hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-105 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
               >
                 <Github className="h-5 w-5" />
                 View on GitHub
@@ -219,7 +219,7 @@ export const HomePage: FC = () => {
         </div>
 
         {/* Bottom gradient fade */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-white dark:from-gray-900 to-transparent" />
         <ElevateSection />
         <HowItWorks />
         <WhyChooseUs />

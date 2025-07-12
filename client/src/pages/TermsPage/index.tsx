@@ -67,7 +67,7 @@ export function TermsPage() {
 
       <main className="isolate">
         {/* Hero section */}
-        <div className="relative isolate -z-10 overflow-hidden bg-gradient-to-b from-indigo-100/20 dark:from-indigo-900/20 pt-14">
+        <div className="relative isolate -z-10 overflow-hidden bg-linear-to-b from-indigo-100/20 dark:from-indigo-900/20 pt-14">
           <div
             aria-hidden="true"
             className="absolute inset-y-0 right-1/2 -z-10 -mr-96 w-[200%] origin-top-right skew-x-[-30deg] bg-white dark:bg-gray-900 shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 dark:ring-indigo-950 sm:-mr-80 lg:-mr-96"
@@ -89,7 +89,7 @@ export function TermsPage() {
               </p>
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white dark:from-gray-900 sm:h-32" />
+          <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-white dark:from-gray-900 sm:h-32" />
         </div>
 
         {/* Notice section */}
@@ -97,7 +97,7 @@ export function TermsPage() {
           <div className="mx-auto max-w-4xl">
             <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-4">
               <div className="flex">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <AlertCircle
                     className="h-5 w-5 text-blue-400"
                     aria-hidden="true"

@@ -24,13 +24,13 @@ export function UseCases() {
                   requirements.
                 </p>
               </div>
-              <div className="relative min-h-[30rem] w-full grow max-lg:mx-auto max-lg:max-w-sm">
-                <div className="absolute inset-x-10 top-10 bottom-0 flex items-center justify-center rounded-t-xl bg-gradient-to-br from-primary/10 to-purple-500/10 dark:from-primary/20 dark:to-purple-500/20">
+              <div className="relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm">
+                <div className="absolute inset-x-10 top-10 bottom-0 flex items-center justify-center rounded-t-xl bg-linear-to-br from-primary/10 to-purple-500/10 dark:from-primary/20 dark:to-purple-500/20">
                   <Globe className="h-32 w-32 text-primary/50 dark:text-primary/40" />
                 </div>
               </div>
             </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 lg:rounded-l-4xl dark:outline-white/10" />
+            <div className="pointer-events-none absolute inset-px rounded-lg shadow-xs outline-solid outline-black/5 lg:rounded-l-4xl dark:outline-white/10" />
           </div>
           <div className="relative max-lg:row-start-1">
             <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-4xl dark:bg-gray-800" />
@@ -53,7 +53,7 @@ export function UseCases() {
                 </div>
               </div>
             </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 max-lg:rounded-t-4xl dark:outline-white/10" />
+            <div className="pointer-events-none absolute inset-px rounded-lg shadow-xs outline-solid outline-black/5 max-lg:rounded-t-4xl dark:outline-white/10" />
           </div>
           <div className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
             <div className="absolute inset-px rounded-lg bg-white dark:bg-gray-800" />
@@ -71,7 +71,7 @@ export function UseCases() {
                 <BarChart3 className="h-20 w-20 text-primary dark:text-primary/90" />
               </div>
             </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 dark:outline-white/10" />
+            <div className="pointer-events-none absolute inset-px rounded-lg shadow-xs outline-solid outline-black/5 dark:outline-white/10" />
           </div>
           <div className="relative lg:row-span-2">
             <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-b-4xl lg:rounded-r-4xl dark:bg-gray-800" />
@@ -85,15 +85,15 @@ export function UseCases() {
                   accounts, no limits, just pure collaboration.
                 </p>
               </div>
-              <div className="relative min-h-[30rem] w-full grow">
-                <div className="absolute top-10 right-0 bottom-0 left-10 overflow-hidden rounded-tl-xl bg-gradient-to-br from-purple-50 to-primary/5 shadow-inner dark:from-purple-900/20 dark:to-primary/10">
+              <div className="relative min-h-120 w-full grow">
+                <div className="absolute top-10 right-0 bottom-0 left-10 overflow-hidden rounded-tl-xl bg-linear-to-br from-purple-50 to-primary/5 shadow-inner dark:from-purple-900/20 dark:to-primary/10">
                   <div className="flex h-full items-center justify-center">
                     <Users className="h-32 w-32 text-primary/40 dark:text-primary/30" />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-black/5 max-lg:rounded-b-4xl lg:rounded-r-4xl dark:outline-white/10" />
+            <div className="pointer-events-none absolute inset-px rounded-lg shadow-xs outline-solid outline-black/5 max-lg:rounded-b-4xl lg:rounded-r-4xl dark:outline-white/10" />
           </div>
         </div>
       </div>

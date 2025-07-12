@@ -44,11 +44,11 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-24 sm:py-32">
+    <section className="relative overflow-hidden bg-linear-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-24 sm:py-32">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-56 left-[50%] w-[600px] h-[600px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent blur-3xl" />
-        <div className="absolute -bottom-56 right-[20%] w-[600px] h-[600px] rounded-full bg-gradient-to-tl from-secondary/20 via-secondary/5 to-transparent blur-3xl" />
+        <div className="absolute -top-56 left-[50%] w-[600px] h-[600px] -translate-x-1/2 rounded-full bg-linear-to-tr from-primary/20 via-primary/5 to-transparent blur-3xl" />
+        <div className="absolute -bottom-56 right-[20%] w-[600px] h-[600px] rounded-full bg-linear-to-tl from-secondary/20 via-secondary/5 to-transparent blur-3xl" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -63,7 +63,7 @@ export function FeaturesSection() {
             </div>
             <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
               Everything You Need,
-              <span className="block mt-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              <span className="block mt-2 bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                 Nothing You Don&apos;t
               </span>
             </h2>
@@ -75,7 +75,7 @@ export function FeaturesSection() {
 
           {/* Features Grid */}
           <div className="mt-16 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-700 rounded-3xl blur-[1px]" />
+            <div className="absolute inset-0 bg-linear-to-r from-gray-200 via-gray-200 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-700 rounded-3xl blur-[1px]" />
             <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-12">
               <div className="grid grid-cols-1 gap-y-8 sm:grid-cols-2 sm:gap-x-8 lg:gap-x-12">
                 {features.map((feature) => (
@@ -88,7 +88,7 @@ export function FeaturesSection() {
                   >
                     <div
                       className={cn(
-                        "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300",
+                        "shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300",
                         feature.available
                           ? "bg-primary/10 group-hover:bg-primary/20"
                           : "bg-gray-100 dark:bg-gray-700",
@@ -134,7 +134,7 @@ export function FeaturesSection() {
               <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-linear-to-br from-primary/20 to-primary/10">
                       <Shield className="h-6 w-6 text-primary" />
                     </div>
                     <div>

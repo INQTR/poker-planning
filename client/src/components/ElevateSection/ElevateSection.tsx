@@ -38,11 +38,11 @@ const features = [
 
 export function ElevateSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 py-24 sm:py-32">
+    <section className="relative overflow-hidden bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 py-24 sm:py-32">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-96 left-[20%] w-[800px] h-[800px] rounded-full bg-gradient-to-br from-primary/10 via-transparent to-transparent blur-3xl" />
-        <div className="absolute -bottom-96 right-[10%] w-[800px] h-[800px] rounded-full bg-gradient-to-tl from-secondary/10 via-transparent to-transparent blur-3xl" />
+        <div className="absolute -top-96 left-[20%] w-[800px] h-[800px] rounded-full bg-linear-to-br from-primary/10 via-transparent to-transparent blur-3xl" />
+        <div className="absolute -bottom-96 right-[10%] w-[800px] h-[800px] rounded-full bg-linear-to-tl from-secondary/10 via-transparent to-transparent blur-3xl" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -58,7 +58,7 @@ export function ElevateSection() {
               </div>
               <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
                 Elevate Your
-                <span className="block mt-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                <span className="block mt-2 bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                   Scrum Planning
                 </span>
               </h2>
@@ -77,7 +77,7 @@ export function ElevateSection() {
                   >
                     <div
                       className={cn(
-                        "flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
+                        "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all duration-300 group-hover:scale-110",
                         feature.bgColor,
                       )}
                     >
@@ -116,11 +116,11 @@ export function ElevateSection() {
           <div className="relative flex items-center justify-center">
             <div className="relative">
               {/* Glow effect behind screenshot */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl opacity-70" />
+              <div className="absolute -inset-4 bg-linear-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl opacity-70" />
 
               {/* Screenshot container with enhanced styling */}
               <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-gray-900/10 dark:ring-gray-100/10">
-                <div className="absolute inset-0 bg-gradient-to-tr from-gray-900/5 via-transparent to-transparent dark:from-white/5" />
+                <div className="absolute inset-0 bg-linear-to-tr from-gray-900/5 via-transparent to-transparent dark:from-white/5" />
                 <img
                   alt="Planning Poker platform screenshot"
                   src={pokerPlanningScreenshot}

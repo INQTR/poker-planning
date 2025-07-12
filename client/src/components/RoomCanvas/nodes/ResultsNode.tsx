@@ -65,7 +65,7 @@ export const ResultsNode = memo(
         <Handle
           type="source"
           position={Position.Left}
-          className="!bg-gray-400 dark:!bg-gray-600"
+          className="bg-gray-400! dark:bg-gray-600!"
         />
 
         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-green-400 dark:border-green-600 min-w-[250px]">

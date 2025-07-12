@@ -168,7 +168,7 @@ export function useCanvasLayout({
       target: "story-current",
       type: "smoothstep",
       animated: true,
-      className: "!stroke-green-500 dark:!stroke-green-400",
+      className: "stroke-green-500! dark:stroke-green-400!",
       style: { strokeWidth: 2 },
     }));
   }, [room.game.table]);

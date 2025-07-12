@@ -169,11 +169,11 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          className="[&>*]:stroke-gray-300 dark:[&>*]:stroke-gray-700"
+          className="*:stroke-gray-300 dark:*:stroke-gray-700"
         />
-        <Controls className="!bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !shadow-lg [&>button]:!bg-white dark:[&>button]:!bg-gray-800 [&>button]:!border-gray-300 dark:[&>button]:!border-gray-600 [&>button]:hover:!bg-gray-50 dark:[&>button]:hover:!bg-gray-700 [&>button_svg]:!fill-gray-700 dark:[&>button_svg]:!fill-gray-300" />
+        <Controls className="bg-white! dark:bg-gray-800! border-gray-300! dark:border-gray-600! shadow-lg! [&>button]:bg-white! dark:[&>button]:bg-gray-800! [&>button]:border-gray-300! dark:[&>button]:border-gray-600! hover:[&>button]:bg-gray-50! dark:hover:[&>button]:bg-gray-700! [&>button_svg]:fill-gray-700! dark:[&>button_svg]:fill-gray-300!" />
         <MiniMap
-          className="!bg-gray-100 dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600"
+          className="bg-gray-100! dark:bg-gray-800! border-gray-300! dark:border-gray-600!"
           nodeStrokeColor={miniMapNodeStrokeColor}
           nodeColor={miniMapNodeColor}
           pannable

@@ -222,7 +222,7 @@ test.describe("Editing", () => {
     await checkNumberOfTodosInLocalStorage(page, 3);
   });
 
-  test("should save edits on blur", async ({ page }) => {
+  test("should save edits on blur-sm", async ({ page }) => {
     const todoItems = page.getByTestId("todo-item");
     await todoItems.nth(1).dblclick();
     await todoItems
@@ -232,7 +232,7 @@ test.describe("Editing", () => {
     await todoItems
       .nth(1)
       .getByRole("textbox", { name: "Edit" })
-      .dispatchEvent("blur");
+      .dispatchEvent("blur-sm");
 
     await expect(todoItems).toHaveText([
       TODO_ITEMS[0],

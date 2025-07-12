@@ -15,7 +15,7 @@ export const CallToAction: FC<CallToActionProps> = ({
       {/* Background gradient effects */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <svg
-          className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-white/10 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+          className="absolute left-[max(50%,25rem)] top-0 h-256 w-512 -translate-x-1/2 stroke-white/10 mask-[radial-gradient(64rem_64rem_at_top,white,transparent)]"
           aria-hidden="true"
         >
           <defs>
@@ -48,7 +48,7 @@ export const CallToAction: FC<CallToActionProps> = ({
           aria-hidden="true"
         >
           <div
-            className="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-primary to-purple-600 opacity-20"
+            className="aspect-1108/632 w-277 bg-linear-to-r from-primary to-purple-600 opacity-20"
             style={{
               clipPath:
                 "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
@@ -70,7 +70,7 @@ export const CallToAction: FC<CallToActionProps> = ({
           <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
             Ready to improve your
             <span className="relative">
-              <span className="relative bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
+              <span className="relative bg-linear-to-r from-primary to-purple-400 bg-clip-text text-transparent">
                 {" "}
                 sprint planning
               </span>
@@ -112,7 +112,7 @@ export const CallToAction: FC<CallToActionProps> = ({
             <button
               onClick={onStartGame}
               disabled={loading}
-              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Start Planning Now
@@ -126,7 +126,7 @@ export const CallToAction: FC<CallToActionProps> = ({
               href="https://github.com/INQTR/poker-planning"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50"
+              className="inline-flex items-center justify-center rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-xs transition-all duration-200 hover:bg-white/20 hover:scale-105 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50"
             >
               View on GitHub
             </a>
@@ -151,7 +151,7 @@ export const CallToAction: FC<CallToActionProps> = ({
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-gray-900 dark:from-black to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-gray-900 dark:from-black to-transparent" />
     </div>
   );
 };

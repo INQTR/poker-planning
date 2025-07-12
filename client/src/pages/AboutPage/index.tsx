@@ -68,7 +68,7 @@ export function AboutPage() {
 
       <main className="isolate">
         {/* Hero section */}
-        <div className="relative isolate -z-10 overflow-hidden bg-gradient-to-b from-indigo-100/20 dark:from-indigo-900/20 pt-14">
+        <div className="relative isolate -z-10 overflow-hidden bg-linear-to-b from-indigo-100/20 dark:from-indigo-900/20 pt-14">
           <div
             aria-hidden="true"
             className="absolute inset-y-0 right-1/2 -z-10 -mr-96 w-[200%] origin-top-right skew-x-[-30deg] bg-white dark:bg-gray-900 shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 dark:ring-indigo-950 sm:-mr-80 lg:-mr-96"
@@ -108,11 +108,11 @@ export function AboutPage() {
               <img
                 alt="Team collaboration"
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1280&q=80"
-                className="mt-10 aspect-[6/5] w-full max-w-lg rounded-2xl object-cover sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-36"
+                className="mt-10 aspect-6/5 w-full max-w-lg rounded-2xl object-cover sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-36"
               />
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white dark:from-gray-900 sm:h-32" />
+          <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-white dark:from-gray-900 sm:h-32" />
         </div>
 
         {/* Timeline section */}
@@ -255,7 +255,7 @@ export function AboutPage() {
                   clipPath:
                     "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
                 }}
-                className="aspect-[1404/767] w-[87.75rem] bg-gradient-to-r from-[#80caff] to-[#4f46e5] opacity-25"
+                className="aspect-1404/767 w-351 bg-linear-to-r from-[#80caff] to-[#4f46e5] opacity-25"
               />
             </div>
           </div>
@@ -286,19 +286,19 @@ export function AboutPage() {
                     </h3>
                     <ul className="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         React 19 with TypeScript
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         TanStack Router
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         Apollo GraphQL
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         Tailwind CSS
                       </li>
                     </ul>
@@ -309,19 +309,19 @@ export function AboutPage() {
                     </h3>
                     <ul className="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         Rust with Actix Web
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         GraphQL API
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         WebSocket support
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle2 className="mr-2 h-4 w-4 flex-shrink-0 text-green-500" />
+                        <CheckCircle2 className="mr-2 h-4 w-4 shrink-0 text-green-500" />
                         Domain-driven design
                       </li>
                     </ul>
@@ -333,29 +333,29 @@ export function AboutPage() {
                   <img
                     alt="Dashboard screenshot"
                     src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1152&q=80"
-                    className="aspect-[7/5] w-[37rem] max-w-none rounded-2xl bg-gray-50 object-cover"
+                    className="aspect-7/5 w-148 max-w-none rounded-2xl bg-gray-50 object-cover"
                   />
                 </div>
-                <div className="contents lg:col-span-2 lg:col-end-2 lg:ml-auto lg:flex lg:w-[37rem] lg:items-start lg:justify-end lg:gap-x-8">
+                <div className="contents lg:col-span-2 lg:col-end-2 lg:ml-auto lg:flex lg:w-148 lg:items-start lg:justify-end lg:gap-x-8">
                   <div className="order-first flex w-64 flex-none justify-end self-end lg:w-auto">
                     <img
                       alt="Mobile app screenshot"
                       src="https://images.unsplash.com/photo-1605656816944-971cd5c1407f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=768&h=604&q=80"
-                      className="aspect-[4/3] w-[24rem] max-w-none flex-none rounded-2xl bg-gray-50 object-cover"
+                      className="aspect-4/3 w-[24rem] max-w-none flex-none rounded-2xl bg-gray-50 object-cover"
                     />
                   </div>
                   <div className="flex w-96 flex-auto justify-end lg:w-auto lg:flex-none">
                     <img
                       alt="Team collaboration"
                       src="https://images.unsplash.com/photo-1568992687947-868a62a9f521?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1152&h=842&q=80"
-                      className="aspect-[7/5] w-[37rem] max-w-none flex-none rounded-2xl bg-gray-50 object-cover"
+                      className="aspect-7/5 w-148 max-w-none flex-none rounded-2xl bg-gray-50 object-cover"
                     />
                   </div>
                   <div className="hidden sm:block sm:w-0 sm:flex-auto lg:w-auto lg:flex-none">
                     <img
                       alt="Code editor"
                       src="https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=768&h=604&q=80"
-                      className="aspect-[4/3] w-[24rem] max-w-none rounded-2xl bg-gray-50 object-cover"
+                      className="aspect-4/3 w-[24rem] max-w-none rounded-2xl bg-gray-50 object-cover"
                     />
                   </div>
                 </div>
@@ -379,7 +379,7 @@ export function AboutPage() {
               <img
                 alt="Bohdan working"
                 src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1344&h=1104&q=80"
-                className="mt-16 aspect-[6/5] w-full rounded-2xl bg-gray-50 object-cover lg:aspect-auto lg:h-[34.5rem]"
+                className="mt-16 aspect-6/5 w-full rounded-2xl bg-gray-50 object-cover lg:aspect-auto lg:h-138"
               />
             </div>
             <div className="w-full lg:max-w-xl lg:flex-auto">
@@ -489,7 +489,7 @@ export function AboutPage() {
             </div>
             <svg
               viewBox="0 0 1024 1024"
-              className="absolute left-1/2 top-1/2 -z-10 h-[64rem] w-[64rem] -translate-x-1/2 [mask-image:radial-gradient(closest-side,white,transparent)]"
+              className="absolute left-1/2 top-1/2 -z-10 h-256 w-5xl -translate-x-1/2 mask-[radial-gradient(closest-side,white,transparent)]"
               aria-hidden="true"
             >
               <circle

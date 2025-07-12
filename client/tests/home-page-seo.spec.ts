@@ -95,7 +95,7 @@ test.describe("Home Page SEO and Content", () => {
     const gradientHeading = page.locator("h1").getByText("Planning Poker");
     await expect(gradientHeading).toBeVisible();
     const classes = await gradientHeading.getAttribute("class");
-    expect(classes).toContain("bg-gradient-to-r");
+    expect(classes).toContain("bg-linear-to-r");
 
     // Check for updated CTA buttons
     const startButton = page.getByRole("button", { name: "Start New Game" });
