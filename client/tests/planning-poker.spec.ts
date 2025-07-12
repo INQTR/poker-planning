@@ -4,6 +4,24 @@ test.describe("Planning Poker Estimation", () => {
   let pages: Page[];
 
   test.beforeAll(async ({ browser }) => {
+    // First, verify backend connectivity
+    const testPage = await browser.newPage();
+    await testPage.goto("http://localhost:5173");
+
+    // Check if the GraphQL endpoints are logged in console
+    testPage.on("console", (msg) => {
+      if (
+        msg.text().includes("GRAPHQL_ENDPOINT") ||
+        msg.text().includes("GRAPHQL_WS_ENDPOINT")
+      ) {
+        console.log(`GraphQL Config: ${msg.text()}`);
+      }
+    });
+
+    // Wait a moment for the app to initialize
+    await testPage.waitForTimeout(2000);
+    await testPage.close();
+
     pages = await Promise.all(
       Array(4)
         .fill(null)
@@ -34,9 +52,42 @@ test.describe("Planning Poker Estimation", () => {
 });
 
 async function createRoom(page: Page): Promise<string> {
+  // Listen for console messages and errors
+  page.on("console", (msg) =>
+    console.log(`Browser console: ${msg.type()}: ${msg.text()}`),
+  );
+  page.on("pageerror", (error) =>
+    console.log(`Browser error: ${error.message}`),
+  );
+
   await page.goto("http://localhost:5173");
-  await page.getByRole("button", { name: "Start New Game" }).click();
-  await expect(page.getByLabel("Username", { exact: true })).toBeVisible();
+
+  // Wait for the button to be visible and clickable
+  const startButton = page.getByRole("button", { name: "Start New Game" });
+  await expect(startButton).toBeVisible();
+  await startButton.click();
+
+  // Wait for navigation or username input with better error message
+  try {
+    await expect(page.getByLabel("Username", { exact: true })).toBeVisible({
+      timeout: 10000,
+    });
+  } catch (error) {
+    // Log current URL and page content for debugging
+    console.log(`Current URL: ${page.url()}`);
+    console.log(`Page title: ${await page.title()}`);
+
+    // Check if there are any error toasts
+    const toasts = await page.locator('[role="alert"]').all();
+    for (const toast of toasts) {
+      console.log(`Toast message: ${await toast.textContent()}`);
+    }
+
+    throw new Error(
+      `Username input not found after clicking "Start New Game". This likely means the createRoom mutation failed.`,
+    );
+  }
+
   return page.url();
 }
 

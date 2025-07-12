@@ -1,7 +1,7 @@
-use actix_web::{web, HttpRequest, HttpResponse, Result};
+use actix_web::{HttpRequest, HttpResponse, Result, web};
 use async_graphql::{
-    http::{playground_source, GraphQLPlaygroundConfig},
     Schema,
+    http::{GraphQLPlaygroundConfig, playground_source},
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 
