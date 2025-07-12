@@ -16,11 +16,25 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
+const TermsLazyImport = createFileRoute('/terms')()
+const PrivacyLazyImport = createFileRoute('/privacy')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 const RoomRoomIdLazyImport = createFileRoute('/room/$roomId')()
 
 // Create/Update Routes
+
+const TermsLazyRoute = TermsLazyImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/terms.lazy').then((d) => d.Route))
+
+const PrivacyLazyRoute = PrivacyLazyImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/privacy.lazy').then((d) => d.Route))
 
 const AboutLazyRoute = AboutLazyImport.update({
   id: '/about',
@@ -58,6 +72,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/room/$roomId': {
       id: '/room/$roomId'
       path: '/room/$roomId'
@@ -73,12 +101,16 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/about': typeof AboutLazyRoute
+  '/privacy': typeof PrivacyLazyRoute
+  '/terms': typeof TermsLazyRoute
   '/room/$roomId': typeof RoomRoomIdLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
   '/about': typeof AboutLazyRoute
+  '/privacy': typeof PrivacyLazyRoute
+  '/terms': typeof TermsLazyRoute
   '/room/$roomId': typeof RoomRoomIdLazyRoute
 }
 
@@ -86,27 +118,33 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
   '/about': typeof AboutLazyRoute
+  '/privacy': typeof PrivacyLazyRoute
+  '/terms': typeof TermsLazyRoute
   '/room/$roomId': typeof RoomRoomIdLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/room/$roomId'
+  fullPaths: '/' | '/about' | '/privacy' | '/terms' | '/room/$roomId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/room/$roomId'
-  id: '__root__' | '/' | '/about' | '/room/$roomId'
+  to: '/' | '/about' | '/privacy' | '/terms' | '/room/$roomId'
+  id: '__root__' | '/' | '/about' | '/privacy' | '/terms' | '/room/$roomId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
   AboutLazyRoute: typeof AboutLazyRoute
+  PrivacyLazyRoute: typeof PrivacyLazyRoute
+  TermsLazyRoute: typeof TermsLazyRoute
   RoomRoomIdLazyRoute: typeof RoomRoomIdLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
   AboutLazyRoute: AboutLazyRoute,
+  PrivacyLazyRoute: PrivacyLazyRoute,
+  TermsLazyRoute: TermsLazyRoute,
   RoomRoomIdLazyRoute: RoomRoomIdLazyRoute,
 }
 
@@ -122,6 +160,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/privacy",
+        "/terms",
         "/room/$roomId"
       ]
     },
@@ -130,6 +170,12 @@ export const routeTree = rootRoute
     },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/privacy": {
+      "filePath": "privacy.lazy.tsx"
+    },
+    "/terms": {
+      "filePath": "terms.lazy.tsx"
     },
     "/room/$roomId": {
       "filePath": "room.$roomId.lazy.tsx"
