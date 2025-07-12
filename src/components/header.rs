@@ -96,9 +96,10 @@
 // };
 
 use leptos::prelude::*;
+use crate::domain::room::Room;
 
 #[component]
-pub fn Header() -> impl IntoView {
+pub fn Header(_room: Option<Room>) -> impl IntoView {
     view! {
         <header class="flex justify-between items-center h-14 px-4 border-b">
             <div class="flex items-center space-x-4">

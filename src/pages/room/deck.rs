@@ -5,9 +5,15 @@ use crate::{domain::room::Room, pages::room::card::Card, server_fns::pick_card};
 
 #[component]
 pub fn Deck(room: Room, user_id: Uuid) -> impl IntoView {
-    let (selected_card, set_selected_card) = signal::<Option<String>>(None);
+    // Find the user's current selected card from the table
+    let current_selection = room.game.table.iter()
+        .find(|user_card| user_card.user_id == user_id)
+        .and_then(|user_card| user_card.card.clone());
+    
+    let (selected_card, set_selected_card) = signal::<Option<String>>(current_selection);
     let is_game_over = room.is_game_over;
     let cards = room.deck.cards.clone();
+    let room_id = room.id;
 
     Effect::new(move || {
         log!("selected_card: {:?}", selected_card());
@@ -40,7 +46,7 @@ pub fn Deck(room: Room, user_id: Uuid) -> impl IntoView {
                                         let card_to_pick = card_for_click.clone();
                                         set_selected_card(Some(card_for_click.clone()));
                                         spawn_local(async move {
-                                            let _ = pick_card(user_id, room.id, card_to_pick).await;
+                                            let _ = pick_card(user_id, room_id, card_to_pick).await;
                                         });
                                     }
                                     disabled=is_game_over

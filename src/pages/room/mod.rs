@@ -1,118 +1,186 @@
 use deck::Deck;
 use join_room_dialog::JoinRoomDialog;
-use leptos::{ logging::log, prelude::*, task::spawn_local};
-use leptos_router::hooks::{use_params};
+use leptos::{logging::log, prelude::*, task::spawn_local};
+use leptos_router::hooks::use_params;
 use leptos_router::params::Params;
 use room::Room;
 use uuid::Uuid;
 
 use crate::{
-    components::{ use_auth, AuthContext, Layout},
+    components::{AuthContext, Layout, use_auth},
     server_fns::{join_room, subscribe_to_rooms},
 };
 
 mod card;
 mod deck;
+mod join_room_dialog;
+mod player;
 mod room;
 mod table;
-mod join_room_dialog;
+mod vote_distribution_chart;
+
+pub use card::Card;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Params)]
 struct RoomParams {
     room_id: Uuid,
 }
 
-
 #[component]
 pub fn RoomPage() -> impl IntoView {
-    let params = use_params::<RoomParams>();
-    let room_id = move || params.get().map(|params| params.room_id);
-    let test_room_id = room_id().unwrap_or_default();
-    log!("Room ID: {:?}", &test_room_id);
-    let AuthContext { user, .. } = use_auth();
-    
-    // TODO: Find a better way to handle conditional resource creation
-    // This source signal correctly produces Some((uuid, user)) only when logged in.
-    let resource_source = move || user.get().map(|user_instance| (test_room_id, user_instance));
-    let room_first = Resource::new(
-        resource_source,
-        move |input| async move {
-            match input {
-                Some((id, user)) => join_room(id, user).await,
-                None => {
-                    log!("Resource fetcher called unexpectedly with None input.");
-                    Err(leptos::server_fn::ServerFnError::ServerError(
-                        "Resource fetcher called unexpectedly with None input.".to_string(),
-                    ))
-                }
-            }
-        },
-    );
-
-    use futures::StreamExt;
-    use futures::channel::mpsc;
-    let (_, rx) = mpsc::channel(1);
-    let room_latest = RwSignal::new(None);
-
-    let room = Signal::derive(move || {
-        room_latest.get().or_else(|| room_first.get())
-    });
-
-    // we'll only listen for websocket messages on the client
-    if cfg!(feature = "hydrate") {
-        spawn_local(async move {
-            match subscribe_to_rooms(rx.into()).await {
-                Ok(mut messages) => {
-                    while let Some(msg) = messages.next().await {
-                        room_latest.set(Some(msg));
-                    }
-                }
-                Err(e) => leptos::logging::warn!("{e}"),
-            }
-        });
+    // For SSR, just return a loading state
+    #[cfg(not(feature = "hydrate"))]
+    {
+        return view! {
+            <Layout room=None>
+                <div class="flex items-center justify-center h-[calc(100vh-120px)]">
+                    <div class="text-center">
+                        <p class="text-gray-500">"Loading room..."</p>
+                    </div>
+                </div>
+            </Layout>
+        };
     }
+    
+    // Client-side only implementation
+    #[cfg(feature = "hydrate")]
+    {
+        RoomPageClient()
+    }
+}
 
+#[cfg(feature = "hydrate")]
+#[component]
+fn RoomPageClient() -> impl IntoView {
+    let params = use_params::<RoomParams>();
+    let room_id = move || {
+        params
+            .get()
+            .map(|params| params.room_id)
+            .unwrap_or_default()
+    };
+    // Get the initial room_id value for use in non-reactive contexts
+    let room_id_value = params
+        .get_untracked()
+        .map(|params| params.room_id)
+        .unwrap_or_default();
+    let AuthContext { user, .. } = use_auth();
+
+    // Track if join room has been called to prevent duplicate calls
+    let is_join_room_called = RwSignal::new(false);
+
+    // Room state from join_room call
+    let room_from_join =
+        RwSignal::new(None::<Result<crate::domain::room::Room, leptos::server_fn::ServerFnError>>);
+
+    // Room state from subscription
+    let room_from_subscription =
+        RwSignal::new(None::<Result<crate::domain::room::Room, leptos::server_fn::ServerFnError>>);
+
+    // Combined room state (subscription takes precedence over join)
+    let room = Signal::derive(move || room_from_subscription.get().or(room_from_join.get()));
+
+    // Join room when user is authenticated and hasn't joined yet
     Effect::new(move || {
-        if let Some(msg) = room_latest.get() {
-            if let Ok(room) = msg {
-                log!("subscribe_to_rooms: {:?}", room);
+        if let Some(user) = user.get() {
+            if !is_join_room_called.get() {
+                is_join_room_called.set(true);
+                let room_id = room_id();
+                spawn_local(async move {
+                    match join_room(room_id, user).await {
+                        Ok(room) => {
+                            room_from_join.set(Some(Ok(room)));
+                        }
+                        Err(e) => {
+                            log!("Error joining room: {:?}", e);
+                            room_from_join.set(Some(Err(e)));
+                        }
+                    }
+                });
             }
         }
     });
 
+    // Set up websocket subscription for real-time updates
+    use futures::StreamExt;
+    use futures::channel::mpsc;
+    let (_, rx) = mpsc::channel(1);
+
+    spawn_local(async move {
+        match subscribe_to_rooms(rx.into()).await {
+            Ok(mut messages) => {
+                while let Some(msg) = messages.next().await {
+                    if let Ok(ref room_data) = msg {
+                        // Only update if it's the room we're interested in
+                        if room_data.id == room_id_value {
+                            room_from_subscription.set(Some(msg));
+                        }
+                    }
+                }
+            }
+            Err(e) => log!("WebSocket subscription error: {e}"),
+        }
+    });
+
     view! {
-        <Layout>
-            <Suspense fallback=move || {
-                view! { <p>"Loading..."</p> }
-            }>
+        <>
+            <Layout room={room.get_untracked().and_then(|r| r.ok())}>
                 {move || {
-                    match user() {
-                        None => view! { <JoinRoomDialog /> }.into_any(),
-                        Some(user) => {
+                    match room.get() {
+                        Some(Ok(room_data)) => {
                             view! {
                                 <>
-                                    {move || match room.get() {
-                                        Some(Ok(data)) => {
-                                            view! {
-                                                <>
-                                                    <Room room=data.clone() />
-                                                    <div class="absolute left-0 right-0 bottom-4 mx-auto my-0 max-w-4xl overflow-auto">
-                                                        <Deck room=data user_id=user.id />
+                                    <Room room=room_data.clone() />
+                                    <div class="absolute left-0 right-0 bottom-4 mx-auto my-0 max-w-4xl overflow-auto">
+                                        {move || {
+                                            if room_data.is_game_over {
+                                                view! {
+                                                    <div class="flex justify-center">
+                                                        <vote_distribution_chart::VoteDistributionChart room=room_data.clone() />
                                                     </div>
-                                                </>
+                                                }.into_any()
+                                            } else {
+                                                view! {
+                                                    <Deck
+                                                        room=room_data.clone()
+                                                        user_id=user.get().map(|u| u.id).unwrap_or_default()
+                                                    />
+                                                }.into_any()
                                             }
-                                                .into_any()
-                                        }
-                                        _ => view! { <p>"No data"</p> }.into_any(),
-                                    }}
+                                        }}
+                                    </div>
                                 </>
-                            }
-                                .into_any()
+                            }.into_any()
+                        }
+                        Some(Err(e)) => {
+                            view! {
+                                <div class="flex items-center justify-center h-[calc(100vh-120px)]">
+                                    <div class="text-center">
+                                        <p class="text-red-500 mb-2">"Error loading room"</p>
+                                        <p class="text-sm text-gray-500">{format!("{:?}", e)}</p>
+                                    </div>
+                                </div>
+                            }.into_any()
+                        }
+                        None => {
+                            view! {
+                                <div class="flex items-center justify-center h-[calc(100vh-120px)]">
+                                    <div class="text-center">
+                                        <p class="text-gray-500">"Loading room..."</p>
+                                    </div>
+                                </div>
+                            }.into_any()
                         }
                     }
                 }}
-            </Suspense>
-        </Layout>
+            </Layout>
+            {move || {
+                if user.get().is_none() {
+                    view! { <JoinRoomDialog _room_id=room_id() /> }.into_any()
+                } else {
+                    view! {}.into_any()
+                }
+            }}
+        </>
     }
 }
-

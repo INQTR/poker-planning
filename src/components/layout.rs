@@ -1,9 +1,10 @@
 use leptos::prelude::*;
 
 use crate::components::Header;
+use crate::domain::room::Room;
 
 #[component]
-pub fn Layout(children: Children) -> impl IntoView {
+pub fn Layout(children: Children, room: Option<Room>) -> impl IntoView {
     view! {
         <ErrorBoundary fallback=|errors| {
             view! {
@@ -24,7 +25,7 @@ pub fn Layout(children: Children) -> impl IntoView {
             }
         }>
             <Suspense fallback=move || view! { <p>"Loading..."</p> }>
-                <Header />
+                <Header _room=room.clone() />
                 <main class="flex-grow h-[calc(100%-56px)]">{children()}</main>
             </Suspense>
         </ErrorBoundary>

@@ -5,7 +5,7 @@ use crate::components::Layout;
 #[component]
 pub fn NotFoundPage() -> impl IntoView {
     view! {
-        <Layout>
+        <Layout room=None>
             <div class="grid min-h-full place-items-center bg-white dark:bg-gray-900 px-6 py-24 sm:py-32 lg:px-8">
                 <div class="text-center">
                     <p class="text-base font-semibold text-indigo-600 dark:text-indigo-400">404</p>
