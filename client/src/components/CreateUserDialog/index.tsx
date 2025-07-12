@@ -26,10 +26,10 @@ export const CreateUserDialog: FC<CreateUserDialogProps> = ({
   const { user, login } = useAuth();
   const { toast } = useToast();
   const [username, setUsername] = useState("");
-  const [open, setOpen] = useState<boolean>(!Boolean(user));
+  const [open, setOpen] = useState<boolean>(!user);
 
   useEffect(() => {
-    setOpen(!Boolean(user));
+    setOpen(!user);
   }, [setOpen, user]);
 
   const [createUserMutation, { loading }] = useCreateUserMutation({

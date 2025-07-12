@@ -95,11 +95,12 @@ export const VoteDistributionChart: FC<VoteDistributionChartProps> = ({
             tickMargin={4}
           />
           <ChartTooltip
-            content={
+            content={(props) => (
               <ChartTooltipContent
+                {...props}
                 labelFormatter={(value) => `Card: ${value}`}
               />
-            }
+            )}
             cursor={false}
           />
           <ReferenceLine

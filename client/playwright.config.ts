@@ -3,7 +3,7 @@ import path from "path";
 import { defineConfig, devices } from "@playwright/test";
 import { config } from "dotenv";
 
-config({ path: path.resolve(__dirname, ".env") });
+config({ path: path.resolve(process.cwd(), ".env") });
 
 /**
  * See https://playwright.dev/docs/test-configuration.
