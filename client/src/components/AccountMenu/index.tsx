@@ -50,7 +50,7 @@ export function AccountMenu(): ReactElement {
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-10 w-10 rounded-full hover:bg-transparent"
+              className="relative h-10 w-10 rounded-full"
               aria-label="Account menu"
             >
               <Avatar className="h-10 w-10">

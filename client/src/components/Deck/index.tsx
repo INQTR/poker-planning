@@ -69,7 +69,7 @@ export function Deck({
             <Card
               onClick={handleCardClick(card)}
               disabled={isGameOver}
-              variant={isCardPicked ? "default" : "outline-solid"}
+              variant={isCardPicked ? "default" : "outline"}
             >
               {card}
             </Card>
