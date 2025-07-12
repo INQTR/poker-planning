@@ -102,15 +102,33 @@ test.describe("Home Page SEO and Content", () => {
     await expect(startButton).toBeVisible();
     await expect(startButton).toHaveClass(/rounded-full/);
 
-    const githubButton = page.getByRole("link", { name: "View on GitHub" }).first();
+    const githubButton = page
+      .getByRole("link", { name: "View on GitHub" })
+      .first();
     await expect(githubButton).toBeVisible();
     await expect(githubButton).toHaveClass(/rounded-full/);
 
     // Check for trust indicators in hero section
-    const trustIndicators = page.locator("div").filter({ hasText: /100% Free Forever.*No Account Required.*Real-time Collaboration/ }).first();
-    await expect(trustIndicators.locator("span").filter({ hasText: "100% Free Forever" })).toBeVisible();
-    await expect(trustIndicators.locator("span").filter({ hasText: "No Account Required" })).toBeVisible();
-    await expect(trustIndicators.locator("span").filter({ hasText: "Real-time Collaboration" })).toBeVisible();
+    const trustIndicators = page
+      .locator("div")
+      .filter({
+        hasText:
+          /100% Free Forever.*No Account Required.*Real-time Collaboration/,
+      })
+      .first();
+    await expect(
+      trustIndicators.locator("span").filter({ hasText: "100% Free Forever" }),
+    ).toBeVisible();
+    await expect(
+      trustIndicators
+        .locator("span")
+        .filter({ hasText: "No Account Required" }),
+    ).toBeVisible();
+    await expect(
+      trustIndicators
+        .locator("span")
+        .filter({ hasText: "Real-time Collaboration" }),
+    ).toBeVisible();
   });
 
   test("has How It Works section with 4 steps", async ({ page }) => {
@@ -168,10 +186,15 @@ test.describe("Home Page SEO and Content", () => {
     ];
 
     // Check benefits are displayed in the WhyChooseUs section
-    const whyChooseSection = page.locator("div").filter({ hasText: "Why Teams Choose PokerPlanning.org" }).first();
+    const whyChooseSection = page
+      .locator("div")
+      .filter({ hasText: "Why Teams Choose PokerPlanning.org" })
+      .first();
     for (const benefit of benefits) {
       // Look for benefits in dt elements specifically
-      await expect(whyChooseSection.locator("dt").filter({ hasText: benefit })).toBeVisible();
+      await expect(
+        whyChooseSection.locator("dt").filter({ hasText: benefit }),
+      ).toBeVisible();
     }
 
     // The WhyChooseUs component doesn't include a pricing box,
@@ -188,18 +211,10 @@ test.describe("Home Page SEO and Content", () => {
     ).toBeVisible();
 
     // Check for the 4 use case cards - they are not headings but p tags
-    await expect(
-      page.getByText("Remote-first design"),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Lightning fast"),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Team insights"),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Built for everyone"),
-    ).toBeVisible();
+    await expect(page.getByText("Remote-first design")).toBeVisible();
+    await expect(page.getByText("Lightning fast")).toBeVisible();
+    await expect(page.getByText("Team insights")).toBeVisible();
+    await expect(page.getByText("Built for everyone")).toBeVisible();
 
     // Check descriptions
     await expect(page.getByText(/Built for distributed teams/)).toBeVisible();
@@ -264,16 +279,35 @@ test.describe("Home Page SEO and Content", () => {
     await expect(ctaButtons).toHaveCount(1);
 
     // Check GitHub link in CTA section
-    const ctaSection = page.locator("div").filter({ hasText: /Start Planning NowView on GitHub/ }).last();
-    const ctaGithubLink = ctaSection.getByRole("link", { name: "View on GitHub" });
+    const ctaSection = page
+      .locator("div")
+      .filter({ hasText: /Start Planning NowView on GitHub/ })
+      .last();
+    const ctaGithubLink = ctaSection.getByRole("link", {
+      name: "View on GitHub",
+    });
     await expect(ctaGithubLink).toBeVisible();
 
     // Check trust indicators in CTA section
-    const ctaContainer = page.locator("div").filter({ hasText: /Ready to improve your.*sprint planning/ }).first();
-    const ctaTrustIndicators = ctaContainer.locator("div").filter({ hasText: /Always free.*No account needed.*Open source/ }).first();
-    await expect(ctaTrustIndicators.locator("span").filter({ hasText: "Always free" })).toBeVisible();
-    await expect(ctaTrustIndicators.locator("span").filter({ hasText: "No account needed" })).toBeVisible();
-    await expect(ctaTrustIndicators.locator("span").filter({ hasText: "Open source" })).toBeVisible();
+    const ctaContainer = page
+      .locator("div")
+      .filter({ hasText: /Ready to improve your.*sprint planning/ })
+      .first();
+    const ctaTrustIndicators = ctaContainer
+      .locator("div")
+      .filter({ hasText: /Always free.*No account needed.*Open source/ })
+      .first();
+    await expect(
+      ctaTrustIndicators.locator("span").filter({ hasText: "Always free" }),
+    ).toBeVisible();
+    await expect(
+      ctaTrustIndicators
+        .locator("span")
+        .filter({ hasText: "No account needed" }),
+    ).toBeVisible();
+    await expect(
+      ctaTrustIndicators.locator("span").filter({ hasText: "Open source" }),
+    ).toBeVisible();
   });
 
   test("has enhanced footer with navigation", async ({ page }) => {
