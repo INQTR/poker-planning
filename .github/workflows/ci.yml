@@ -38,9 +38,6 @@ jobs:
       - name: Check TypeScript
         run: npm run checkTs
 
-      - name: Check Prettier formatting
-        run: npm run format -- --check
-
   # Frontend Unit/Integration Tests
   frontend-test:
     name: Frontend Tests

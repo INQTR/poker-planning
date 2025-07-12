@@ -2,9 +2,9 @@ import { useParams } from "@tanstack/react-router";
 import { ReactElement, useEffect, useRef } from "react";
 
 import { useJoinRoomMutation, useRoomSubscription } from "@/api";
-import { Deck, PageLayout, Room } from "@/components";
+import { PageLayout } from "@/components";
 import { CreateUserDialog } from "@/components/CreateUserDialog";
-import { VoteDistributionChart } from "@/components/vote-distribution-chart";
+import { RoomCanvas } from "@/components/RoomCanvas";
 import { useAuth } from "@/contexts";
 import { useToast } from "@/hooks/use-toast";
 import { User } from "@/types";
@@ -70,25 +70,7 @@ export function RoomPage(): ReactElement {
   return (
     <>
       <PageLayout room={room} users={room?.users}>
-        {room && (
-          <>
-            <Room room={room} />
-            <div className="absolute left-0 right-0 bottom-4 mx-auto my-0 max-w-4xl overflow-auto">
-              {room.isGameOver ? (
-                <div className="flex justify-center">
-                  <VoteDistributionChart room={room} />
-                </div>
-              ) : (
-                <Deck
-                  roomId={roomId}
-                  isGameOver={room.isGameOver}
-                  cards={room.deck.cards}
-                  table={room.game.table}
-                />
-              )}
-            </div>
-          </>
-        )}
+        {room && <RoomCanvas room={room} roomId={roomId} />}
       </PageLayout>
       <CreateUserDialog handleJoinRoomMutation={handleJoinRoomMutation} />
     </>
