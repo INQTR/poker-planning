@@ -27,6 +27,7 @@ export const useModal = (
   // If no deps provided, options reference is used as-is
   const memoizedOptions = useMemo(
     () => options,
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
     deps || [options],
   );

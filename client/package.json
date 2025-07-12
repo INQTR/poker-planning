@@ -17,7 +17,8 @@
     "coverage": "vitest run --coverage",
     "codegen": "graphql-codegen --config codegen.yml",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headless": "playwright test --reporter=line"
   },
   "dependencies": {
     "@apollo/client": "3.12.5",
@@ -33,6 +34,7 @@
     "@radix-ui/react-toast": "1.2.6",
     "@radix-ui/react-tooltip": "1.1.8",
     "@tanstack/react-router": "1.114.22",
+    "axe-playwright": "2.1.0",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "graphql": "16.9.0",
