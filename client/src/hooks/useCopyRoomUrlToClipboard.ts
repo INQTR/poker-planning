@@ -18,7 +18,7 @@ export function useCopyRoomUrlToClipboard(): UseCopyRoomUrlReturn {
       toast.success("Invite link copied to clipboard");
     } else {
       toast.error(
-        "When copying a invite link something went wrong. But don't be discouraged, just copy it yourself from the browser.",
+        "When copying an invite link something went wrong. But don't be discouraged, just copy it yourself from the browser.",
       );
     }
   }, []);
