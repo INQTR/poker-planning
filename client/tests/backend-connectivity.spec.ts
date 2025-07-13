@@ -22,6 +22,19 @@ test.describe("Backend Connectivity", () => {
     const startButton = page.getByRole("button", { name: "Start New Game" });
     await startButton.click();
 
+    // Handle room type selector dialog
+    const roomTypeDialog = page.getByRole("dialog", {
+      name: "Choose Your Planning Experience",
+    });
+    const isDialogVisible = await roomTypeDialog.isVisible().catch(() => false);
+
+    if (isDialogVisible) {
+      console.log("Room type selector dialog is visible");
+      await page
+        .getByRole("button", { name: "Start Classic Room", exact: true })
+        .click();
+    }
+
     // Check what happens after clicking
     await page.waitForTimeout(3000);
 
@@ -37,7 +50,10 @@ test.describe("Backend Connectivity", () => {
     }
 
     // Check if we're on a room page or still on home page
-    if (currentUrl.includes("/room/")) {
+    if (
+      currentUrl.includes("/room/") ||
+      currentUrl.includes("/classic-room/")
+    ) {
       console.log("Successfully navigated to room page");
 
       // Check if username dialog is visible

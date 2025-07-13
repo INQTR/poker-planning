@@ -69,7 +69,7 @@ export const VoteDistributionChart: FC<VoteDistributionChartProps> = ({
         config={{
           card: {
             label: "Votes",
-            color: "hsl(var(--chart-1))",
+            color: "var(--chart-1)",
           },
         }}
       >
@@ -83,7 +83,7 @@ export const VoteDistributionChart: FC<VoteDistributionChartProps> = ({
         >
           <Bar
             dataKey="votes"
-            fill="hsl(var(--chart-1))"
+            fill="var(--chart-1)"
             radius={5}
             fillOpacity={0.6}
             activeBar={<Rectangle fillOpacity={0.8} />}
@@ -105,7 +105,7 @@ export const VoteDistributionChart: FC<VoteDistributionChartProps> = ({
           />
           <ReferenceLine
             y={((maxCardCount * agreement) / 100) * 0.8}
-            stroke="hsl(var(--muted-foreground))"
+            stroke="var(--muted-foreground)"
             strokeDasharray="3 3"
             strokeWidth={1}
           >
@@ -113,13 +113,13 @@ export const VoteDistributionChart: FC<VoteDistributionChartProps> = ({
               position="insideBottomLeft"
               value="Agreement"
               offset={10}
-              fill="hsl(var(--foreground))"
+              fill="var(--foreground)"
             />
             <Label
               position="insideTopLeft"
               value={`${agreement.toFixed(0)}% ${agreement > 95 ? "🎉" : ""}`}
               className="text-lg"
-              fill="hsl(var(--foreground))"
+              fill="var(--foreground)"
               offset={10}
               startOffset={100}
             />

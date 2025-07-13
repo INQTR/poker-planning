@@ -55,15 +55,18 @@ export function Deck({
   };
 
   return (
-    <div className="flex justify-between items-end" ref={cardsContainerRef}>
+    <div
+      className="flex flex-wrap sm:flex-nowrap justify-center sm:justify-between items-end gap-1 sm:gap-2"
+      ref={cardsContainerRef}
+    >
       {cards.map((card) => {
         const isCardPicked = selectedCard === card;
         return (
           <div
             key={card}
             className={cn(
-              "transition-margin-bottom duration-100",
-              isCardPicked ? "mb-8" : "mb-0",
+              "transition-all duration-100 flex-shrink-0",
+              isCardPicked ? "mb-4 sm:mb-8" : "mb-0",
             )}
           >
             <Card

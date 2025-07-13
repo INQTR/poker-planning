@@ -1,15 +1,16 @@
 import { useParams } from "@tanstack/react-router";
-import { ReactElement, useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef } from "react";
 
 import { useJoinRoomMutation, useRoomSubscription } from "@/api";
+import { Deck, PageLayout, Room } from "@/components";
 import { CreateUserDialog } from "@/components/CreateUserDialog";
-import { RoomCanvas } from "@/components/RoomCanvas";
+import { VoteDistributionChart } from "@/components/vote-distribution-chart";
 import { useAuth } from "@/contexts";
 import { toast } from "@/lib/toast";
 import { User } from "@/types";
 
-export function RoomPage(): ReactElement {
-  const { roomId } = useParams({ from: "/room/$roomId" });
+export function ClassicRoomPage(): ReactElement {
+  const { roomId } = useParams({ from: "/classic-room/$roomId" });
   const { user } = useAuth();
   const isJoinRoomCalledRef = useRef(false);
 
@@ -56,41 +57,30 @@ export function RoomPage(): ReactElement {
   }
 
   const room = subscriptionData?.room || joinRoomData?.joinRoom;
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const handleToggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
 
   return (
     <>
-      <div className="h-screen w-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <PageLayout room={room} users={room?.users}>
         {room && (
-          <RoomCanvas
-            room={room}
-            roomId={roomId}
-            onToggleFullscreen={handleToggleFullscreen}
-            isFullscreen={isFullscreen}
-          />
+          <>
+            <Room room={room} />
+            <div className="absolute left-0 right-0 bottom-4 mx-auto my-0 max-w-4xl overflow-auto">
+              {room.isGameOver ? (
+                <div className="flex justify-center">
+                  <VoteDistributionChart room={room} />
+                </div>
+              ) : (
+                <Deck
+                  roomId={roomId}
+                  isGameOver={room.isGameOver}
+                  cards={room.deck.cards}
+                  table={room.game.table}
+                />
+              )}
+            </div>
+          </>
         )}
-      </div>
+      </PageLayout>
       <CreateUserDialog handleJoinRoomMutation={handleJoinRoomMutation} />
     </>
   );

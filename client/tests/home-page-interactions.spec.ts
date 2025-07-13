@@ -44,8 +44,16 @@ test.describe("Home Page Interactive Features", () => {
       .first();
     await startButton.click();
 
+    // Handle room type selector dialog
+    await expect(
+      page.getByRole("dialog", { name: "Choose Your Planning Experience" }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Start Classic Room", exact: true })
+      .click();
+
     // Check navigation to room (any room ID)
-    await expect(page).toHaveURL(/\/room\/[a-f0-9-]+/);
+    await expect(page).toHaveURL(/\/(room|classic-room)\/[a-f0-9-]+/);
   });
 
   test("Call to Action Start Planning Now button works", async ({ page }) => {
@@ -54,37 +62,51 @@ test.describe("Home Page Interactive Features", () => {
     await ctaButton.scrollIntoViewIfNeeded();
     await ctaButton.click();
 
+    // Handle room type selector dialog
+    await expect(
+      page.getByRole("dialog", { name: "Choose Your Planning Experience" }),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: "Start Classic Room", exact: true })
+      .click();
+
     // Check navigation to room (any room ID)
-    await expect(page).toHaveURL(/\/room\/[a-f0-9-]+/);
+    await expect(page).toHaveURL(/\/(room|classic-room)\/[a-f0-9-]+/);
   });
 
   test("FAQ items expand and collapse correctly", async ({ page }) => {
-    // Get all FAQ buttons
-    const faqButtons = page.locator("button").filter({ hasText: "?" });
-    const firstFaq = faqButtons.first();
-    const secondFaq = faqButtons.nth(1);
+    // Get FAQ accordion triggers
+    const firstFaq = page.getByRole("button", {
+      name: "What is Planning Poker?",
+    });
+    const secondFaq = page.getByRole("button", {
+      name: "How much does PokerPlanning.org cost?",
+    });
 
     // Get the answer text for the first FAQ
     const firstAnswer = page.locator(
       "text=/Planning Poker is an agile estimation technique/",
     );
+    const secondAnswer = page.locator(
+      "text=/PokerPlanning.org is completely free forever/",
+    );
 
-    // Initially answer should not be visible
+    // Initially answers should not be visible
     await expect(firstAnswer).not.toBeVisible();
+    await expect(secondAnswer).not.toBeVisible();
 
-    // Click to expand
+    // Click to expand first FAQ
     await firstFaq.click();
     await expect(firstAnswer).toBeVisible();
 
-    // Click another FAQ
+    // Click another FAQ - first should collapse (single mode)
     await secondFaq.click();
-
-    // First should still be expanded (multiple can be open)
-    await expect(firstAnswer).toBeVisible();
-
-    // Click first again to collapse
-    await firstFaq.click();
     await expect(firstAnswer).not.toBeVisible();
+    await expect(secondAnswer).toBeVisible();
+
+    // Click second again to collapse
+    await secondFaq.click();
+    await expect(secondAnswer).not.toBeVisible();
   });
 
   test("GitHub links open in new tab", async ({ page, context }) => {

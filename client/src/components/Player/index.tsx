@@ -27,7 +27,9 @@ export function Player({
   return (
     <div className="flex flex-col items-center" data-testid="player">
       <Card>{cardSymbol}</Card>
-      <span className="text-sm mb-1">{username}</span>
+      <span className="text-xs sm:text-sm mb-1 max-w-[60px] sm:max-w-[80px] truncate">
+        {username}
+      </span>
     </div>
   );
 }

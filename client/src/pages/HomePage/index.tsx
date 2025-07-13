@@ -1,9 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Github, Sparkles } from "lucide-react";
-import { FC } from "react";
+import { FC, useState } from "react";
 
 import { useCreateRoomMutation } from "@/api";
-import { ModeToggle, FeaturesSection, ElevateSection } from "@/components";
+import {
+  ModeToggle,
+  FeaturesSection,
+  ElevateSection,
+  BetaAnnouncement,
+  RoomTypeSelector,
+} from "@/components";
 import { Footer } from "@/components/footer";
 import { useCopyRoomUrlToClipboard } from "@/hooks";
 import { toast } from "@/lib/toast";
@@ -18,20 +24,43 @@ import { WhyChooseUs } from "./why-choose-us";
 export const HomePage: FC = () => {
   const navigate = useNavigate();
   const { copyRoomUrlToClipboard } = useCopyRoomUrlToClipboard();
+  const [showRoomTypeSelector, setShowRoomTypeSelector] = useState(false);
 
   const [createRoomMutation, { loading }] = useCreateRoomMutation({
-    onCompleted: (data) => {
-      navigate({ to: "/room/$roomId", params: { roomId: data.createRoom.id } });
-      copyRoomUrlToClipboard(data.createRoom.id);
-    },
     onError: (error) => {
       toast.error(`Create room: ${error.message}`);
     },
   });
 
   function onCreateRoom() {
-    createRoomMutation();
+    setShowRoomTypeSelector(true);
   }
+
+  const handleSelectClassic = () => {
+    createRoomMutation({
+      onCompleted: (data) => {
+        navigate({
+          to: "/classic-room/$roomId",
+          params: { roomId: data.createRoom.id },
+        });
+        copyRoomUrlToClipboard(data.createRoom.id);
+        setShowRoomTypeSelector(false);
+      },
+    });
+  };
+
+  const handleSelectCanvas = () => {
+    createRoomMutation({
+      onCompleted: (data) => {
+        navigate({
+          to: "/room/$roomId",
+          params: { roomId: data.createRoom.id },
+        });
+        copyRoomUrlToClipboard(data.createRoom.id);
+        setShowRoomTypeSelector(false);
+      },
+    });
+  };
 
   return (
     <div className="bg-white dark:bg-gray-900">
@@ -42,6 +71,7 @@ export const HomePage: FC = () => {
         Skip to main content
       </a>
       <Banner />
+      <BetaAnnouncement />
       <header className="relative z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xs border-b border-gray-200/50 dark:border-gray-800/50">
         <nav
           aria-label="Global"
@@ -224,6 +254,13 @@ export const HomePage: FC = () => {
         <CallToAction onStartGame={onCreateRoom} loading={loading} />
       </main>
       <Footer />
+
+      <RoomTypeSelector
+        open={showRoomTypeSelector}
+        onOpenChange={setShowRoomTypeSelector}
+        onSelectClassic={handleSelectClassic}
+        onSelectCanvas={handleSelectCanvas}
+      />
     </div>
   );
 };

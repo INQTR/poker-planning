@@ -8,18 +8,17 @@ import type {
   PlayerNodeType,
   StoryNodeType,
   TimerNodeType,
-  ControlsNodeType,
   VotingCardNodeType,
   ResultsNodeType,
   CustomNodeType,
 } from "../types";
 
-// Layout constants
-const CANVAS_CENTER = { x: 400, y: 250 };
-const PLAYER_CIRCLE_RADIUS = 180;
-const VOTING_CARD_START_X = 50;
-const VOTING_CARD_Y = 500;
-const VOTING_CARD_SPACING = 75;
+// Layout constants for endless canvas
+const CANVAS_CENTER = { x: 0, y: 0 };
+const PLAYER_CIRCLE_RADIUS = 220;
+const VOTING_CARD_START_X = -500;
+const VOTING_CARD_Y = 350;
+const VOTING_CARD_SPACING = 80;
 
 interface UseCanvasLayoutProps {
   room: Room;
@@ -71,13 +70,13 @@ export function useCanvasLayout({
     const storyNode: StoryNodeType = {
       id: "story-current",
       type: "story",
-      position: { x: CANVAS_CENTER.x - 100, y: CANVAS_CENTER.y - 50 },
+      position: { x: CANVAS_CENTER.x - 100, y: CANVAS_CENTER.y - 60 },
       data: {
         title: "Current Story",
         description: "Ready to estimate",
         storyId: "current",
       },
-      draggable: false,
+      draggable: true,
     };
     allNodes.push(storyNode);
 
@@ -85,7 +84,7 @@ export function useCanvasLayout({
     const timerNode: TimerNodeType = {
       id: "timer",
       type: "timer",
-      position: { x: CANVAS_CENTER.x - 40, y: 80 },
+      position: { x: CANVAS_CENTER.x - 40, y: CANVAS_CENTER.y - 200 },
       data: {
         duration: 0,
         isRunning: false,
@@ -93,19 +92,7 @@ export function useCanvasLayout({
     };
     allNodes.push(timerNode);
 
-    // Controls node
-    const controlsNode: ControlsNodeType = {
-      id: "controls",
-      type: "controls",
-      position: { x: CANVAS_CENTER.x - 100, y: CANVAS_CENTER.y + 80 },
-      data: {
-        roomId,
-        isCardsPicked: room.game.table.length > 0,
-        isGameOver: room.isGameOver,
-      },
-      draggable: false,
-    };
-    allNodes.push(controlsNode);
+    // Controls are now in the floating navigation bar
 
     // Voting cards for current user
     if (currentUserId && !room.isGameOver) {
@@ -141,7 +128,7 @@ export function useCanvasLayout({
       const resultsNode: ResultsNodeType = {
         id: "results",
         type: "results",
-        position: { x: 600, y: 200 },
+        position: { x: CANVAS_CENTER.x + 300, y: CANVAS_CENTER.y },
         data: {
           votes: room.game.table,
           users: room.users,

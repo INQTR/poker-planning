@@ -2,7 +2,6 @@ import {
   ReactFlow,
   Node,
   Edge,
-  Controls,
   MiniMap,
   Background,
   BackgroundVariant,
@@ -13,11 +12,13 @@ import {
   ReactFlowProvider,
   useReactFlow,
   ConnectionMode,
+  Panel,
 } from "@xyflow/react";
 import { ReactElement, useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
 
-import { useTheme } from "@/components";
+import { useShowCardsMutation, useResetGameMutation } from "@/api";
+import { useTheme, CanvasNavigation } from "@/components";
 import { useAuth } from "@/contexts";
 import { Room as RoomType } from "@/types";
 import { getPickedUserCard } from "@/utils";
@@ -36,6 +37,8 @@ import type { CustomNodeType } from "./types";
 interface RoomCanvasProps {
   room: RoomType;
   roomId: string;
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
 }
 
 // Define node types outside component to prevent re-renders
@@ -48,12 +51,33 @@ const nodeTypes: NodeTypes = {
   controls: ControlsNode,
 } as const;
 
-function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
+function RoomCanvasInner({
+  room,
+  roomId,
+  onToggleFullscreen,
+  isFullscreen,
+}: RoomCanvasProps): ReactElement {
   const { user: currentUser } = useAuth();
   const [nodes, setNodes, onNodesChange] = useNodesState<CustomNodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { fitView } = useReactFlow();
   const { theme } = useTheme();
+
+  // GraphQL mutations
+  const [showCardsMutation] = useShowCardsMutation();
+  const [resetGameMutation] = useResetGameMutation();
+
+  const handleRevealCards = useCallback(() => {
+    showCardsMutation({
+      variables: { roomId },
+    });
+  }, [showCardsMutation, roomId]);
+
+  const handleResetGame = useCallback(() => {
+    resetGameMutation({
+      variables: { roomId },
+    });
+  }, [resetGameMutation, roomId]);
 
   // Track selected cards
   const [selectedCardValue, setSelectedCardValue] = useState<string | null>(
@@ -144,7 +168,14 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
   );
 
   return (
-    <div className="w-full h-full bg-gray-50 dark:bg-gray-900">
+    <div className="w-full h-full relative">
+      <CanvasNavigation
+        room={room}
+        onRevealCards={handleRevealCards}
+        onResetGame={handleResetGame}
+        onToggleFullscreen={onToggleFullscreen}
+        isFullscreen={isFullscreen}
+      />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -153,11 +184,10 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
-        fitView
-        fitViewOptions={{ padding: 0.15, maxZoom: 1 }}
+        fitView={false}
         proOptions={{ hideAttribution: true }}
-        minZoom={0.4}
-        maxZoom={1.5}
+        minZoom={0.1}
+        maxZoom={4}
         defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
         nodesDraggable
         nodesConnectable={false}
@@ -166,6 +196,13 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
         snapGrid={[25, 25]}
         preventScrolling={false}
         attributionPosition="bottom-right"
+        panOnScroll
+        selectionOnDrag
+        panOnDrag={[1, 2]}
+        translateExtent={[
+          [-2000, -2000],
+          [2000, 2000],
+        ]}
       >
         <Background
           variant={BackgroundVariant.Dots}
@@ -173,14 +210,15 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
           size={1}
           className="*:stroke-gray-300 dark:*:stroke-gray-700"
         />
-        <Controls className="!bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !shadow-lg [&>button]:!bg-white dark:[&>button]:!bg-gray-800 [&>button]:!border-gray-300 dark:[&>button]:!border-gray-600 hover:[&>button]:!bg-gray-50 dark:hover:[&>button]:!bg-gray-700 [&>button_svg]:!fill-gray-700 dark:[&>button_svg]:!fill-gray-300 !left-4 !top-4" />
-        <MiniMap
-          className="!bg-gray-100 dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !right-4 !bottom-4"
-          nodeStrokeColor={miniMapNodeStrokeColor}
-          nodeColor={miniMapNodeColor}
-          pannable
-          zoomable
-        />
+        <Panel position="bottom-left" className="!m-4">
+          <MiniMap
+            className="!bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !shadow-lg"
+            nodeStrokeColor={miniMapNodeStrokeColor}
+            nodeColor={miniMapNodeColor}
+            pannable
+            zoomable
+          />
+        </Panel>
       </ReactFlow>
     </div>
   );
