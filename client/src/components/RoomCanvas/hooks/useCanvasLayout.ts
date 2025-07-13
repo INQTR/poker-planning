@@ -15,11 +15,11 @@ import type {
 } from "../types";
 
 // Layout constants
-const CANVAS_CENTER = { x: 400, y: 300 };
-const PLAYER_CIRCLE_RADIUS = 200;
-const VOTING_CARD_START_X = 200;
-const VOTING_CARD_Y = 450;
-const VOTING_CARD_SPACING = 70;
+const CANVAS_CENTER = { x: 400, y: 250 };
+const PLAYER_CIRCLE_RADIUS = 180;
+const VOTING_CARD_START_X = 50;
+const VOTING_CARD_Y = 500;
+const VOTING_CARD_SPACING = 75;
 
 interface UseCanvasLayoutProps {
   room: Room;
@@ -85,7 +85,7 @@ export function useCanvasLayout({
     const timerNode: TimerNodeType = {
       id: "timer",
       type: "timer",
-      position: { x: 50, y: 50 },
+      position: { x: CANVAS_CENTER.x - 40, y: 80 },
       data: {
         duration: 0,
         isRunning: false,
@@ -97,7 +97,7 @@ export function useCanvasLayout({
     const controlsNode: ControlsNodeType = {
       id: "controls",
       type: "controls",
-      position: { x: CANVAS_CENTER.x - 100, y: CANVAS_CENTER.y + 50 },
+      position: { x: CANVAS_CENTER.x - 100, y: CANVAS_CENTER.y + 80 },
       data: {
         roomId,
         isCardsPicked: room.game.table.length > 0,

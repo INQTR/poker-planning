@@ -93,9 +93,10 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fitView({
-        padding: 0.2,
+        padding: 0.1,
         duration: 800,
-        maxZoom: 1.5,
+        maxZoom: 1.2,
+        minZoom: 0.6,
       });
     }, 100);
 
@@ -143,7 +144,7 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
   );
 
   return (
-    <div className="w-full h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
+    <div className="w-full h-full bg-gray-50 dark:bg-gray-900">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -153,10 +154,11 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
         fitView
+        fitViewOptions={{ padding: 0.15, maxZoom: 1 }}
         proOptions={{ hideAttribution: true }}
-        minZoom={0.5}
-        maxZoom={2}
-        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        minZoom={0.4}
+        maxZoom={1.5}
+        defaultViewport={{ x: 0, y: 0, zoom: 0.8 }}
         nodesDraggable
         nodesConnectable={false}
         elementsSelectable
@@ -171,9 +173,9 @@ function RoomCanvasInner({ room, roomId }: RoomCanvasProps): ReactElement {
           size={1}
           className="*:stroke-gray-300 dark:*:stroke-gray-700"
         />
-        <Controls className="bg-white! dark:bg-gray-800! border-gray-300! dark:border-gray-600! shadow-lg! [&>button]:bg-white! dark:[&>button]:bg-gray-800! [&>button]:border-gray-300! dark:[&>button]:border-gray-600! hover:[&>button]:bg-gray-50! dark:hover:[&>button]:bg-gray-700! [&>button_svg]:fill-gray-700! dark:[&>button_svg]:fill-gray-300!" />
+        <Controls className="!bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !shadow-lg [&>button]:!bg-white dark:[&>button]:!bg-gray-800 [&>button]:!border-gray-300 dark:[&>button]:!border-gray-600 hover:[&>button]:!bg-gray-50 dark:hover:[&>button]:!bg-gray-700 [&>button_svg]:!fill-gray-700 dark:[&>button_svg]:!fill-gray-300 !left-4 !top-4" />
         <MiniMap
-          className="bg-gray-100! dark:bg-gray-800! border-gray-300! dark:border-gray-600!"
+          className="!bg-gray-100 dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !right-4 !bottom-4"
           nodeStrokeColor={miniMapNodeStrokeColor}
           nodeColor={miniMapNodeColor}
           pannable

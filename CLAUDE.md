@@ -19,7 +19,6 @@ npm run lint               # Check for linting errors
 npm run lint:fix           # Fix linting errors
 npm run checkTs            # TypeScript type checking
 npm test                   # Run unit tests with Vitest
-npm run coverage           # Run tests with coverage report
 npm run codegen            # Generate GraphQL types from schema
 npm run test:e2e           # Run Playwright end-to-end tests
 npm run test:e2e:ui        # Run Playwright tests with UI
@@ -45,7 +44,7 @@ cargo test                 # Run tests
 - **Routing**: TanStack Router with file-based routing in `/routes`
 - **State Management**: Apollo Client for GraphQL state, React Context for auth
 - **UI Components**: Custom components using shadcn/ui and Radix UI primitives
-- **Styling**: Tailwind CSS with custom theme configuration
+- **Styling**: Tailwind CSS 4 with custom theme configuration
 - **Real-time**: GraphQL subscriptions via WebSocket
 
 ### Backend Architecture
@@ -88,8 +87,8 @@ cargo test                 # Run tests
 
 ### Creating a New Component
 
-1. Create directory under `src/components/`
-2. Follow existing patterns (see Card, Player, Room components)
+1. Create directory under `client/src/components/`
+2. Follow existing patterns (see card, player, room, mode-toggle, etc. components)
 3. Export from `index.tsx` and re-export from `src/components/index.ts`
 
 ### Adding a New Route
@@ -108,7 +107,7 @@ The app deploys to DigitalOcean App Platform:
 
 ## Important Notes
 
-- Node.js version must be >=20 (check `.nvmrc`)
+- Node.js version must be >=20 (check `client/.nvmrc`)
 - Frontend proxies `/graphql` requests to backend in development
 - WebSocket endpoint for subscriptions: `ws://localhost:8000/graphql`
 - All environment variables in frontend must be prefixed with `VITE_`

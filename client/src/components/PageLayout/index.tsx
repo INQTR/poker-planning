@@ -15,9 +15,9 @@ export function PageLayout({
   users,
 }: PageLayoutProps): ReactElement {
   return (
-    <>
+    <div className="h-screen flex flex-col">
       <Header room={room} users={users} />
-      <main className="grow h-[calc(100%-56px)]">{children}</main>
-    </>
+      <main className="flex-1 overflow-hidden">{children}</main>
+    </div>
   );
 }
