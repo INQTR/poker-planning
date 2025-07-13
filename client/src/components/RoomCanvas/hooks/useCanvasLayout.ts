@@ -15,8 +15,12 @@ import type {
 
 // Layout constants for endless canvas
 const CANVAS_CENTER = { x: 0, y: 0 };
-const PLAYER_CIRCLE_RADIUS = 220;
-const VOTING_CARD_Y = 400; // Fixed Y position at bottom
+const TIMER_X = -500; // Timer in left corner
+const TIMER_Y = -250; // Timer at top left corner
+const SESSION_Y = -300; // Session box almost at top of screen
+const PLAYERS_Y = 200; // Players positioned lower, above voting cards
+const PLAYER_SPACING = 200; // Horizontal spacing between players
+const VOTING_CARD_Y = 450; // Voting cards almost at bottom of screen
 const VOTING_CARD_SPACING = 70; // Space between cards
 
 interface UseCanvasLayoutProps {
@@ -26,6 +30,7 @@ interface UseCanvasLayoutProps {
   selectedCardValue: string | null;
   onRevealCards?: () => void;
   onResetGame?: () => void;
+  onCardSelect?: (cardValue: string) => void;
 }
 
 interface UseCanvasLayoutReturn {
@@ -40,16 +45,20 @@ export function useCanvasLayout({
   selectedCardValue,
   onRevealCards,
   onResetGame,
+  onCardSelect,
 }: UseCanvasLayoutProps): UseCanvasLayoutReturn {
   const nodes = useMemo(() => {
     const allNodes: CustomNodeType[] = [];
 
-    // Player nodes in circle layout
+    // Player nodes in horizontal layout
     if (room.users.length > 0) {
+      // Calculate total width needed for all players
+      const totalWidth = (room.users.length - 1) * PLAYER_SPACING;
+      const startX = CANVAS_CENTER.x - totalWidth / 2;
+
       room.users.forEach((user, index) => {
-        const angle = (index * 2 * Math.PI) / room.users.length;
-        const x = CANVAS_CENTER.x + PLAYER_CIRCLE_RADIUS * Math.cos(angle);
-        const y = CANVAS_CENTER.y + PLAYER_CIRCLE_RADIUS * Math.sin(angle);
+        const x = startX + index * PLAYER_SPACING;
+        const y = PLAYERS_Y;
 
         const pickedCard = getPickedUserCard(user.id, room.game.table);
 
@@ -69,11 +78,24 @@ export function useCanvasLayout({
       });
     }
 
-    // Session node (center)
+    // Timer node (left corner)
+    const timerNode: TimerNodeType = {
+      id: "timer",
+      type: "timer",
+      position: { x: TIMER_X, y: TIMER_Y },
+      data: {
+        duration: 0,
+        isRunning: false,
+      },
+    };
+    allNodes.push(timerNode);
+
+    // Session node (centered at top)
+    // Session node is approximately 280px wide, so offset by half to center
     const sessionNode: SessionNodeType = {
       id: "session-current",
       type: "session",
-      position: { x: CANVAS_CENTER.x - 140, y: CANVAS_CENTER.y - 80 },
+      position: { x: CANVAS_CENTER.x - 140, y: SESSION_Y },
       data: {
         sessionName: room.name || "Planning Session",
         participantCount: room.users.length,
@@ -87,22 +109,10 @@ export function useCanvasLayout({
     };
     allNodes.push(sessionNode);
 
-    // Timer node
-    const timerNode: TimerNodeType = {
-      id: "timer",
-      type: "timer",
-      position: { x: CANVAS_CENTER.x - 40, y: CANVAS_CENTER.y - 200 },
-      data: {
-        duration: 0,
-        isRunning: false,
-      },
-    };
-    allNodes.push(timerNode);
-
     // Controls are now in the floating navigation bar
 
     // Voting cards for current user
-    if (currentUserId && !room.isGameOver) {
+    if (currentUserId) {
       const currentUserIndex = room.users.findIndex(
         (u) => u.id === currentUserId,
       );
@@ -126,6 +136,7 @@ export function useCanvasLayout({
               roomId,
               isSelectable: !room.isGameOver,
               isSelected: card === selectedCardValue,
+              onCardSelect,
             },
             selected: card === selectedCardValue,
             draggable: false,
@@ -140,7 +151,7 @@ export function useCanvasLayout({
       const resultsNode: ResultsNodeType = {
         id: "results",
         type: "results",
-        position: { x: CANVAS_CENTER.x + 300, y: CANVAS_CENTER.y },
+        position: { x: CANVAS_CENTER.x + 400, y: SESSION_Y + 100 },
         data: {
           votes: room.game.table,
           users: room.users,
@@ -158,22 +169,67 @@ export function useCanvasLayout({
     room.deck.cards,
     onRevealCards,
     onResetGame,
+    onCardSelect,
     currentUserId,
     roomId,
     selectedCardValue,
   ]);
 
   const edges = useMemo(() => {
-    return room.game.table.map((vote) => ({
-      id: `vote-${vote.userId}`,
-      source: `player-${vote.userId}`,
-      target: "story-current",
-      type: "smoothstep",
-      animated: true,
-      className: "stroke-green-500! dark:stroke-green-400!",
-      style: { strokeWidth: 2 },
-    }));
-  }, [room.game.table]);
+    const allEdges: Edge[] = [];
+
+    // Session to Players edges
+    room.users.forEach((user) => {
+      allEdges.push({
+        id: `session-to-player-${user.id}`,
+        source: "session-current",
+        sourceHandle: "bottom",
+        target: `player-${user.id}`,
+        targetHandle: "top",
+        type: "default",
+        animated: false,
+        style: {
+          stroke: "#3b82f6",
+          strokeWidth: 2,
+          strokeOpacity: 0.8,
+        },
+      });
+    });
+
+    // Session to Results edge (when game is over)
+    if (room.isGameOver) {
+      allEdges.push({
+        id: "session-to-results",
+        source: "session-current",
+        target: "results",
+        type: "smoothstep",
+        animated: true,
+        style: {
+          stroke: "#10b981",
+          strokeWidth: 3,
+        },
+      });
+    }
+
+    // Timer to Session edge
+    allEdges.push({
+      id: "timer-to-session",
+      source: "timer",
+      sourceHandle: "right",
+      target: "session-current",
+      targetHandle: "left",
+      type: "straight",
+      animated: false,
+      style: {
+        stroke: "#64748b",
+        strokeWidth: 2,
+        strokeDasharray: "5,5",
+        strokeOpacity: 0.6,
+      },
+    });
+
+    return allEdges;
+  }, [room.users, room.isGameOver]);
 
   return { nodes, edges };
 }

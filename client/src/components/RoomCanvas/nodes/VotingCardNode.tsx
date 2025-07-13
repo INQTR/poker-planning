@@ -9,9 +9,13 @@ import type { VotingCardNodeType } from "../types";
 
 export const VotingCardNode = memo(
   ({ data, selected }: NodeProps<VotingCardNodeType>): ReactElement => {
-    const { card, userId, roomId, isSelectable } = data;
+    const { card, userId, roomId, isSelectable, onCardSelect, isSelected } =
+      data;
     const [isHovered, setIsHovered] = useState(false);
     const [isClicking, setIsClicking] = useState(false);
+
+    // Use either the node's selected prop or data.isSelected
+    const isCardSelected = selected || isSelected;
 
     const [pickCardMutation] = usePickCardMutation({
       onError(error) {
@@ -23,6 +27,12 @@ export const VotingCardNode = memo(
       if (!isSelectable || !userId) return;
 
       setIsClicking(true);
+
+      // Update local state immediately for instant feedback
+      if (onCardSelect) {
+        onCardSelect(card.value);
+      }
+
       pickCardMutation({
         variables: {
           userId,
@@ -33,18 +43,28 @@ export const VotingCardNode = memo(
 
       // Reset clicking state after animation
       setTimeout(() => setIsClicking(false), 200);
-    }, [isSelectable, userId, roomId, card.value, pickCardMutation]);
+    }, [
+      isSelectable,
+      userId,
+      roomId,
+      card.value,
+      pickCardMutation,
+      onCardSelect,
+    ]);
 
     const containerClasses = useMemo(
       () =>
         cn(
           "transition-all duration-200 select-none relative",
-          selected && "transform -translate-y-3",
-          isHovered && isSelectable && !selected && "transform -translate-y-1",
+          isCardSelected && "transform -translate-y-3",
+          isHovered &&
+            isSelectable &&
+            !isCardSelected &&
+            "transform -translate-y-1",
           isClicking && "transform scale-95",
           !isSelectable && "cursor-not-allowed",
         ),
-      [selected, isSelectable, isHovered, isClicking],
+      [isCardSelected, isSelectable, isHovered, isClicking],
     );
 
     const cardClasses = useMemo(
@@ -55,16 +75,16 @@ export const VotingCardNode = memo(
           "bg-white dark:bg-gray-800 transition-all duration-200",
           "border-2 relative overflow-hidden",
           isSelectable && "cursor-pointer",
-          selected
+          isCardSelected
             ? "border-blue-500 dark:border-blue-400 bg-blue-500 text-white dark:bg-blue-600 shadow-lg shadow-blue-500/30"
             : "border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 shadow-md",
           isHovered &&
             isSelectable &&
-            !selected &&
+            !isCardSelected &&
             "border-gray-400 dark:border-gray-500 shadow-lg",
           !isSelectable && "opacity-50 cursor-not-allowed shadow-sm",
         ),
-      [selected, isSelectable, isHovered],
+      [isCardSelected, isSelectable, isHovered],
     );
 
     const handleKeyDown = useCallback(
@@ -82,7 +102,7 @@ export const VotingCardNode = memo(
         role="button"
         tabIndex={isSelectable ? 0 : -1}
         aria-label={`Vote ${card.value}`}
-        aria-pressed={selected}
+        aria-pressed={isCardSelected}
         aria-disabled={!isSelectable}
         className={containerClasses}
         onClick={handleClick}
@@ -95,7 +115,7 @@ export const VotingCardNode = memo(
       >
         <div className={cardClasses}>
           {/* Shimmer effect for selected cards */}
-          {selected && (
+          {isCardSelected && (
             <div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
               style={{
@@ -105,7 +125,7 @@ export const VotingCardNode = memo(
           )}
 
           {/* Hover glow effect */}
-          {isHovered && isSelectable && !selected && (
+          {isHovered && isSelectable && !isCardSelected && (
             <div
               className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent"
               style={{

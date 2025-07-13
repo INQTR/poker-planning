@@ -62,24 +62,28 @@ export const SessionNode = memo(
         <Handle
           type="target"
           position={Position.Top}
+          id="top"
           className="bg-gray-400! dark:bg-gray-600!"
           aria-hidden="true"
         />
         <Handle
-          type="target"
+          type="source"
           position={Position.Right}
+          id="right"
           className="bg-gray-400! dark:bg-gray-600!"
           aria-hidden="true"
         />
         <Handle
-          type="target"
+          type="source"
           position={Position.Bottom}
+          id="bottom"
           className="bg-gray-400! dark:bg-gray-600!"
           aria-hidden="true"
         />
         <Handle
-          type="target"
+          type="source"
           position={Position.Left}
+          id="left"
           className="bg-gray-400! dark:bg-gray-600!"
           aria-hidden="true"
         />

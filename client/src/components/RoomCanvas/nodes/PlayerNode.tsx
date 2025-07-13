@@ -48,6 +48,7 @@ export const PlayerNode = memo(
         <Handle
           type="source"
           position={Position.Bottom}
+          id="bottom"
           className="bg-gray-400! dark:bg-gray-600!"
           aria-hidden="true"
         />
@@ -100,6 +101,7 @@ export const PlayerNode = memo(
         <Handle
           type="target"
           position={Position.Top}
+          id="top"
           className="bg-gray-400! dark:bg-gray-600!"
           aria-hidden="true"
         />

@@ -42,6 +42,7 @@ export type VotingCardNodeData = {
   roomId: string;
   isSelectable: boolean;
   isSelected: boolean;
+  onCardSelect?: (cardValue: string) => void;
 };
 
 export type ResultsNodeData = {
