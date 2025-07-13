@@ -35,7 +35,6 @@ export type TimerNodeData = {
   isRunning: boolean;
 };
 
-
 export type VotingCardNodeData = {
   card: { value: string };
   userId: string;
