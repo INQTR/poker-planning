@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 PokerPlanning.org is an open-source online planning poker tool for Scrum teams. It features real-time collaboration with a Rust/GraphQL backend and React/TypeScript frontend.
 
 The application offers two room types:
+
 - **Classic Room**: Traditional planning poker interface with a focused, distraction-free environment
 - **Canvas Room** (Beta): Modern whiteboard-style interface with endless canvas, floating navigation, and advanced collaboration features
 
@@ -116,6 +117,7 @@ cargo test                 # Run tests
 The application supports two room types with different interfaces:
 
 1. **Classic Room** (`/classic-room/:roomId`)
+
    - Uses traditional `Room` component with circular table layout
    - Voting cards displayed at bottom of screen
    - Players arranged around a central table
@@ -129,6 +131,7 @@ The application supports two room types with different interfaces:
    - Players can be repositioned on the canvas
 
 Room creation flow:
+
 1. User clicks "Start New Game"
 2. `RoomTypeSelector` modal appears
 3. User selects room type (Classic or Canvas)

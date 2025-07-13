@@ -111,11 +111,11 @@ export function useCanvasLayout({
         const cardCount = room.deck.cards.length;
         const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
         const startX = CANVAS_CENTER.x - totalWidth / 2;
-        
+
         room.deck.cards.forEach((card, index) => {
           const x = startX + index * VOTING_CARD_SPACING;
           const y = VOTING_CARD_Y;
-          
+
           const votingCardNode: VotingCardNodeType = {
             id: `card-${card}`,
             type: "votingCard",
@@ -152,14 +152,15 @@ export function useCanvasLayout({
     return allNodes;
   }, [
     room.users,
+    room.name,
     room.game.table,
-    room.deck.cards,
     room.isGameOver,
-    roomId,
-    currentUserId,
-    selectedCardValue,
+    room.deck.cards,
     onRevealCards,
     onResetGame,
+    currentUserId,
+    roomId,
+    selectedCardValue,
   ]);
 
   const edges = useMemo(() => {

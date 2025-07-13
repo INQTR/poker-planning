@@ -199,7 +199,22 @@ Working on fixing existing components before adding new features:
   - Improved card styling with larger size and better colors
   - Selected cards now have blue background with white text
   - Reduced transform effects for cleaner appearance
-- Next: Consider additional improvements or optimizations
+- Enhanced voting card visual feedback:
+  - Added hover effects with smooth scale and shadow transitions
+  - Implemented click animations with scale-down effect
+  - Created shimmer animation for selected cards using CSS keyframes
+  - Added fade-in animation for hover glow effects
+  - All animations defined in index.css for Tailwind CSS 4 compatibility
+- Improved player nodes with better status indicators:
+  - Added hover effects with scale and enhanced shadows
+  - Implemented gradient backgrounds for avatars
+  - Added online status indicator (green dot) on avatar
+  - Current user indicator with pulsing blue dot
+  - Enhanced voting status with "Voted" (green checkmark) and "Waiting" (amber pulse) indicators
+  - Vote value badge with improved styling and gradient backgrounds
+  - Subtle glow effect for players who have voted
+  - Bounce animation on vote badge when hovering over player
+  - Better visual hierarchy and accessibility features
 
 ## Next Steps
 
