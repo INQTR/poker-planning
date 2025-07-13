@@ -3,8 +3,6 @@ import { useReactFlow } from "@xyflow/react";
 import {
   Copy,
   Users,
-  Play,
-  RotateCcw,
   ZoomIn,
   ZoomOut,
   Maximize2,
@@ -34,16 +32,12 @@ import { Room } from "@/types";
 
 interface CanvasNavigationProps {
   room: Room;
-  onRevealCards?: () => void;
-  onResetGame?: () => void;
   onToggleFullscreen?: () => void;
   isFullscreen?: boolean;
 }
 
 export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   room,
-  onRevealCards,
-  onResetGame,
   onToggleFullscreen,
   isFullscreen = false,
 }) => {
@@ -70,8 +64,6 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
 
   const buttonClass =
     "h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors";
-  const actionButtonClass =
-    "h-8 px-3 gap-1.5 font-medium rounded-md transition-colors";
 
   return (
     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
@@ -122,51 +114,6 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {room.users.length} {room.users.length === 1 ? "user" : "users"}
           </span>
-        </div>
-
-        <Separator orientation="vertical" className="h-6 mx-1" />
-
-        {/* Game Controls */}
-        <div className="flex items-center gap-1 px-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onRevealCards}
-                disabled={room.isGameOver || room.game.table.length === 0}
-                className={`${actionButtonClass} ${
-                  !room.isGameOver && room.game.table.length > 0
-                    ? "hover:bg-primary/10 dark:hover:bg-primary/20 text-primary"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Play className="h-4 w-4" />
-                Reveal
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Reveal all cards</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onResetGame}
-                disabled={!room.isGameOver}
-                className={`${actionButtonClass} hover:bg-gray-100 dark:hover:bg-gray-700`}
-              >
-                <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Start new round</p>
-            </TooltipContent>
-          </Tooltip>
         </div>
 
         <Separator orientation="vertical" className="h-6 mx-1" />

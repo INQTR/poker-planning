@@ -25,10 +25,10 @@ import { getPickedUserCard } from "@/utils";
 
 import { useCanvasLayout } from "./hooks/useCanvasLayout";
 import {
-  ControlsNode,
   PlayerNode,
   ResultsNode,
   StoryNode,
+  SessionNode,
   TimerNode,
   VotingCardNode,
 } from "./nodes";
@@ -45,10 +45,10 @@ interface RoomCanvasProps {
 const nodeTypes: NodeTypes = {
   player: PlayerNode,
   story: StoryNode,
+  session: SessionNode,
   votingCard: VotingCardNode,
   results: ResultsNode,
   timer: TimerNode,
-  controls: ControlsNode,
 } as const;
 
 function RoomCanvasInner({
@@ -96,6 +96,8 @@ function RoomCanvasInner({
     roomId,
     currentUserId: currentUser?.id,
     selectedCardValue,
+    onRevealCards: handleRevealCards,
+    onResetGame: handleResetGame,
   });
 
   // Update nodes and edges when layout changes
@@ -171,8 +173,6 @@ function RoomCanvasInner({
     <div className="w-full h-full relative">
       <CanvasNavigation
         room={room}
-        onRevealCards={handleRevealCards}
-        onResetGame={handleResetGame}
         onToggleFullscreen={onToggleFullscreen}
         isFullscreen={isFullscreen}
       />

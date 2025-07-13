@@ -46,10 +46,10 @@ The RoomCanvas component implements an interactive planning poker room using Rea
 ## Node Types
 
 1. **PlayerNode** - Displays team members with voting status
-2. **StoryNode** - Shows the current story being estimated
-3. **VotingCardNode** - Interactive cards for submitting votes
-4. **ControlsNode** - Room control buttons
-5. **TimerNode** - Session timer display
+2. **SessionNode** - Central hub showing session info and controls
+3. **StoryNode** - Shows the current story being estimated (legacy)
+4. **VotingCardNode** - Interactive cards for submitting votes
+5. **TimerNode** - Session timer with built-in controls
 6. **ResultsNode** - Vote results visualization
 
 ## Real-time Features

@@ -32,9 +32,9 @@ export const VotingCardNode = memo(
     const containerClasses = useMemo(
       () =>
         cn(
-          "cursor-pointer transition-all duration-200 select-none",
-          selected && "transform -translate-y-4 scale-110",
-          !isSelectable && "opacity-50 cursor-not-allowed",
+          "transition-all duration-200 select-none",
+          selected && "transform -translate-y-2",
+          !isSelectable && "cursor-not-allowed",
         ),
       [selected, isSelectable],
     );
@@ -42,14 +42,15 @@ export const VotingCardNode = memo(
     const cardClasses = useMemo(
       () =>
         cn(
-          "h-20 min-w-[52px] text-xl py-6 px-3 border-2 leading-normal rounded-md",
-          "flex items-center justify-center font-semibold",
-          "bg-white dark:bg-gray-800 transition-colors",
-          isSelectable && "hover:bg-gray-50 dark:hover:bg-gray-700",
+          "h-24 w-16 text-2xl rounded-xl shadow-md",
+          "flex items-center justify-center font-bold",
+          "bg-white dark:bg-gray-800 transition-all duration-200",
+          "border-2",
+          isSelectable && "hover:shadow-lg cursor-pointer",
           selected
-            ? "border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-            : "border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100",
-          !isSelectable && "hover:bg-white dark:hover:bg-gray-800",
+            ? "border-blue-500 dark:border-blue-400 bg-blue-500 text-white dark:bg-blue-600"
+            : "border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100",
+          !isSelectable && "opacity-50 cursor-not-allowed",
         ),
       [selected, isSelectable],
     );

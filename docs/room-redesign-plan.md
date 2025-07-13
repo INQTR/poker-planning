@@ -179,13 +179,23 @@ Players float freely around stories, creating organic clusters:
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Weeks 1-2)
+> **Current Status**: Phase 1 partially complete, focusing on improving existing features before proceeding
+>
+> **Progress Tracking**: See [canvas-room-progress.md](./canvas-room-progress.md) for detailed status
 
-- [ ] Set up ReactFlow with TypeScript
-- [ ] Create basic node components (Player, Story, Card)
-- [ ] Implement canvas navigation and controls
-- [ ] Connect to existing GraphQL subscriptions
-- [ ] Basic drag and drop functionality
+### Phase 1: Foundation (Weeks 1-2) - IN PROGRESS
+
+- [x] Set up ReactFlow with TypeScript
+- [x] Create basic node components (Player, Story, Card)
+- [x] Implement canvas navigation and controls
+- [x] Connect to existing GraphQL subscriptions
+
+**Issues to Fix Before Proceeding:**
+
+- StoryNode shows hardcoded data instead of real story
+- TimerNode has no controls
+- Voting cards positioned incorrectly
+- ControlsNode is deprecated
 
 ### Phase 2: Core Planning Features (Weeks 3-4)
 

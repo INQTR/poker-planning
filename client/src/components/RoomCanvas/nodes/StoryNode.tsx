@@ -1,5 +1,13 @@
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { ReactElement, memo, useMemo } from "react";
+import { Play, RotateCcw } from "lucide-react";
+import {
+  ReactElement,
+  memo,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -7,8 +15,34 @@ import type { StoryNodeType } from "../types";
 
 export const StoryNode = memo(
   ({ data }: NodeProps<StoryNodeType>): ReactElement => {
-    const { title, description } = data;
-    const isActive = true; // Always active in current implementation
+    const {
+      title,
+      description,
+      isGameOver,
+      hasVotes,
+      onRevealCards,
+      onResetGame,
+    } = data;
+    const isActive = !isGameOver; // Active when game is not over
+
+    // Cooldown state for reset button
+    const [resetCooldown, setResetCooldown] = useState(0);
+
+    useEffect(() => {
+      if (resetCooldown > 0) {
+        const timer = setTimeout(() => {
+          setResetCooldown(resetCooldown - 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }, [resetCooldown]);
+
+    const handleResetClick = useCallback(() => {
+      if (resetCooldown === 0 && onResetGame) {
+        setResetCooldown(3); // 3 second cooldown
+        onResetGame();
+      }
+    }, [resetCooldown, onResetGame]);
 
     const nodeClasses = useMemo(
       () =>
@@ -73,22 +107,83 @@ export const StoryNode = memo(
             {description}
           </p>
 
-          {isActive && (
-            <div className="mt-3 flex items-center gap-2" aria-live="polite">
-              <div
-                className="flex-1 bg-amber-200 dark:bg-amber-800 rounded-full h-2"
-                role="progressbar"
-                aria-label="Voting in progress"
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <div className="bg-amber-500 dark:bg-amber-400 h-2 rounded-full w-0 animate-pulse" />
+          {/* Status and Controls */}
+          <div className="mt-3 space-y-2">
+            {/* Status Display */}
+            {isActive ? (
+              <div className="flex items-center gap-2" aria-live="polite">
+                <div
+                  className="flex-1 bg-amber-200 dark:bg-amber-800 rounded-full h-2"
+                  role="progressbar"
+                  aria-label="Voting in progress"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <div className="bg-amber-500 dark:bg-amber-400 h-2 rounded-full w-0 animate-pulse" />
+                </div>
+                <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                  Voting...
+                </span>
               </div>
-              <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
-                Voting...
-              </span>
+            ) : (
+              <div className="flex items-center gap-2" aria-live="polite">
+                <svg
+                  className="w-4 h-4 text-green-600 dark:text-green-400"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-xs text-green-700 dark:text-green-300 font-medium">
+                  Voting Complete
+                </span>
+              </div>
+            )}
+
+            {/* Control Buttons */}
+            <div className="flex items-center gap-2">
+              {!isGameOver && hasVotes && (
+                <button
+                  onClick={onRevealCards}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md bg-primary/10 hover:bg-primary/20 text-primary dark:bg-primary/20 dark:hover:bg-primary/30 transition-colors"
+                  aria-label="Reveal all cards"
+                >
+                  <Play className="h-3 w-3" />
+                  Reveal
+                </button>
+              )}
+              {isGameOver && (
+                <button
+                  onClick={handleResetClick}
+                  disabled={resetCooldown > 0}
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
+                    resetCooldown > 0
+                      ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600",
+                  )}
+                  aria-label={
+                    resetCooldown > 0
+                      ? `Wait ${resetCooldown} seconds`
+                      : "Start new round"
+                  }
+                >
+                  <RotateCcw
+                    className={cn(
+                      "h-3 w-3",
+                      resetCooldown > 0 && "animate-spin",
+                    )}
+                  />
+                  {resetCooldown > 0 ? `Wait ${resetCooldown}s` : "New Round"}
+                </button>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     );

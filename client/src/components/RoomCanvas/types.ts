@@ -14,6 +14,20 @@ export type StoryNodeData = {
   title: string;
   description: string;
   storyId: string;
+  isGameOver?: boolean;
+  hasVotes?: boolean;
+  onRevealCards?: () => void;
+  onResetGame?: () => void;
+};
+
+export type SessionNodeData = {
+  sessionName: string;
+  participantCount: number;
+  voteCount: number;
+  isVotingComplete: boolean;
+  hasVotes: boolean;
+  onRevealCards?: () => void;
+  onResetGame?: () => void;
 };
 
 export type TimerNodeData = {
@@ -21,11 +35,6 @@ export type TimerNodeData = {
   isRunning: boolean;
 };
 
-export type ControlsNodeData = {
-  roomId: string;
-  isCardsPicked: boolean;
-  isGameOver: boolean;
-};
 
 export type VotingCardNodeData = {
   card: { value: string };
@@ -43,8 +52,8 @@ export type ResultsNodeData = {
 // Node types
 export type PlayerNodeType = Node<PlayerNodeData, "player">;
 export type StoryNodeType = Node<StoryNodeData, "story">;
+export type SessionNodeType = Node<SessionNodeData, "session">;
 export type TimerNodeType = Node<TimerNodeData, "timer">;
-export type ControlsNodeType = Node<ControlsNodeData, "controls">;
 export type VotingCardNodeType = Node<VotingCardNodeData, "votingCard">;
 export type ResultsNodeType = Node<ResultsNodeData, "results">;
 
@@ -52,7 +61,7 @@ export type ResultsNodeType = Node<ResultsNodeData, "results">;
 export type CustomNodeType =
   | PlayerNodeType
   | StoryNodeType
+  | SessionNodeType
   | TimerNodeType
-  | ControlsNodeType
   | VotingCardNodeType
   | ResultsNodeType;
