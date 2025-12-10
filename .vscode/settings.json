@@ -1,3 +1,5 @@
 {
-  "eslint.workingDirectories": ["./client"]
+  "eslint.workingDirectories": ["./client"],
+  "diffEditor.diffAlgorithm": "advanced",
+  "diffEditor.experimental.showMoves": true
 }
