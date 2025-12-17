@@ -50,7 +50,7 @@ export class HomePage {
   async verifyHeroSection(): Promise<void> {
     await expect(this.heroHeading).toBeVisible();
     await expect(this.heroHeading).toContainText("Estimate stories with");
-    await expect(this.heroHeading).toContainText("Planning Poker");
+    await expect(this.heroHeading).toContainText("AgileKit");
 
     await expect(this.heroDescription).toBeVisible();
     await expect(this.heroDescription).toContainText(

@@ -18,9 +18,11 @@ export function Header() {
               height={32}
               className="h-8 w-8 mr-2"
             />
-            <span className="sr-only">Planning poker / Scrum Poker</span>
-            <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-              Planning poker
+            <span className="sr-only">
+              Planning poker / Scrum Poker / AgileKit
+            </span>
+            <span className="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              AgileKit
             </span>
           </Link>
         </div>
