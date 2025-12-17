@@ -1,10 +1,10 @@
-# PokerPlanning.org
+# AgileKit
 
 [![Build & Tests](https://github.com/INQTR/poker-planning/actions/workflows/ci.yml/badge.svg)](https://github.com/INQTR/poker-planning/actions/workflows/ci.yml)
 
-PokerPlanning.org is an open-source, user-friendly online planning poker tool designed to enhance Scrum team collaboration and improve estimation accuracy. Our mission is to provide a free, accessible, and enjoyable planning poker experience for teams worldwide 🌍🌎🌏!
+AgileKit is an open-source, user-friendly online planning poker tool designed to enhance Scrum team collaboration and improve estimation accuracy. Our mission is to provide a free, accessible, and enjoyable planning poker experience for teams worldwide 🌍🌎🌏!
 
-![PokerPlanning.org Room demo](public/poker-planning-screenshot.png "Room Screen")
+![AgileKit Room demo](public/agilekit-screenshot.png "Room Screen")
 
 ## Features 🚀
 
@@ -36,7 +36,7 @@ PokerPlanning.org is an open-source, user-friendly online planning poker tool de
 
    ```sh
    git clone https://github.com/INQTR/poker-planning.git
-   cd poker-planning
+   cd agilekit
    ```
 
 2. Install dependencies:

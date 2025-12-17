@@ -83,7 +83,7 @@ export default function AboutPage() {
               </h1>
               <div className="mt-6 max-w-xl lg:mt-0 xl:col-end-1 xl:row-start-1">
                 <p className="text-lg font-medium text-gray-600 dark:text-gray-300 sm:text-xl/8">
-                  PokerPlanning.org is a free, open-source planning poker tool
+                  AgileKit is a free, open-source planning poker tool
                   built for modern Scrum teams. We believe estimation tools
                   should be accessible to everyone, without compromising on
                   quality or privacy.
@@ -385,7 +385,7 @@ export default function AboutPage() {
                 Meet the creator
               </h2>
               <p className="mt-6 text-xl/8 text-gray-600 dark:text-gray-400">
-                PokerPlanning.org was created by a developer who believes in the
+                AgileKit was created by a developer who believes in the
                 power of open source and the importance of accessible tools for
                 every team.
               </p>
@@ -403,13 +403,13 @@ export default function AboutPage() {
               </h3>
               <p className="mt-6 text-base/7 text-gray-600 dark:text-gray-400">
                 Full-stack developer passionate about creating tools that make
-                teams more productive. Started PokerPlanning.org in 2021 to
+                teams more productive. Started AgileKit in 2021 to
                 solve his own team&apos;s need for a simple, fast, and free
                 planning poker tool.
               </p>
               <p className="mt-6 text-base/7 text-gray-600 dark:text-gray-400">
                 &ldquo;I believe that good tools should be accessible to
-                everyone. That&apos;s why PokerPlanning.org will always be free
+                everyone. That&apos;s why AgileKit will always be free
                 and open source. The community&apos;s contributions and feedback
                 have been invaluable in shaping what it is today.&rdquo;
               </p>
@@ -424,7 +424,7 @@ export default function AboutPage() {
                   <GithubIcon className="h-6 w-6" />
                 </a>
                 <a
-                  href="https://x.com/pokerplanning"
+                  href="https://x.com/agilekit"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
@@ -440,7 +440,7 @@ export default function AboutPage() {
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                   Whether you&apos;re a developer, designer, or just a user with
                   great ideas, we&apos;d love to have you as part of the
-                  PokerPlanning.org community.
+                  AgileKit community.
                 </p>
                 <div className="mt-6 flex gap-x-3">
                   <Button asChild variant="outline" size="sm">
@@ -474,7 +474,7 @@ export default function AboutPage() {
               Start planning with your team today
             </h2>
             <p className="mx-auto mt-2 max-w-xl text-center text-lg/8 text-indigo-200">
-              Join thousands of teams already using PokerPlanning.org for their
+              Join thousands of teams already using AgileKit for their
               estimation sessions.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">

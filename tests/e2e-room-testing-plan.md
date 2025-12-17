@@ -1,4 +1,4 @@
-# E2E Testing Plan for PokerPlanning Room Features
+# E2E Testing Plan for AgileKit Room Features
 
 ## Overview
 

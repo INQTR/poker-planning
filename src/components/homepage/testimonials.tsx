@@ -15,7 +15,7 @@ interface Testimonial {
 }
 
 const featuredTestimonial: Testimonial = {
-  body: "PokerPlanning.org has transformed our sprint planning sessions. The real-time collaboration and intuitive interface have made our estimations 50% faster and much more accurate. The fact that it's completely free is just incredible.",
+  body: "AgileKit has transformed our sprint planning sessions. The real-time collaboration and intuitive interface have made our estimations 50% faster and much more accurate. The fact that it's completely free is just incredible.",
   author: {
     name: "Sarah Chen",
     handle: "sarahchen",
@@ -63,7 +63,7 @@ const testimonials: Testimonial[][][] = [
     ],
     [
       {
-        body: "We switched from a paid tool to PokerPlanning.org and haven't looked back. It has all the features we need without the monthly subscription fees.",
+        body: "We switched from a paid tool to AgileKit and haven't looked back. It has all the features we need without the monthly subscription fees.",
         author: {
           name: "Lindsay Wang",
           handle: "lindsaywang",

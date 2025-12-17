@@ -18,7 +18,7 @@ const sections = [
     id: "introduction",
     title: "1. Introduction",
     content:
-      "This Privacy Policy explains how PokerPlanning.org collects, uses, and protects your information when you use our service. We are committed to ensuring that your privacy is protected and that we handle your data responsibly.",
+      "This Privacy Policy explains how AgileKit collects, uses, and protects your information when you use our service. We are committed to ensuring that your privacy is protected and that we handle your data responsibly.",
   },
   {
     id: "information-collection",
@@ -66,7 +66,7 @@ const sections = [
     id: "children",
     title: "9. Children's Privacy",
     content:
-      "PokerPlanning.org is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.",
+      "AgileKit is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.",
   },
   {
     id: "changes",
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
               </h1>
               <p className="mt-6 text-xl/8 text-gray-600 dark:text-gray-300">
                 Learn how we collect, use, and protect your information at
-                PokerPlanning.org.
+                AgileKit.
               </p>
             </div>
           </div>

@@ -40,7 +40,7 @@ export function AppPreview() {
             </div>
             <Image
               alt="Planning Poker app interface showing real-time collaboration"
-              src="/poker-planning-screenshot.png"
+              src="/agilekit-screenshot.png"
               width={2432}
               height={1442}
               className="relative -z-20 max-w-xl min-w-full rounded-xl shadow-xl ring-1 ring-white/10 lg:row-span-4 lg:w-[64rem] lg:max-w-none"

@@ -8,7 +8,6 @@ import { ArrowRight } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { useCopyRoomUrlToClipboard } from "@/hooks/use-copy-room-url-to-clipboard";
 import {
-  Banner,
   HowItWorks,
   FAQ,
   UseCases,
@@ -52,7 +51,6 @@ export default function HomePage() {
       >
         Skip to main content
       </a>
-      <Banner />
 
       <Header />
 
@@ -63,7 +61,7 @@ export default function HomePage() {
         {/* Background gradient effects */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <svg
-            className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+            className="absolute left-[max(50%,25rem)] top-0 h-256 w-512 -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
             aria-hidden="true"
           >
             <defs>
@@ -100,7 +98,7 @@ export default function HomePage() {
             aria-hidden="true"
           >
             <div
-              className="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-primary/30 to-purple-600/30 opacity-20 dark:from-primary/20 dark:to-purple-600/20"
+              className="aspect-1108/632 w-277 bg-linear-to-r from-primary/30 to-purple-600/30 opacity-20 dark:from-primary/20 dark:to-purple-600/20"
               style={{
                 clipPath:
                   "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
@@ -114,9 +112,9 @@ export default function HomePage() {
             <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
               Estimate stories with
               <span className="relative">
-                <span className="relative bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                <span className="relative bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                   {" "}
-                  Planning Poker
+                  AgileKit
                 </span>
                 <svg
                   className="absolute -bottom-2 left-0 w-full"
@@ -185,11 +183,17 @@ export default function HomePage() {
                 <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
                 <span>100% Free Forever</span>
               </div>
-              <div className="flex items-center gap-2" data-testid="trust-no-account">
+              <div
+                className="flex items-center gap-2"
+                data-testid="trust-no-account"
+              >
                 <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
                 <span>No Account Required</span>
               </div>
-              <div className="flex items-center gap-2" data-testid="trust-realtime">
+              <div
+                className="flex items-center gap-2"
+                data-testid="trust-realtime"
+              >
                 <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
                 <span>Real-time Collaboration</span>
               </div>
@@ -198,7 +202,7 @@ export default function HomePage() {
         </div>
 
         {/* Bottom gradient fade */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-white dark:from-gray-900 to-transparent" />
 
         <AppPreview />
         <HowItWorks />

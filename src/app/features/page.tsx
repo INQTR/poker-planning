@@ -176,7 +176,7 @@ export default function FeaturesPage() {
                 </span>
               </h1>
               <p className="mt-8 text-xl leading-8 text-gray-600 dark:text-gray-300">
-                Discover all the powerful features that make PokerPlanning.org
+                Discover all the powerful features that make AgileKit
                 the go-to choice for agile teams worldwide. Free forever, no
                 strings attached.
               </p>
@@ -325,7 +325,7 @@ export default function FeaturesPage() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Why Teams Choose PokerPlanning.org
+                Why Teams Choose AgileKit
               </h2>
               <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="text-center">
@@ -385,7 +385,7 @@ export default function FeaturesPage() {
                 Ready to Transform Your Sprint Planning?
               </h2>
               <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
-                Join thousands of teams already using PokerPlanning.org
+                Join thousands of teams already using AgileKit
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
                 <Button asChild size="lg" className="group">

@@ -15,7 +15,7 @@ test.describe("Home Page - Basic Elements", () => {
   });
 
   test("should load successfully and display main heading", async () => {
-    await homePage.verifyPageTitle(/Planning Poker for Teams|PokerPlanning/i);
+    await homePage.verifyPageTitle(/Planning Poker for Teams|AgileKit/i);
     await homePage.verifyHeroSection();
   });
 
