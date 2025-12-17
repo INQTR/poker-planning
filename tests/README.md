@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains end-to-end tests for the PokerPlanning application using Playwright.
+This directory contains end-to-end tests for the AgileKit application using Playwright.
 
 ## Structure
 

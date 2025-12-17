@@ -12,9 +12,9 @@ const faqs = [
       "Planning Poker is an agile estimation technique where team members use cards to vote on the complexity of user stories. It helps teams reach consensus on effort estimates through discussion and collaboration, making sprint planning more accurate and engaging.",
   },
   {
-    question: "How much does PokerPlanning.org cost?",
+    question: "How much does AgileKit cost?",
     answer:
-      "PokerPlanning.org is completely free forever. There are no hidden costs, premium tiers, or limitations on team size or number of sessions. As an open-source project, we believe in making quality tools accessible to everyone.",
+      "AgileKit is completely free forever. There are no hidden costs, premium tiers, or limitations on team size or number of sessions. As an open-source project, we believe in making quality tools accessible to everyone.",
   },
   {
     question: "Do I need to create an account?",
@@ -44,7 +44,7 @@ const faqs = [
   {
     question: "What browsers and devices are supported?",
     answer:
-      "PokerPlanning.org works on all modern browsers (Chrome, Firefox, Safari, Edge) and is fully responsive on desktop, tablet, and mobile devices. No app installation required - it works directly in your browser.",
+      "AgileKit works on all modern browsers (Chrome, Firefox, Safari, Edge) and is fully responsive on desktop, tablet, and mobile devices. No app installation required - it works directly in your browser.",
   },
   {
     question: "How does it compare to other planning poker tools?",

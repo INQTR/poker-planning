@@ -29,7 +29,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <ConvexProvider client={convex}>
       <ThemeProvider 
         defaultTheme="system" 
-        storageKey="pokerplanning-theme" 
+        storageKey="agilekit-theme" 
         attribute="class"
         enableSystem
         disableTransitionOnChange

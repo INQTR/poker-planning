@@ -13,7 +13,7 @@ export function Header() {
           <Link href="/" className="-m-1.5 p-1.5 flex items-center">
             <Image
               src="/logo.svg"
-              alt="PokerPlanning.org Logo"
+              alt="AgileKit Logo"
               width={32}
               height={32}
               className="h-8 w-8 mr-2"

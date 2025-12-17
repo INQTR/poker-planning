@@ -1,6 +1,6 @@
 # Canvas Room Progress Tracking
 
-This document tracks the development progress of the Canvas Room feature for PokerPlanning.org. It serves as a living document to monitor implementation status, issues, and improvements between development sessions.
+This document tracks the development progress of the Canvas Room feature for AgileKit. It serves as a living document to monitor implementation status, issues, and improvements between development sessions.
 
 ## Overview
 

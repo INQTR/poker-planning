@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Start the development server for PokerPlanning.org
+# Start the development server for AgileKit
 # This script starts both the Convex backend and Next.js frontend
 
-echo "Starting development server for PokerPlanning.org..."
+echo "Starting development server for AgileKit..."
 echo "=================================================="
 
 # Function to start Convex backend
@@ -20,8 +20,8 @@ start_nextjs() {
 
 # Check if we're in the correct directory
 if [ ! -f "package.json" ]; then
-    echo "Error: This doesn't appear to be the poker-planning project directory."
-    echo "Please run this script from the root of the poker-planning project."
+    echo "Error: This doesn't appear to be the agilekit project directory."
+    echo "Please run this script from the root of the agilekit project."
     exit 1
 fi
 

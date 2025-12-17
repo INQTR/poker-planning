@@ -1,7 +1,7 @@
 # Product Steering Document
 
 ## Product Vision
-PokerPlanning.org aims to revolutionize how Agile/Scrum teams conduct planning poker sessions by providing a modern, intuitive, and feature-rich platform that remains simple to use.
+AgileKit aims to revolutionize how Agile/Scrum teams conduct planning poker sessions by providing a modern, intuitive, and feature-rich platform that remains simple to use.
 
 ## Target Users
 - **Primary**: Agile/Scrum teams of all sizes

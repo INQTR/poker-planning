@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines a comprehensive redesign of the PokerPlanning.org room page, transforming it from a static table-centered layout to a dynamic, spatial endless canvas experience using ReactFlow (@xyflow/react). This redesign aims to create a more expansive, flexible, and engaging environment for distributed teams conducting planning poker sessions.
+This document outlines a comprehensive redesign of the AgileKit room page, transforming it from a static table-centered layout to a dynamic, spatial endless canvas experience using ReactFlow (@xyflow/react). This redesign aims to create a more expansive, flexible, and engaging environment for distributed teams conducting planning poker sessions.
 
 ## Vision & Goals
 

@@ -19,19 +19,19 @@ const sections = [
     id: "acceptance",
     title: "1. Acceptance of Terms",
     content:
-      "By accessing and using PokerPlanning.org, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service. These terms apply to all users of the site, including without limitation users who are contributors of content.",
+      "By accessing and using AgileKit, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service. These terms apply to all users of the site, including without limitation users who are contributors of content.",
   },
   {
     id: "description",
     title: "2. Description of Service",
     content:
-      "PokerPlanning.org provides a free, web-based planning poker tool for Agile teams to estimate work items. The service includes real-time collaboration features, voting mechanisms, and session management. We reserve the right to modify, suspend, or discontinue the service at any time without notice.",
+      "AgileKit provides a free, web-based planning poker tool for Agile teams to estimate work items. The service includes real-time collaboration features, voting mechanisms, and session management. We reserve the right to modify, suspend, or discontinue the service at any time without notice.",
   },
   {
     id: "use-license",
     title: "3. Use License",
     content:
-      "PokerPlanning.org is open source software distributed under the MIT License. You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the conditions of the MIT License. The software is provided 'as is', without warranty of any kind.",
+      "AgileKit is open source software distributed under the MIT License. You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software, subject to the conditions of the MIT License. The software is provided 'as is', without warranty of any kind.",
   },
   {
     id: "user-conduct",
@@ -61,13 +61,13 @@ const sections = [
     id: "liability",
     title: "8. Limitation of Liability",
     content:
-      "In no event shall PokerPlanning.org, its creators, contributors, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use or inability to use the service.",
+      "In no event shall AgileKit, its creators, contributors, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use or inability to use the service.",
   },
   {
     id: "indemnification",
     title: "9. Indemnification",
     content:
-      "You agree to defend, indemnify, and hold harmless PokerPlanning.org and its contributors from and against any claims, damages, obligations, losses, liabilities, costs, or expenses arising from: (a) your use of and access to the service; (b) your violation of any term of these Terms of Service; (c) your violation of any third party right.",
+      "You agree to defend, indemnify, and hold harmless AgileKit and its contributors from and against any claims, damages, obligations, losses, liabilities, costs, or expenses arising from: (a) your use of and access to the service; (b) your violation of any term of these Terms of Service; (c) your violation of any third party right.",
   },
   {
     id: "termination",
@@ -120,7 +120,7 @@ export default function TermsPage() {
               </h1>
               <p className="mt-6 text-xl/8 text-gray-600 dark:text-gray-300">
                 Please read these terms carefully before using
-                PokerPlanning.org.
+                AgileKit.
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function TermsPage() {
                   </h3>
                   <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
                     <p>
-                      PokerPlanning.org is a free, open-source tool licensed
+                      AgileKit is a free, open-source tool licensed
                       under MIT. These terms ensure fair use and protect both
                       users and contributors.
                     </p>
@@ -256,7 +256,7 @@ export default function TermsPage() {
                   Open Source License
                 </h3>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  PokerPlanning.org is licensed under the MIT License. You can
+                  AgileKit is licensed under the MIT License. You can
                   find the full license text in our GitHub repository.
                 </p>
               </div>

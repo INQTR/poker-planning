@@ -7,7 +7,7 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Planning Poker for Teams | PokerPlanning.org",
+  title: "Planning Poker for Teams | AgileKit",
   description:
     "Free online planning poker tool for agile teams. Real-time collaboration, no registration required.",
 };

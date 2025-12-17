@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The voting timer feature adds time-boxing capabilities to planning poker sessions, allowing Scrum Masters and facilitators to set time limits for discussions. This feature enhances meeting efficiency by keeping estimation discussions focused and preventing extended debates, while maintaining the simplicity that makes PokerPlanning.org accessible to all teams.
+The voting timer feature adds time-boxing capabilities to planning poker sessions, allowing Scrum Masters and facilitators to set time limits for discussions. This feature enhances meeting efficiency by keeping estimation discussions focused and preventing extended debates, while maintaining the simplicity that makes AgileKit accessible to all teams.
 
 ## Alignment with Product Vision
 
