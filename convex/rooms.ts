@@ -107,3 +107,21 @@ export const executeAutoReveal = mutation({
     return { revealed: false };
   },
 });
+
+// Rename a room
+export const rename = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    if (!room) {
+      throw new Error("Room not found");
+    }
+    await ctx.db.patch(args.roomId, {
+      name: args.name,
+      lastActivityAt: Date.now(),
+    });
+  },
+});

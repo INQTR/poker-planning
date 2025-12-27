@@ -10,6 +10,7 @@
 
 import type * as canvas from "../canvas.js";
 import type * as cleanup from "../cleanup.js";
+import type * as constants from "../constants.js";
 import type * as crons from "../crons.js";
 import type * as maintenance from "../maintenance.js";
 import type * as model_canvas from "../model/canvas.js";
@@ -32,6 +33,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   canvas: typeof canvas;
   cleanup: typeof cleanup;
+  constants: typeof constants;
   crons: typeof crons;
   maintenance: typeof maintenance;
   "model/canvas": typeof model_canvas;

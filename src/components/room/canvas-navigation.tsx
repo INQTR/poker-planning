@@ -14,7 +14,7 @@ import {
   Settings,
   Home,
 } from "lucide-react";
-import { FC, useState } from "react";
+import { FC, useState, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { RoomSettingsPanel } from "./room-settings-panel";
+import { cn } from "@/lib/utils";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
 
 interface CanvasNavigationProps {
@@ -45,9 +47,11 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
 }) => {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   const { toast } = useToast();
-  const [isFullscreenSupported] = useState(() => 
+  const [isFullscreenSupported] = useState(() =>
     typeof document !== 'undefined' && document.fullscreenEnabled
   );
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleCopyRoomUrl = async () => {
     if (roomData?.room) {
@@ -271,27 +275,38 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className={buttonClass}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  ref={settingsButtonRef}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  className={cn(
+                    buttonClass,
+                    isSettingsOpen && "bg-gray-100 dark:bg-gray-700"
+                  )}
                   aria-label="Room settings"
+                  aria-expanded={isSettingsOpen}
                 >
                   <Settings className="h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem disabled>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Room settings
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Room settings</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </div>
+
+      {/* Settings Panel */}
+      <RoomSettingsPanel
+        roomData={roomData}
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        triggerRef={settingsButtonRef}
+      />
     </>
   );
 };
