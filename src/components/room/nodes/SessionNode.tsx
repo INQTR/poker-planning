@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { cn } from "@/lib/utils";
+import { COUNTDOWN_DURATION_MS } from "@/convex/constants";
 
 import type { SessionNodeType } from "../types";
 
@@ -47,7 +48,7 @@ export const SessionNode = memo(
     }, [resetCooldown]);
 
     // Auto-reveal countdown state
-    const COUNTDOWN_DURATION_SECONDS = 3;
+    const COUNTDOWN_DURATION_SECONDS = COUNTDOWN_DURATION_MS / 1000;
     const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
 
     useEffect(() => {
