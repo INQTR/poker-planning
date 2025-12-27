@@ -26,8 +26,13 @@ export type SessionNodeData = {
   voteCount: number;
   isVotingComplete: boolean;
   hasVotes: boolean;
+  autoCompleteVoting: boolean;
+  autoRevealCountdownStartedAt: number | null;
   onRevealCards?: () => void;
   onResetGame?: () => void;
+  onToggleAutoComplete?: () => void;
+  onCancelAutoReveal?: () => void;
+  onExecuteAutoReveal?: () => void;
 };
 
 export type TimerNodeData = {

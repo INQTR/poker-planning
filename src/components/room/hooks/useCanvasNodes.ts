@@ -17,6 +17,9 @@ interface UseCanvasNodesProps {
   onRevealCards?: () => void;
   onResetGame?: () => void;
   onCardSelect?: (cardValue: string) => void;
+  onToggleAutoComplete?: () => void;
+  onCancelAutoReveal?: () => void;
+  onExecuteAutoReveal?: () => void;
 }
 
 interface UseCanvasNodesReturn {
@@ -32,6 +35,9 @@ export function useCanvasNodes({
   onRevealCards,
   onResetGame,
   onCardSelect,
+  onToggleAutoComplete,
+  onCancelAutoReveal,
+  onExecuteAutoReveal,
 }: UseCanvasNodesProps): UseCanvasNodesReturn {
   // Query canvas nodes from Convex
   const canvasNodes = useQuery(api.canvas.getCanvasNodes, { roomId });
@@ -89,8 +95,13 @@ export function useCanvasNodes({
             voteCount: votes.filter((v: SanitizedVote) => v.hasVoted).length,
             isVotingComplete: room.isGameOver,
             hasVotes: votes.some((v: SanitizedVote) => v.hasVoted),
+            autoCompleteVoting: room.autoCompleteVoting,
+            autoRevealCountdownStartedAt: room.autoRevealCountdownStartedAt ?? null,
             onRevealCards,
             onResetGame,
+            onToggleAutoComplete,
+            onCancelAutoReveal,
+            onExecuteAutoReveal,
           },
           draggable: !node.isLocked,
         };
@@ -130,7 +141,7 @@ export function useCanvasNodes({
     });
 
     return allNodes;
-  }, [canvasNodes, roomData, currentUserId, selectedCardValue, onRevealCards, onResetGame, onCardSelect, roomId]);
+  }, [canvasNodes, roomData, currentUserId, selectedCardValue, onRevealCards, onResetGame, onCardSelect, onToggleAutoComplete, onCancelAutoReveal, onExecuteAutoReveal, roomId]);
 
   const edges = useMemo(() => {
     if (!canvasNodes || !roomData) return [];

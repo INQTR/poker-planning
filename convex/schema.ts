@@ -6,6 +6,7 @@ export default defineSchema({
     name: v.string(),
     votingCategorized: v.boolean(),
     autoCompleteVoting: v.boolean(),
+    autoRevealCountdownStartedAt: v.optional(v.number()), // Timestamp when countdown began
     roomType: v.optional(v.literal("canvas")), // Optional for backward compatibility
     isGameOver: v.boolean(),
     createdAt: v.number(),

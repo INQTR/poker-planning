@@ -59,6 +59,9 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
   const resetGame = useMutation(api.rooms.resetGame);
   const pickCard = useMutation(api.votes.pickCard);
   const updateNodePosition = useMutation(api.canvas.updateNodePosition);
+  const toggleAutoComplete = useMutation(api.rooms.toggleAutoComplete);
+  const cancelAutoRevealCountdown = useMutation(api.rooms.cancelAutoRevealCountdown);
+  const executeAutoReveal = useMutation(api.rooms.executeAutoReveal);
 
   const handleRevealCards = useCallback(async () => {
     if (!roomData) return;
@@ -77,6 +80,33 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
       console.error("Failed to reset game:", error);
     }
   }, [resetGame, roomData]);
+
+  const handleToggleAutoComplete = useCallback(async () => {
+    if (!roomData) return;
+    try {
+      await toggleAutoComplete({ roomId: roomData.room._id });
+    } catch (error) {
+      console.error("Failed to toggle auto-complete:", error);
+    }
+  }, [toggleAutoComplete, roomData]);
+
+  const handleCancelAutoReveal = useCallback(async () => {
+    if (!roomData) return;
+    try {
+      await cancelAutoRevealCountdown({ roomId: roomData.room._id });
+    } catch (error) {
+      console.error("Failed to cancel auto-reveal:", error);
+    }
+  }, [cancelAutoRevealCountdown, roomData]);
+
+  const handleExecuteAutoReveal = useCallback(async () => {
+    if (!roomData) return;
+    try {
+      await executeAutoReveal({ roomId: roomData.room._id });
+    } catch (error) {
+      console.error("Failed to execute auto-reveal:", error);
+    }
+  }, [executeAutoReveal, roomData]);
 
   // Track selected cards locally (server doesn't send card value until reveal)
   const [selectedCardValue, setSelectedCardValue] = useState<string | null>(
@@ -135,6 +165,9 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
     onRevealCards: handleRevealCards,
     onResetGame: handleResetGame,
     onCardSelect: handleCardSelect,
+    onToggleAutoComplete: handleToggleAutoComplete,
+    onCancelAutoReveal: handleCancelAutoReveal,
+    onExecuteAutoReveal: handleExecuteAutoReveal,
   });
 
   // Update nodes and edges when layout changes

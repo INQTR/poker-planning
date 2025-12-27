@@ -113,6 +113,7 @@ export async function showRoomCards(
   await ctx.db.patch(roomId, {
     isGameOver: true,
     lastActivityAt: Date.now(),
+    autoRevealCountdownStartedAt: undefined, // Clear countdown when revealing
   });
 
   // Create results node for canvas rooms
@@ -133,6 +134,7 @@ export async function resetRoomGame(
   await ctx.db.patch(roomId, {
     isGameOver: false,
     lastActivityAt: Date.now(),
+    autoRevealCountdownStartedAt: undefined, // Clear countdown when resetting
   });
 
   // Delete all votes for this room in a more efficient way
