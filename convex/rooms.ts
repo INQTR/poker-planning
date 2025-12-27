@@ -1,6 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import * as Rooms from "./model/rooms";
+import { COUNTDOWN_DURATION_MS } from "./constants";
 
 // Create a new room
 export const create = mutation({
@@ -92,7 +93,6 @@ export const executeAutoReveal = mutation({
       return { revealed: false };
     }
 
-    const COUNTDOWN_DURATION_MS = 3000; // 3 seconds
     const elapsed = Date.now() - room.autoRevealCountdownStartedAt;
 
     if (elapsed >= COUNTDOWN_DURATION_MS) {
