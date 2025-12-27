@@ -21,23 +21,26 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
 });
 
+function getStoredUser(): User | null {
+  if (typeof window === "undefined") return null;
+  const storedUser = localStorage.getItem("poker-user");
+  if (!storedUser) return null;
+  try {
+    return JSON.parse(storedUser);
+  } catch (e) {
+    console.error("Failed to parse stored user", e);
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(getStoredUser);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load user from localStorage
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("poker-user");
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (e) {
-          console.error("Failed to parse stored user", e);
-        }
-      }
-      setIsLoading(false);
-    }
+    // Mark loading as complete after initial render - intentional hydration pattern
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {

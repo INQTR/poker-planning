@@ -152,6 +152,7 @@ export async function resetRoomGame(
  * TODO: Implement proper user session tracking
  */
 export async function getUserRooms(
+
   _ctx: QueryCtx,
   _userId: string
 ): Promise<Doc<"rooms">[]> {

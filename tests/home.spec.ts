@@ -187,7 +187,7 @@ test.describe("Home Page - Error Handling", () => {
       
       // Navigation succeeded despite clipboard failure - good!
       await expect(page).toHaveURL(/\/room\/[a-z0-9]+/);
-    } catch (e) {
+    } catch {
       // If navigation fails, verify app is still functional
       await expect(startButton).toBeVisible();
       await expect(startButton).toBeEnabled();

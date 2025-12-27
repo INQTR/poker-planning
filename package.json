@@ -6,8 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "ts:check": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -40,6 +40,7 @@
     "tailwind-merge": "3.4.0"
   },
   "devDependencies": {
+    "@convex-dev/eslint-plugin": "1.1.1",
     "@eslint/eslintrc": "3.3.3",
     "@playwright/test": "1.57.0",
     "@tailwindcss/postcss": "4.1.18",

@@ -19,6 +19,7 @@ import { useClickOutside } from "@/hooks/use-click-outside";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
 
@@ -104,7 +105,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   const handleRemoveUser = async (userId: string) => {
     setRemovingUserId(userId);
     try {
-      await removeUser({ userId: userId as any });
+      await removeUser({ userId: userId as Id<"users"> });
       toast({
         title: "User removed",
         description: "The user has been removed from the room.",

@@ -121,12 +121,11 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
       (v: SanitizedVote) => v.userId === user.id
     );
 
-    // If no card is picked on server (game was reset), clear local selection
+    // Sync local selection state with server state - intentional state sync pattern
     if (!userVote || !userVote.hasVoted) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional sync with props
       setSelectedCardValue(null);
-    }
-    // If game is revealed and we have a card value from server, sync it
-    else if (roomData.room.isGameOver && userVote.cardLabel) {
+    } else if (roomData.room.isGameOver && userVote.cardLabel) {
       setSelectedCardValue(userVote.cardLabel);
     }
   }, [user, roomData]);

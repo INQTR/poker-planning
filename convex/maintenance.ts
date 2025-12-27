@@ -6,6 +6,7 @@ import * as Cleanup from "./model/cleanup";
  * This should be called periodically or manually by administrators
  */
 export const cleanupOrphanedData = internalMutation({
+  args: {},
   handler: async (ctx) => {
     console.log("Starting orphaned data cleanup...");
     const result = await Cleanup.cleanupOrphanedData(ctx);

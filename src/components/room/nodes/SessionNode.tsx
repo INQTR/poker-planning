@@ -48,18 +48,20 @@ export const SessionNode = memo(
     }, [resetCooldown]);
 
     // Auto-reveal countdown state
-    const COUNTDOWN_DURATION_SECONDS = COUNTDOWN_DURATION_MS / 1000;
+    const countdownDurationSeconds = COUNTDOWN_DURATION_MS / 1000;
     const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
 
     useEffect(() => {
       if (!autoRevealCountdownStartedAt) {
+        // Reset countdown when no longer active - this is intentional state sync with props
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCountdownSeconds(null);
         return;
       }
 
       const updateCountdown = () => {
         const elapsed = (Date.now() - autoRevealCountdownStartedAt) / 1000;
-        const remaining = Math.max(0, COUNTDOWN_DURATION_SECONDS - elapsed);
+        const remaining = Math.max(0, countdownDurationSeconds - elapsed);
 
         if (remaining <= 0) {
           setCountdownSeconds(0);
@@ -76,7 +78,7 @@ export const SessionNode = memo(
       // Then update every 100ms for smooth countdown
       const interval = setInterval(updateCountdown, 100);
       return () => clearInterval(interval);
-    }, [autoRevealCountdownStartedAt, onExecuteAutoReveal]);
+    }, [autoRevealCountdownStartedAt, countdownDurationSeconds, onExecuteAutoReveal]);
 
     const isCountdownActive = countdownSeconds !== null && countdownSeconds > 0;
 

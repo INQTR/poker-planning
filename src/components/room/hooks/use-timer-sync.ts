@@ -40,13 +40,14 @@ export function useTimerSync({
 
   // Local state for smooth timer display
   const [localSeconds, setLocalSeconds] = useState(0);
-  const [lastSyncTime, setLastSyncTime] = useState(Date.now());
+  const [lastSyncTime, setLastSyncTime] = useState(() => Date.now());
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Sync local state with server state
+  // Sync local state with server state - intentional state sync pattern
   useEffect(() => {
     if (serverTimerState) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalSeconds(serverTimerState.currentSeconds);
       setLastSyncTime(Date.now());
       setError(null);

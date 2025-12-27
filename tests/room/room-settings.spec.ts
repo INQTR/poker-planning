@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { RoomPage } from "../pages/room-page";
 import { SettingsPanelPage } from "../pages/settings-panel-page";
 import { JoinRoomPage } from "../pages/join-room-page";
 import {
@@ -7,11 +6,9 @@ import {
   createMultipleUsers,
   cleanupUsers,
   joinExistingRoom,
-  navigateToRoom,
   generateTestRoomName,
-  RoomUser,
 } from "../utils/room-helpers";
-import { mockClipboardAPI, safeClick } from "../utils/test-helpers";
+import { mockClipboardAPI } from "../utils/test-helpers";
 
 test.describe("Room Settings Panel", () => {
   test.describe("Panel interactions", () => {
