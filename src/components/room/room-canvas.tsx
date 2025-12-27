@@ -48,9 +48,7 @@ const nodeTypes: NodeTypes = {
   timer: TimerNode,
 } as const;
 
-function RoomCanvasInner({
-  roomData,
-}: RoomCanvasProps): ReactElement {
+function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
   const { user } = useAuth();
   const [nodes, setNodes, onNodesChange] = useNodesState<CustomNodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -82,15 +80,17 @@ function RoomCanvasInner({
 
   // Track selected cards locally (server doesn't send card value until reveal)
   const [selectedCardValue, setSelectedCardValue] = useState<string | null>(
-    null,
+    null
   );
 
   // Reset selected card when game is reset
   useEffect(() => {
     if (!roomData || !user) return;
-    
-    const userVote = roomData.votes.find((v: SanitizedVote) => v.userId === user.id);
-    
+
+    const userVote = roomData.votes.find(
+      (v: SanitizedVote) => v.userId === user.id
+    );
+
     // If no card is picked on server (game was reset), clear local selection
     if (!userVote || !userVote.hasVoted) {
       setSelectedCardValue(null);
@@ -102,23 +102,26 @@ function RoomCanvasInner({
   }, [user, roomData]);
 
   // Handle card selection
-  const handleCardSelect = useCallback(async (cardValue: string) => {
-    if (!user || !roomData) return;
-    
-    setSelectedCardValue(cardValue);
-    
-    try {
-      await pickCard({
-        roomId: roomData.room._id,
-        userId: user.id,
-        cardLabel: cardValue,
-        cardValue: parseInt(cardValue) || 0,
-      });
-    } catch (error) {
-      console.error("Failed to pick card:", error);
-      setSelectedCardValue(null);
-    }
-  }, [pickCard, user, roomData]);
+  const handleCardSelect = useCallback(
+    async (cardValue: string) => {
+      if (!user || !roomData) return;
+
+      setSelectedCardValue(cardValue);
+
+      try {
+        await pickCard({
+          roomId: roomData.room._id,
+          userId: user.id,
+          cardLabel: cardValue,
+          cardValue: parseInt(cardValue) || 0,
+        });
+      } catch (error) {
+        console.error("Failed to pick card:", error);
+        setSelectedCardValue(null);
+      }
+    },
+    [pickCard, user, roomData]
+  );
 
   // Get room ID
   const roomId = roomData?.room._id as Id<"rooms">;
@@ -145,18 +148,19 @@ function RoomCanvasInner({
 
   // Debounced position update to prevent database overload
   const debouncedPositionUpdate = useMemo(
-    () => debounce((nodeId: string, position: { x: number; y: number }) => {
-      if (!user || !roomId) return;
-      
-      updateNodePosition({
-        roomId,
-        nodeId,
-        position,
-        userId: user.id,
-      }).catch((error) => {
-        console.error("Failed to update node position:", error);
-      });
-    }, 100),
+    () =>
+      debounce((nodeId: string, position: { x: number; y: number }) => {
+        if (!user || !roomId) return;
+
+        updateNodePosition({
+          roomId,
+          nodeId,
+          position,
+          userId: user.id,
+        }).catch((error) => {
+          console.error("Failed to update node position:", error);
+        });
+      }, 100),
     [roomId, user, updateNodePosition]
   );
 
@@ -168,17 +172,20 @@ function RoomCanvasInner({
   }, [debouncedPositionUpdate]);
 
   // Handle node position changes
-  const handleNodesChange = useCallback((changes: NodeChange<CustomNodeType>[]) => {
-    // Call the original handler to update local state
-    onNodesChange(changes);
-    
-    // Send position updates to database
-    changes.forEach((change) => {
-      if (change.type === 'position' && change.position && !change.dragging) {
-        debouncedPositionUpdate(change.id, change.position);
-      }
-    });
-  }, [onNodesChange, debouncedPositionUpdate]);
+  const handleNodesChange = useCallback(
+    (changes: NodeChange<CustomNodeType>[]) => {
+      // Call the original handler to update local state
+      onNodesChange(changes);
+
+      // Send position updates to database
+      changes.forEach((change) => {
+        if (change.type === "position" && change.position && !change.dragging) {
+          debouncedPositionUpdate(change.id, change.position);
+        }
+      });
+    },
+    [onNodesChange, debouncedPositionUpdate]
+  );
 
   // Handle connection between nodes - prevent manual connections
   const onConnect = useCallback(() => {
@@ -189,7 +196,7 @@ function RoomCanvasInner({
   // Fit view when users change with debounce
   useEffect(() => {
     if (!roomData?.users) return;
-    
+
     const timeoutId = setTimeout(() => {
       fitView({
         padding: 0.1,
@@ -203,7 +210,11 @@ function RoomCanvasInner({
   }, [roomData?.users, fitView]);
 
   if (!roomData || !user) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -241,7 +252,7 @@ function RoomCanvasInner({
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          className="[&>*]:stroke-gray-300 dark:[&>*]:stroke-gray-700"
+          className="*:stroke-gray-300 dark:*:stroke-gray-700"
         />
       </ReactFlow>
     </div>

@@ -12,7 +12,7 @@ export const TimerNode = memo(
   ({ data }: NodeProps<TimerNodeType>): ReactElement => {
     // Extract required data for useTimerSync hook
     const { roomId, userId, nodeId } = data;
-    
+
     // Use the synchronized timer hook instead of local state
     const {
       displayTime,
@@ -56,8 +56,11 @@ export const TimerNode = memo(
           />
           <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
             <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" aria-hidden="true" />
-              <span className="text-lg font-mono font-medium text-gray-400 min-w-[4rem]">
+              <div
+                className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"
+                aria-hidden="true"
+              />
+              <span className="text-lg font-mono font-medium text-gray-400 min-w-16">
                 --:--
               </span>
               <div className="flex items-center gap-1">
@@ -93,11 +96,11 @@ export const TimerNode = memo(
             <div
               className={cn(
                 "w-2 h-2 rounded-full",
-                isRunning ? "bg-red-500 animate-pulse" : "bg-gray-400",
+                isRunning ? "bg-red-500 animate-pulse" : "bg-gray-400"
               )}
               aria-hidden="true"
             />
-            <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300 min-w-[4rem]">
+            <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300 min-w-16">
               {displayTime}
             </span>
             <div className="flex items-center gap-1">
@@ -124,7 +127,7 @@ export const TimerNode = memo(
                     "h-4 w-4",
                     currentSeconds === 0 && !isRunning
                       ? "text-gray-400 dark:text-gray-600"
-                      : "text-gray-600 dark:text-gray-400",
+                      : "text-gray-600 dark:text-gray-400"
                   )}
                 />
               </button>
@@ -133,7 +136,7 @@ export const TimerNode = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 TimerNode.displayName = "TimerNode";
