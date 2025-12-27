@@ -50,6 +50,18 @@ export async function pickCard(
       cardIcon: args.cardIcon,
     });
   }
+
+  // Check for auto-complete voting - start countdown instead of immediate reveal
+  const room = await ctx.db.get(args.roomId);
+  if (room && room.autoCompleteVoting && !room.isGameOver && !room.autoRevealCountdownStartedAt) {
+    const allVotesIn = await areAllVotesIn(ctx, args.roomId);
+    if (allVotesIn) {
+      // Start the countdown instead of revealing immediately
+      await ctx.db.patch(args.roomId, {
+        autoRevealCountdownStartedAt: Date.now(),
+      });
+    }
+  }
 }
 
 /**

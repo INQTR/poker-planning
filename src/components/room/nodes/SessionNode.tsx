@@ -1,7 +1,7 @@
 "use client";
 
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { Play, RotateCcw, Users, Hash } from "lucide-react";
+import { Play, RotateCcw, Users, Hash, Zap, X } from "lucide-react";
 import {
   ReactElement,
   memo,
@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { cn } from "@/lib/utils";
+import { COUNTDOWN_DURATION_MS } from "@/convex/constants";
 
 import type { SessionNodeType } from "../types";
 
@@ -23,8 +24,13 @@ export const SessionNode = memo(
       voteCount,
       isVotingComplete,
       hasVotes,
+      autoCompleteVoting,
+      autoRevealCountdownStartedAt,
       onRevealCards,
       onResetGame,
+      onToggleAutoComplete,
+      onCancelAutoReveal,
+      onExecuteAutoReveal,
     } = data;
 
     const isActive = !isVotingComplete;
@@ -40,6 +46,39 @@ export const SessionNode = memo(
         return () => clearTimeout(timer);
       }
     }, [resetCooldown]);
+
+    // Auto-reveal countdown state
+    const COUNTDOWN_DURATION_SECONDS = COUNTDOWN_DURATION_MS / 1000;
+    const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
+
+    useEffect(() => {
+      if (!autoRevealCountdownStartedAt) {
+        setCountdownSeconds(null);
+        return;
+      }
+
+      const updateCountdown = () => {
+        const elapsed = (Date.now() - autoRevealCountdownStartedAt) / 1000;
+        const remaining = Math.max(0, COUNTDOWN_DURATION_SECONDS - elapsed);
+
+        if (remaining <= 0) {
+          setCountdownSeconds(0);
+          // Trigger the reveal
+          onExecuteAutoReveal?.();
+        } else {
+          setCountdownSeconds(Math.ceil(remaining));
+        }
+      };
+
+      // Update immediately
+      updateCountdown();
+
+      // Then update every 100ms for smooth countdown
+      const interval = setInterval(updateCountdown, 100);
+      return () => clearInterval(interval);
+    }, [autoRevealCountdownStartedAt, onExecuteAutoReveal]);
+
+    const isCountdownActive = countdownSeconds !== null && countdownSeconds > 0;
 
     const handleResetClick = useCallback(() => {
       if (resetCooldown === 0 && onResetGame) {
@@ -125,6 +164,31 @@ export const SessionNode = memo(
             </div>
           </div>
 
+          {/* Auto-reveal toggle */}
+          <button
+            onClick={onToggleAutoComplete}
+            className={cn(
+              "flex items-center gap-2 w-full px-3 py-1.5 mb-3 rounded-md text-xs font-medium transition-colors",
+              autoCompleteVoting
+                ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/50"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700",
+            )}
+            aria-label={
+              autoCompleteVoting
+                ? "Disable auto-reveal when all vote"
+                : "Enable auto-reveal when all vote"
+            }
+            aria-pressed={autoCompleteVoting}
+          >
+            <Zap
+              className={cn(
+                "h-3.5 w-3.5",
+                autoCompleteVoting && "text-amber-500 dark:text-amber-400",
+              )}
+            />
+            <span>Auto-reveal: {autoCompleteVoting ? "On" : "Off"}</span>
+          </button>
+
           {/* Status */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
             {isActive ? (
@@ -154,7 +218,26 @@ export const SessionNode = memo(
                   </span>
                 </div>
 
-                {hasVotes && (
+                {isCountdownActive ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-center gap-2 py-2 bg-amber-100 dark:bg-amber-900/30 rounded-md">
+                      <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+                        {countdownSeconds}
+                      </div>
+                      <span className="text-sm text-amber-700 dark:text-amber-300">
+                        Revealing...
+                      </span>
+                    </div>
+                    <button
+                      onClick={onCancelAutoReveal}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition-colors"
+                      aria-label="Cancel auto-reveal"
+                    >
+                      <X className="h-4 w-4" />
+                      Cancel
+                    </button>
+                  </div>
+                ) : hasVotes ? (
                   <button
                     onClick={onRevealCards}
                     className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-blue-500 hover:bg-blue-600 text-white transition-colors"
@@ -163,7 +246,7 @@ export const SessionNode = memo(
                     <Play className="h-4 w-4" />
                     Reveal Cards
                   </button>
-                )}
+                ) : null}
               </div>
             ) : (
               <div className="space-y-3">

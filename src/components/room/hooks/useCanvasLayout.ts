@@ -32,6 +32,9 @@ interface UseCanvasLayoutProps {
   onRevealCards?: () => void;
   onResetGame?: () => void;
   onCardSelect?: (cardValue: string) => void;
+  onToggleAutoComplete?: () => void;
+  onCancelAutoReveal?: () => void;
+  onExecuteAutoReveal?: () => void;
 }
 
 interface UseCanvasLayoutReturn {
@@ -46,6 +49,9 @@ export function useCanvasLayout({
   onRevealCards,
   onResetGame,
   onCardSelect,
+  onToggleAutoComplete,
+  onCancelAutoReveal,
+  onExecuteAutoReveal,
 }: UseCanvasLayoutProps): UseCanvasLayoutReturn {
   const nodes = useMemo(() => {
     if (!roomData) return [];
@@ -112,8 +118,13 @@ export function useCanvasLayout({
         voteCount: votes.filter((v: SanitizedVote) => v.hasVoted).length,
         isVotingComplete: room.isGameOver,
         hasVotes: votes.some((v: SanitizedVote) => v.hasVoted),
+        autoCompleteVoting: room.autoCompleteVoting,
+        autoRevealCountdownStartedAt: room.autoRevealCountdownStartedAt ?? null,
         onRevealCards,
         onResetGame,
+        onToggleAutoComplete,
+        onCancelAutoReveal,
+        onExecuteAutoReveal,
       },
       draggable: true,
     };
@@ -175,6 +186,9 @@ export function useCanvasLayout({
     onRevealCards,
     onResetGame,
     onCardSelect,
+    onToggleAutoComplete,
+    onCancelAutoReveal,
+    onExecuteAutoReveal,
     currentUserId,
     selectedCardValue,
   ]);
