@@ -1,4 +1,11 @@
-# PokerPlanning.org
+# PokerPlanning.org (v1 - Deprecated)
+
+> **This branch is deprecated.** This is the legacy Rust/React implementation.
+> The project has been rewritten with Next.js + Convex.
+>
+> **See active development on [`main`](https://github.com/INQTR/poker-planning/tree/main).**
+
+---
 
 [![Build & Tests](https://github.com/INQTR/poker-planning/actions/workflows/ci.yml/badge.svg)](https://github.com/INQTR/poker-planning/actions/workflows/ci.yml)
 
