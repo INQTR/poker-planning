@@ -13,6 +13,9 @@ export class RoomPage {
   readonly timerButton: Locator;
   readonly resultsSection: Locator;
   readonly canvasContainer: Locator;
+  readonly roomNameInHeader: Locator;
+  readonly userCountInHeader: Locator;
+  readonly autoRevealCountdown: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -27,10 +30,19 @@ export class RoomPage {
     this.roomTitle = page.locator('.font-semibold').filter({ hasText: "Planning Session" });
     this.copyUrlButton = page.getByRole("button", { name: "Copy room URL" });
 
+    // Room name in navigation header (left nav bar)
+    this.roomNameInHeader = page.locator('[data-testid="canvas-navigation"] .font-semibold');
+
+    // User count in navigation header
+    this.userCountInHeader = page.locator('[data-testid="canvas-navigation"]').locator('text=/\\d+ users?/');
+
+    // Auto-reveal countdown display in session node
+    this.autoRevealCountdown = page.locator('.react-flow__node-session').locator('text=/Revealing.../');
+
     // Player elements - these are React Flow nodes
     this.playerList = page.locator(".react-flow__node-player");
 
-    // Timer and results  
+    // Timer and results
     this.timerButton = page.locator(".react-flow__node-timer");
     this.resultsSection = page.locator(".react-flow__node-results");
 
@@ -157,5 +169,32 @@ export class RoomPage {
     }
 
     return voteResults;
+  }
+
+  async getRoomNameFromHeader(): Promise<string> {
+    await expect(this.roomNameInHeader).toBeVisible({ timeout: 5000 });
+    return (await this.roomNameInHeader.textContent()) || "";
+  }
+
+  async getParticipantCount(): Promise<number> {
+    const text = await this.userCountInHeader.textContent();
+    const match = text?.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  }
+
+  async expectRoomNameInHeader(name: string): Promise<void> {
+    await expect(this.roomNameInHeader).toContainText(name, { timeout: 5000 });
+  }
+
+  async expectParticipantCount(count: number): Promise<void> {
+    await expect(this.userCountInHeader).toContainText(`${count}`, { timeout: 5000 });
+  }
+
+  async expectAutoRevealCountdown(): Promise<void> {
+    await expect(this.autoRevealCountdown).toBeVisible({ timeout: 5000 });
+  }
+
+  async expectNoAutoRevealCountdown(): Promise<void> {
+    await expect(this.autoRevealCountdown).not.toBeVisible({ timeout: 3000 });
   }
 }
