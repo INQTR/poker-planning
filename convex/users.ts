@@ -30,3 +30,11 @@ export const leave = mutation({
     await Users.leaveRoom(ctx, args.userId);
   },
 });
+
+// Remove a user from a room (admin action - can remove any user)
+export const remove = mutation({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    await Users.leaveRoom(ctx, args.userId);
+  },
+});

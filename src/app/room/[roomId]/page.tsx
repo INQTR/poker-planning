@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -11,11 +12,19 @@ import { Id } from "@/convex/_generated/dataModel";
 export default function CanvasRoomPage() {
   const params = useParams();
   const roomId = params.roomId as Id<"rooms">;
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const roomData = useQuery(api.rooms.get, { roomId });
 
-  // Check if user is in this room
-  const isInRoom = user?.roomId === roomId;
+  // Check if user exists in room's user list (not just localStorage)
+  const userExistsInRoom = roomData?.users.some((u) => u._id === user?.id);
+  const isInRoom = user?.roomId === roomId && userExistsInRoom;
+
+  // Clear stale session if localStorage says user is in room but they're not in the database
+  useEffect(() => {
+    if (user?.roomId === roomId && roomData && !roomData.users.some((u) => u._id === user.id)) {
+      setUser(null);
+    }
+  }, [user, roomId, roomData, setUser]);
 
   if (!roomData) {
     return (
