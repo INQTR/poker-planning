@@ -4,105 +4,98 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-AgileKit is an open-source online planning poker tool for Scrum teams. The project is a modern Next.js/Convex stack with a whiteboard-style interface.
+AgileKit is an open-source online planning poker tool for Scrum teams. The project is a modern Next.js/Convex stack with a whiteboard-style interface using React Flow.
 
 ## Development Commands
 
 ```bash
-# Install dependencies
-npm install
-
-# Development
+# Development (run both in separate terminals)
 npm run dev              # Start Next.js dev server (http://localhost:3000)
-npx convex dev           # Start Convex backend (separate terminal)
-
-# Build & Deploy
-npm run build            # Production build
-npx convex deploy --prod # Deploy Convex functions
+npx convex dev           # Start Convex backend
 
 # Code Quality
-npm run lint            # Run ESLint
+npm run lint             # Run ESLint
 npm run lint:fix         # Fix linting errors
-npm run ts:check        # TypeScript type checking
+npm run ts:check         # TypeScript type checking
 
 # Testing
-npm run test:e2e            # Run Playwright tests
-npm run test:e2e:ui         # Run with Playwright UI
-npm run test:e2e:headless   # Run Playwright tests in headless mode
+npm run test:e2e            # Run Playwright tests (starts servers automatically)
+npm run test:e2e:ui         # Run with Playwright UI for debugging
+npm run test:e2e:headless   # Run in headless mode (CI)
+
+# Run a single test file
+npx playwright test tests/room/room-creation.spec.ts
+
+# Run tests matching a pattern
+npx playwright test -g "should create a new room"
 ```
 
-## Architecture Overview
+## Architecture
 
 ### Tech Stack
 
-- **Frontend**: Next.js 15 with App Router, React 19, TypeScript
-- **Backend**: Convex (serverless TypeScript functions)
-- **Styling**: Tailwind CSS 4, shadcn/ui components
-- **Canvas**: @xyflow/react for room canvas functionality
-- **State Management**: Convex reactive queries + React Context for auth
-- **Real-time**: Built-in Convex reactivity
+- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
+- **Backend**: Convex (serverless TypeScript functions with real-time reactivity)
+- **Styling**: shadcn/ui, Tailwind CSS 4
+- **Canvas**: @xyflow/react for the whiteboard interface
 
-### Project Structure
+### Convex Backend Pattern
+
+The backend uses a two-layer architecture:
 
 ```
-/
-├── src/
-│   ├── app/                 # Next.js App Router pages
-│   ├── components/          # React components
-│   │   ├── room/            # Room-specific components
-│   │   │   ├── nodes/       # Canvas node types
-│   │   │   └── hooks/       # Custom hooks
-│   │   └── ui/              # shadcn/ui components
-│   └── hooks/               # Global hooks
-├── convex/                  # Backend functions
-│   ├── model/               # Domain logic
-│   └── *.ts                 # API endpoints
-└── public/                  # Static assets
+convex/
+├── rooms.ts           # API layer - thin handlers with validation
+├── model/
+│   └── rooms.ts       # Domain logic - business rules and data access
 ```
 
-### Key Patterns
+**API layer** (`convex/*.ts`): Defines mutations/queries with argument validation, delegates to model layer.
 
-1. **Convex Functions**: All backend logic in `/convex/*.ts` files
-2. **Type Safety**: Convex generates types automatically, import from `convex/_generated/api`
-3. **Component Organization**: Features in dedicated directories with co-located hooks
-4. **Canvas Nodes**: Each node type is a separate component in `src/components/room/nodes/`
+**Model layer** (`convex/model/*.ts`): Contains business logic, database operations, and helper functions.
 
-## Common Development Tasks
-
-### Working with Convex
-
-1. **Adding a New Function**: Create in `/convex/` directory
-2. **Using in Frontend**: Import with `useQuery`, `useMutation`, or `useAction` from `convex/react`
-3. **Real-time Updates**: Convex queries are reactive by default
-
-Example:
+Example usage in frontend:
 
 ```typescript
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-const room = useQuery(api.rooms.getRoom, { roomId });
+const room = useQuery(api.rooms.get, { roomId });
+const createRoom = useMutation(api.rooms.create);
 ```
 
-### Adding UI Components
+### Canvas Node System
 
-When you need a shadcn/ui component:
+The room canvas (`src/components/room/`) uses React Flow with custom node types:
 
-```bash
-npx shadcn@latest add [component-name]
+- **Node types** defined in `src/components/room/nodes/` (PlayerNode, SessionNode, TimerNode, VotingCardNode, ResultsNode)
+- **Type definitions** in `src/components/room/types.ts` - defines `CustomNodeType` union
+- **Node state** synced via Convex (`canvasNodes` table)
+- **Layout logic** in `useCanvasLayout.ts`, state management in `useCanvasNodes.ts`
+
+### Database Schema
+
+Schema defined in `convex/schema.ts`. Key tables:
+
+- `rooms` - Room configuration and state
+- `users` - Participants in rooms
+- `votes` - User votes (sanitized based on reveal state)
+- `canvasNodes` - Persisted node positions and data
+
+### E2E Testing Pattern
+
+Tests use Page Object Model pattern:
+
 ```
-
-**Never manually create shadcn/ui components** - always use the CLI.
-
-### Canvas Room Development
-
-The canvas room uses React Flow for the whiteboard interface:
-
-- Node types defined in `src/components/room/nodes/`
-- Layout logic in `src/components/room/hooks/useCanvasLayout.ts`
-- Canvas state managed by `useCanvasNodes` hook
+tests/
+├── pages/              # Page objects (HomePage, RoomPage, JoinRoomPage)
+├── utils/              # Helper functions (room-helpers.ts, test-helpers.ts)
+├── fixtures/           # Test fixtures
+└── *.spec.ts           # Test files
+```
 
 ## Important Notes
 
-- Database schema is in `/convex/schema.ts`
-- Convex dev server must be running alongside Next.js for full functionality
+- **shadcn/ui components**: Always use `npx shadcn@latest add [component-name]` - never create manually
+- **Convex dev server** must be running alongside Next.js for full functionality
+- Both servers start automatically when running Playwright tests
