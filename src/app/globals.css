@@ -123,6 +123,12 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Override 1Password auto-fill background color in dark mode */
+  .dark input[data-com-onepassword-filled] {
+    color: var(--foreground) !important;
+    background-clip: text !important;
+  }
 }
 
 /* Custom animations for voting cards */

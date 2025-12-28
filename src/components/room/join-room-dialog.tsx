@@ -67,6 +67,7 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
             <Input
               id="name"
               placeholder="Enter your name"
+              autoComplete="name"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               onKeyDown={(e) => {
@@ -87,7 +88,8 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
           <Button
             onClick={handleJoin}
             disabled={!userName.trim() || isJoining}
-            className="w-full"
+            className="w-full h-12 text-md"
+            size="lg"
           >
             Join Room
           </Button>
