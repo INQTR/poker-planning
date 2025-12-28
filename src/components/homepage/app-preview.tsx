@@ -24,13 +24,13 @@ const features = [
 
 export function AppPreview() {
   return (
-    <div className="bg-white dark:bg-gray-900 py-24">
+    <div className="bg-white dark:bg-black py-24">
       <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="relative isolate overflow-hidden bg-gray-900 dark:bg-black px-6 py-20 sm:rounded-3xl sm:px-10 sm:py-24 lg:py-20 xl:px-24">
+        <div className="relative isolate overflow-hidden bg-gray-900 dark:bg-zinc-950 px-6 py-20 sm:rounded-3xl sm:px-10 sm:py-24 lg:py-20 xl:px-24 ring-1 ring-white/10">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-center lg:gap-y-0">
             <div className="lg:row-start-2 lg:max-w-md">
               <h2 className="text-3xl font-semibold tracking-tight text-balance text-white sm:text-4xl">
-                See Planning Poker in Action
+                See planning poker in action
               </h2>
               <p className="mt-6 text-lg leading-8 text-gray-300">
                 Experience the simplicity and power of our collaborative

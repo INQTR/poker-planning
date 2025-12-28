@@ -58,7 +58,7 @@ export const Footer = () => {
   return (
     <footer
       aria-labelledby="footer-heading"
-      className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
+      className="bg-gray-50 dark:bg-black border-t border-gray-200 dark:border-zinc-900"
     >
       <h2 id="footer-heading" className="sr-only">
         Footer
