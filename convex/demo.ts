@@ -1,6 +1,12 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import * as Demo from "./model/demo";
+import * as Rooms from "./model/rooms";
+import {
+  COUNTDOWN_DURATION_MS,
+  DEMO_VOTE_PROBABILITY,
+  DEMO_RESULTS_DISPLAY_MS,
+} from "./constants";
 
 // v is imported for consistency with other API layer files
 void v;
@@ -47,6 +53,7 @@ export const resetDemo = mutation({
 
 /**
  * Internal mutation called by cron to run demo cycle
+ * State machine: voting → countdown → reveal → display results → reset
  */
 export const runDemoCycle = internalMutation({
   args: {},
@@ -58,7 +65,27 @@ export const runDemoCycle = internalMutation({
     const room = await ctx.db.get(demoRoomId);
     if (!room) return;
 
-    // Get bots and votes
+    // State 1: Results are displayed (game over)
+    if (room.isGameOver) {
+      const timeSinceReveal = Date.now() - room.lastActivityAt;
+      if (timeSinceReveal > DEMO_RESULTS_DISPLAY_MS) {
+        await Demo.resetDemoRoom(ctx);
+      }
+      return;
+    }
+
+    // State 2: Countdown is active - check if expired
+    if (room.autoRevealCountdownStartedAt) {
+      const elapsed = Date.now() - room.autoRevealCountdownStartedAt;
+      if (elapsed >= COUNTDOWN_DURATION_MS) {
+        // Countdown expired, reveal cards
+        await Rooms.showRoomCards(ctx, demoRoomId);
+      }
+      // Wait during countdown (don't vote)
+      return;
+    }
+
+    // State 3: Voting phase
     const [bots, votes] = await Promise.all([
       ctx.db
         .query("users")
@@ -71,44 +98,44 @@ export const runDemoCycle = internalMutation({
         .collect(),
     ]);
 
-    // State machine logic
-    if (room.isGameOver) {
-      // Revealed state: wait 5 seconds then reset
-      const timeSinceReveal = Date.now() - room.lastActivityAt;
-      if (timeSinceReveal > 5000) {
-        await Demo.resetDemoRoom(ctx);
-      }
-      return;
-    }
-
-    // Voting phase
     const votedUserIds = new Set(votes.map((v) => v.userId.toString()));
     const botsWhoHaventVoted = bots.filter(
       (bot) => !votedUserIds.has(bot._id.toString())
     );
 
     if (botsWhoHaventVoted.length > 0) {
-      // Make one bot vote per cycle (staggered voting)
-      const bot = botsWhoHaventVoted[0];
-      const cardLabel = Demo.generateBotVote(bot.name);
-      const cardValue = parseInt(cardLabel) || 0;
+      // Random chance to vote this cycle (more natural pacing)
+      if (Math.random() > DEMO_VOTE_PROBABILITY) {
+        return;
+      }
 
-      // Insert vote
-      await ctx.db.insert("votes", {
-        roomId: demoRoomId,
-        userId: bot._id,
-        cardLabel,
-        cardValue,
-      });
+      // Shuffle bots and pick 1-3 to vote this cycle
+      const shuffled = [...botsWhoHaventVoted].sort(() => Math.random() - 0.5);
+      const maxVoters = Math.min(shuffled.length, Math.floor(Math.random() * 3) + 1);
+      const botsToVote = shuffled.slice(0, maxVoters);
 
-      // Update room activity
+      // Make selected bots vote
+      await Promise.all(
+        botsToVote.map(async (bot) => {
+          const cardLabel = Demo.generateBotVote(bot.name);
+          const cardValue = parseInt(cardLabel) || 0;
+
+          await ctx.db.insert("votes", {
+            roomId: demoRoomId,
+            userId: bot._id,
+            cardLabel,
+            cardValue,
+          });
+        })
+      );
+
       await ctx.db.patch(demoRoomId, {
         lastActivityAt: Date.now(),
       });
 
-      // Check if all bots have voted now
-      if (botsWhoHaventVoted.length === 1) {
-        // This was the last bot, start countdown
+      // Check if all bots have now voted
+      if (botsWhoHaventVoted.length === botsToVote.length) {
+        // Start countdown
         await ctx.db.patch(demoRoomId, {
           autoRevealCountdownStartedAt: Date.now(),
         });
