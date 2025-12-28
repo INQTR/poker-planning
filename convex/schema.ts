@@ -9,6 +9,7 @@ export default defineSchema({
     autoRevealCountdownStartedAt: v.optional(v.number()), // Timestamp when countdown began
     roomType: v.optional(v.literal("canvas")), // Optional for backward compatibility
     isGameOver: v.boolean(),
+    isDemoRoom: v.optional(v.boolean()), // Mark the global demo room
     createdAt: v.number(),
     lastActivityAt: v.number(),
   })
@@ -19,6 +20,7 @@ export default defineSchema({
     roomId: v.id("rooms"),
     name: v.string(),
     isSpectator: v.boolean(),
+    isBot: v.optional(v.boolean()), // Mark bot users for demo room
     joinedAt: v.number(),
   })
     .index("by_room", ["roomId"])

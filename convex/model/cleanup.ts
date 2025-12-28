@@ -20,10 +20,11 @@ export async function removeInactiveRooms(
 ): Promise<CleanupResult> {
   const cutoffTime = Date.now() - (inactiveDays * 24 * 60 * 60 * 1000);
 
-  // Find inactive rooms
+  // Find inactive rooms (excluding demo rooms which should never be deleted)
   const inactiveRooms = await ctx.db
     .query("rooms")
     .withIndex("by_activity", (q) => q.lt("lastActivityAt", cutoffTime))
+    .filter((q) => q.neq(q.field("isDemoRoom"), true))
     .collect();
 
   console.log(`Found ${inactiveRooms.length} inactive rooms to clean up`);

@@ -118,96 +118,97 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
-          <div className="mx-auto max-w-4xl text-center">
-            <h1 className="text-5xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
-              Estimate stories with
-              <span className="relative">
-                <span className="relative bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                  {" "}
-                  AgileKit
+        <div className="py-16 sm:py-20 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center">
+            {/* Left side: Content - 50% */}
+            <div className="text-center lg:text-left px-6 lg:pl-16 xl:pl-36 lg:pr-8">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
+                Estimate stories with
+                <span className="relative">
+                  <span className="relative bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                    {" "}
+                    AgileKit
+                  </span>
+                  <svg
+                    className="absolute -bottom-1.5 left-0 w-full"
+                    viewBox="0 0 300 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2 8.5C2 8.5 101 2 149.5 2C198 2 298 8.5 298 8.5"
+                      stroke="url(#hero-gradient)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="hero-gradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="0%"
+                      >
+                        <stop offset="0%" stopColor="#7c3aed" />
+                        <stop offset="100%" stopColor="#a78bfa" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
                 </span>
-                <svg
-                  className="absolute -bottom-2 left-0 w-full"
-                  viewBox="0 0 300 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+              </h1>
+
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 lg:max-w-xl">
+                Join thousands of Agile teams using our intuitive platform for
+                collaborative story point estimation. No sign-up, no fees, just
+                pure efficiency.
+              </p>
+
+              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+                <button
+                  onClick={handleCreateRoom}
+                  disabled={isCreating}
+                  data-testid="hero-start-button"
+                  className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <path
-                    d="M2 8.5C2 8.5 101 2 149.5 2C198 2 298 8.5 298 8.5"
-                    stroke="url(#hero-gradient)"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                  />
-                  <defs>
-                    <linearGradient
-                      id="hero-gradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#7c3aed" />
-                      <stop offset="100%" stopColor="#a78bfa" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </span>
-            </h1>
+                  <span className="relative z-10 flex items-center gap-2">
+                    Start New Game
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                  {/* Animated glow effect */}
+                  <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
+                </button>
 
-            <p className="mt-8 text-xl leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Join thousands of Agile teams using our intuitive platform for
-              collaborative story point estimation. No sign-up, no fees, just
-              pure efficiency.
-            </p>
-
-            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={handleCreateRoom}
-                disabled={isCreating}
-                data-testid="hero-start-button"
-                className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  Start New Game
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </span>
-                {/* Animated glow effect */}
-                <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
-              </button>
-
-              <a
-                href="https://github.com/INQTR/poker-planning"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="hero-github-link"
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-zinc-950 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:hover:bg-zinc-900 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-              >
-                <GithubIcon className="h-5 w-5" />
-                View on GitHub
-              </a>
+                <a
+                  href="https://github.com/INQTR/poker-planning"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="hero-github-link"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-zinc-950 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:hover:bg-zinc-900 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+                >
+                  <GithubIcon className="h-5 w-5" />
+                  View on GitHub
+                </a>
+              </div>
             </div>
 
-            {/* Trust indicators with animation */}
-            <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-8 text-sm text-gray-500 dark:text-gray-400">
-              <div className="flex items-center gap-2" data-testid="trust-free">
-                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                <span>100% Free Forever</span>
+            {/* Right side: Live Demo - 50%, extends to screen edge */}
+            <div className="relative px-6 lg:pl-0 lg:pr-0 lg:-mr-6 xl:-mr-8">
+              <div className="relative rounded-2xl lg:rounded-l-2xl lg:rounded-r-none overflow-hidden shadow-2xl">
+                {/* Demo iframe */}
+                <iframe
+                  src="/demo"
+                  className="w-full h-[500px] lg:h-[700px] border-0 bg-white dark:bg-black"
+                  title="Live Planning Poker Demo"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+                {/* Live indicator */}
+                <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium">
+                  <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                  Live Demo
+                </div>
               </div>
-              <div
-                className="flex items-center gap-2"
-                data-testid="trust-no-account"
-              >
-                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                <span>No Account Required</span>
-              </div>
-              <div
-                className="flex items-center gap-2"
-                data-testid="trust-realtime"
-              >
-                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
-                <span>Real-time Collaboration</span>
-              </div>
+              {/* Subtle glow effect */}
+              <div className="absolute -inset-4 right-0 -z-10 bg-linear-to-tr from-primary/15 to-purple-600/15 rounded-3xl lg:rounded-r-none blur-2xl" />
             </div>
           </div>
         </div>

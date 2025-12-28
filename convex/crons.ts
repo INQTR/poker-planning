@@ -10,4 +10,11 @@ crons.daily(
   internal.cleanup.removeInactiveRooms
 );
 
+// Demo room automation - run every 8 seconds to cycle bots through voting
+crons.interval(
+  "demo-room-automation",
+  { seconds: 8 },
+  internal.demo.runDemoCycle
+);
+
 export default crons;

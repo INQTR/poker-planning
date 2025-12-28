@@ -36,6 +36,7 @@ import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 
 interface RoomCanvasProps {
   roomData: RoomWithRelatedData;
+  isDemoMode?: boolean;
 }
 
 // Define node types outside component to prevent re-renders
@@ -48,7 +49,7 @@ const nodeTypes: NodeTypes = {
   timer: TimerNode,
 } as const;
 
-function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
+function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): ReactElement {
   const { user } = useAuth();
   const [nodes, setNodes, onNodesChange] = useNodesState<CustomNodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -64,49 +65,49 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
   const executeAutoReveal = useMutation(api.rooms.executeAutoReveal);
 
   const handleRevealCards = useCallback(async () => {
-    if (!roomData) return;
+    if (isDemoMode || !roomData) return;
     try {
       await showCards({ roomId: roomData.room._id });
     } catch (error) {
       console.error("Failed to show cards:", error);
     }
-  }, [showCards, roomData]);
+  }, [isDemoMode, showCards, roomData]);
 
   const handleResetGame = useCallback(async () => {
-    if (!roomData) return;
+    if (isDemoMode || !roomData) return;
     try {
       await resetGame({ roomId: roomData.room._id });
     } catch (error) {
       console.error("Failed to reset game:", error);
     }
-  }, [resetGame, roomData]);
+  }, [isDemoMode, resetGame, roomData]);
 
   const handleToggleAutoComplete = useCallback(async () => {
-    if (!roomData) return;
+    if (isDemoMode || !roomData) return;
     try {
       await toggleAutoComplete({ roomId: roomData.room._id });
     } catch (error) {
       console.error("Failed to toggle auto-complete:", error);
     }
-  }, [toggleAutoComplete, roomData]);
+  }, [isDemoMode, toggleAutoComplete, roomData]);
 
   const handleCancelAutoReveal = useCallback(async () => {
-    if (!roomData) return;
+    if (isDemoMode || !roomData) return;
     try {
       await cancelAutoRevealCountdown({ roomId: roomData.room._id });
     } catch (error) {
       console.error("Failed to cancel auto-reveal:", error);
     }
-  }, [cancelAutoRevealCountdown, roomData]);
+  }, [isDemoMode, cancelAutoRevealCountdown, roomData]);
 
   const handleExecuteAutoReveal = useCallback(async () => {
-    if (!roomData) return;
+    if (isDemoMode || !roomData) return;
     try {
       await executeAutoReveal({ roomId: roomData.room._id });
     } catch (error) {
       console.error("Failed to execute auto-reveal:", error);
     }
-  }, [executeAutoReveal, roomData]);
+  }, [isDemoMode, executeAutoReveal, roomData]);
 
   // Track selected cards locally (server doesn't send card value until reveal)
   const [selectedCardValue, setSelectedCardValue] = useState<string | null>(
@@ -133,7 +134,7 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
   // Handle card selection
   const handleCardSelect = useCallback(
     async (cardValue: string) => {
-      if (!user || !roomData) return;
+      if (isDemoMode || !user || !roomData) return;
 
       setSelectedCardValue(cardValue);
 
@@ -149,7 +150,7 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
         setSelectedCardValue(null);
       }
     },
-    [pickCard, user, roomData]
+    [isDemoMode, pickCard, user, roomData]
   );
 
   // Get room ID
@@ -241,7 +242,7 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
     return () => clearTimeout(timeoutId);
   }, [roomData?.users, fitView]);
 
-  if (!roomData || !user) {
+  if (!roomData || (!user && !isDemoMode)) {
     return (
       <div className="flex items-center justify-center h-screen">
         Loading...
@@ -251,12 +252,12 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
 
   return (
     <div className="w-full h-screen relative">
-      <CanvasNavigation roomData={roomData} />
+      {!isDemoMode && <CanvasNavigation roomData={roomData} />}
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={onEdgesChange}
+        onNodesChange={isDemoMode ? undefined : handleNodesChange}
+        onEdgesChange={isDemoMode ? undefined : onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
@@ -265,15 +266,15 @@ function RoomCanvasInner({ roomData }: RoomCanvasProps): ReactElement {
         minZoom={0.1}
         maxZoom={4}
         defaultViewport={{ x: 0, y: 50, zoom: 0.75 }}
-        nodesDraggable
+        nodesDraggable={!isDemoMode}
         nodesConnectable={false}
-        elementsSelectable
+        elementsSelectable={!isDemoMode}
         snapToGrid
         snapGrid={[25, 25]}
         preventScrolling={false}
         attributionPosition="bottom-right"
         panOnScroll
-        selectionOnDrag
+        selectionOnDrag={!isDemoMode}
         panOnDrag={[1, 2]}
         translateExtent={[
           [-2000, -2000],
