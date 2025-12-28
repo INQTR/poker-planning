@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Toaster } from "sonner";
@@ -35,6 +37,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <SpeedInsights />
           <Toaster />
         </Providers>
       </body>
