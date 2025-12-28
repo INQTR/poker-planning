@@ -83,28 +83,33 @@ export default function AboutPage() {
               </h1>
               <div className="mt-6 max-w-xl lg:mt-0 xl:col-end-1 xl:row-start-1">
                 <p className="text-lg font-medium text-gray-600 dark:text-gray-300 sm:text-xl/8">
-                  AgileKit is a free, open-source planning poker tool
-                  built for modern Scrum teams. We believe estimation tools
-                  should be accessible to everyone, without compromising on
-                  quality or privacy.
+                  AgileKit is a free, open-source planning poker tool built for
+                  modern Scrum teams. We believe estimation tools should be
+                  accessible to everyone, without compromising on quality or
+                  privacy.
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
-                  <Button asChild size="lg">
-                    <a
-                      href="https://github.com/INQTR/poker-planning"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center"
-                    >
-                      <GithubIcon className="mr-2 h-5 w-5" />
-                      View on GitHub
-                    </a>
+                  <Button
+                    render={
+                      <Link
+                        href="https://github.com/INQTR/poker-planning"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center"
+                      />
+                    }
+                    size="lg"
+                  >
+                    <GithubIcon className="mr-2 h-5 w-5" />
+                    View on GitHub
                   </Button>
-                  <Button asChild size="lg" variant="outline">
-                    <Link href="/" className="inline-flex items-center">
-                      Try it now
-                      <Sparkles className="ml-2 h-4 w-4" />
-                    </Link>
+                  <Button
+                    render={<Link href="/" className="inline-flex items-center" />}
+                    size="lg"
+                    variant="outline"
+                  >
+                    Try it now
+                    <Sparkles className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -172,8 +177,8 @@ export default function AboutPage() {
                   index === 0
                     ? "bg-gray-50 dark:bg-gray-800"
                     : index === 1
-                    ? "bg-gray-900 dark:bg-gray-950"
-                    : "bg-indigo-600 dark:bg-indigo-700"
+                      ? "bg-gray-900 dark:bg-gray-950"
+                      : "bg-indigo-600 dark:bg-indigo-700"
                 }`}
               >
                 <p
@@ -198,8 +203,8 @@ export default function AboutPage() {
                       index === 0
                         ? "text-gray-600 dark:text-gray-400"
                         : index === 1
-                        ? "text-gray-400"
-                        : "text-indigo-200"
+                          ? "text-gray-400"
+                          : "text-indigo-200"
                     }`}
                   >
                     {stat.description}
@@ -385,9 +390,9 @@ export default function AboutPage() {
                 Meet the creator
               </h2>
               <p className="mt-6 text-xl/8 text-gray-600 dark:text-gray-400">
-                AgileKit was created by a developer who believes in the
-                power of open source and the importance of accessible tools for
-                every team.
+                AgileKit was created by a developer who believes in the power of
+                open source and the importance of accessible tools for every
+                team.
               </p>
               <Image
                 alt="Bohdan working"
@@ -403,15 +408,15 @@ export default function AboutPage() {
               </h3>
               <p className="mt-6 text-base/7 text-gray-600 dark:text-gray-400">
                 Full-stack developer passionate about creating tools that make
-                teams more productive. Started AgileKit in 2021 to
-                solve his own team&apos;s need for a simple, fast, and free
-                planning poker tool.
+                teams more productive. Started AgileKit in 2021 to solve his own
+                team&apos;s need for a simple, fast, and free planning poker
+                tool.
               </p>
               <p className="mt-6 text-base/7 text-gray-600 dark:text-gray-400">
                 &ldquo;I believe that good tools should be accessible to
-                everyone. That&apos;s why AgileKit will always be free
-                and open source. The community&apos;s contributions and feedback
-                have been invaluable in shaping what it is today.&rdquo;
+                everyone. That&apos;s why AgileKit will always be free and open
+                source. The community&apos;s contributions and feedback have
+                been invaluable in shaping what it is today.&rdquo;
               </p>
               <div className="mt-8 flex gap-x-6">
                 <a
@@ -443,23 +448,31 @@ export default function AboutPage() {
                   AgileKit community.
                 </p>
                 <div className="mt-6 flex gap-x-3">
-                  <Button asChild variant="outline" size="sm">
-                    <a
-                      href="https://github.com/INQTR/poker-planning/issues"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Report Issues
-                    </a>
+                  <Button
+                    render={
+                      <a
+                        href="https://github.com/INQTR/poker-planning/issues"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                    variant="outline"
+                    size="sm"
+                  >
+                    Report Issues
                   </Button>
-                  <Button asChild variant="outline" size="sm">
-                    <a
-                      href="https://github.com/INQTR/poker-planning/discussions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Join Discussions
-                    </a>
+                  <Button
+                    render={
+                      <a
+                        href="https://github.com/INQTR/poker-planning/discussions"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                    variant="outline"
+                    size="sm"
+                  >
+                    Join Discussions
                   </Button>
                 </div>
               </div>
@@ -479,27 +492,27 @@ export default function AboutPage() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button
-                asChild
+                render={<Link href="/" />}
                 size="lg"
                 className="bg-white text-indigo-600 hover:bg-gray-100"
               >
-                <Link href="/">Get started for free</Link>
+                Get started for free
               </Button>
               <Button
-                asChild
+                render={
+                  <a
+                    href="https://github.com/INQTR/poker-planning"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center"
+                  />
+                }
                 size="lg"
                 variant="link"
                 className="text-white hover:text-indigo-200"
               >
-                <a
-                  href="https://github.com/INQTR/poker-planning"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center"
-                >
-                  Learn more
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
+                Learn more
+                <ExternalLink className="ml-2 h-4 w-4" />
               </Button>
             </div>
             <svg

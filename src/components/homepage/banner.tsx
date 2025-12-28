@@ -1,4 +1,5 @@
-import { XMarkIcon } from "@heroicons/react/20/solid";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
 export const Banner = () => {
   return (
@@ -47,7 +48,12 @@ export const Banner = () => {
           className="-m-3 p-3 focus-visible:outline-offset-[-4px] hidden"
         >
           <span className="sr-only">Dismiss</span>
-          <XMarkIcon aria-hidden="true" className="h-5 w-5 text-gray-900" />
+          <HugeiconsIcon
+            icon={Cancel01Icon}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="text-gray-900 size-5"
+          />
         </button>
       </div>
     </aside>

@@ -27,19 +27,28 @@ export default function HomePage() {
 
   const handleCreateRoom = async () => {
     setIsCreating(true);
+
+    let roomId: string | undefined = undefined;
+
     try {
-      const roomId = await createRoom({
+      roomId = await createRoom({
         name: `Game ${new Date().toLocaleTimeString()}`,
         roomType: "canvas",
       });
-
-      await copyRoomUrlToClipboard(roomId);
       router.push(`/room/${roomId}`);
     } catch (error) {
       console.error("Failed to create room:", error);
       toast.error("Failed to create room. Please try again.");
     } finally {
       setIsCreating(false);
+    }
+
+    if (roomId) {
+      try {
+        await copyRoomUrlToClipboard(roomId);
+      } catch (error) {
+        console.error("Failed to copy room URL to clipboard:", error);
+      }
     }
   };
 
@@ -61,7 +70,7 @@ export default function HomePage() {
         {/* Background gradient effects */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <svg
-            className="absolute left-[max(50%,25rem)] top-0 h-256 w-512 -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
+            className="absolute left-[max(50%,25rem)] top-0 h-256 w-512 -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 mask-[radial-gradient(64rem_64rem_at_top,white,transparent)]"
             aria-hidden="true"
           >
             <defs>

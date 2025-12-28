@@ -116,16 +116,18 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           {/* Logo/Home */}
           <Link href="/" className="flex items-center">
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className={buttonClass}
-                  aria-label="Back to home"
-                >
-                  <Home className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={buttonClass}
+                    aria-label="Back to home"
+                  >
+                    <Home className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <TooltipContent>
                 <p>Back to home</p>
               </TooltipContent>
@@ -140,17 +142,19 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
               {room.name || `Room ${room._id.slice(0, 6)}`}
             </span>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleCopyRoomUrl}
-                  className={buttonClass}
-                  aria-label="Copy room URL"
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyRoomUrl}
+                    className={buttonClass}
+                    aria-label="Copy room URL"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <TooltipContent>
                 <p>Copy room link</p>
               </TooltipContent>
@@ -178,51 +182,57 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           {/* Zoom Controls */}
           <div className="flex items-center gap-1 px-2">
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleZoomOut}
-                  className={buttonClass}
-                  aria-label="Zoom out"
-                >
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleZoomOut}
+                    className={buttonClass}
+                    aria-label="Zoom out"
+                  >
+                    <ZoomOut className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <TooltipContent>
                 <p>Zoom out</p>
               </TooltipContent>
             </Tooltip>
 
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleZoomIn}
-                  className={buttonClass}
-                  aria-label="Zoom in"
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleZoomIn}
+                    className={buttonClass}
+                    aria-label="Zoom in"
+                  >
+                    <ZoomIn className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <TooltipContent>
                 <p>Zoom in</p>
               </TooltipContent>
             </Tooltip>
 
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleFitView}
-                  className={buttonClass}
-                  aria-label="Fit view"
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleFitView}
+                    className={buttonClass}
+                    aria-label="Fit view"
+                  >
+                    <Grid3X3 className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <TooltipContent>
                 <p>Fit to view</p>
               </TooltipContent>
@@ -235,17 +245,19 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           <div className="flex items-center gap-1 px-2">
             {isFullscreenSupported && (
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleFullscreen}
-                    className={buttonClass}
-                    aria-label="Toggle fullscreen"
-                  >
-                    <Maximize2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleFullscreen}
+                      className={buttonClass}
+                      aria-label="Toggle fullscreen"
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </Button>
+                  }
+                />
                 <TooltipContent>
                   <p>{isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}</p>
                 </TooltipContent>
@@ -253,16 +265,18 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             )}
 
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className={buttonClass}
-                  aria-label="Share and export options"
-                >
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={buttonClass}
+                    aria-label="Share and export options"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                }
+              />
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem onClick={handleCopyRoomUrl}>
                   <Copy className="h-4 w-4 mr-2" />
@@ -276,22 +290,25 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </DropdownMenu>
 
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  ref={settingsButtonRef}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                  className={cn(
-                    buttonClass,
-                    isSettingsOpen && "bg-gray-100 dark:bg-gray-700"
-                  )}
-                  aria-label="Room settings"
-                  aria-expanded={isSettingsOpen}
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <TooltipTrigger
+                render={(props) => (
+                  <Button
+                    {...props}
+                    ref={settingsButtonRef}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                    className={cn(
+                      buttonClass,
+                      isSettingsOpen && "bg-gray-100 dark:bg-gray-700"
+                    )}
+                    aria-label="Room settings"
+                    aria-expanded={isSettingsOpen}
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                )}
+              />
               <TooltipContent>
                 <p>Room settings</p>
               </TooltipContent>

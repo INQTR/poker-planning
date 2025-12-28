@@ -144,17 +144,19 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           Room Settings
         </h2>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-              aria-label="Close settings"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                aria-label="Close settings"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            }
+          />
           <TooltipContent>
             <p>Close</p>
           </TooltipContent>
@@ -302,18 +304,20 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                     )}
                   </div>
                   <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemoveUser(u._id)}
-                        disabled={removingUserId === u._id}
-                        className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shrink-0"
-                        aria-label={`Remove ${u.name}`}
-                      >
-                        <UserMinus className="h-3.5 w-3.5" />
-                      </Button>
-                    </TooltipTrigger>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveUser(u._id)}
+                          disabled={removingUserId === u._id}
+                          className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shrink-0"
+                          aria-label={`Remove ${u.name}`}
+                        >
+                          <UserMinus className="h-3.5 w-3.5" />
+                        </Button>
+                      }
+                    />
                     <TooltipContent>
                       <p>Remove user</p>
                     </TooltipContent>

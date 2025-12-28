@@ -181,22 +181,28 @@ export default function FeaturesPage() {
                 strings attached.
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Button asChild size="lg" className="group">
-                  <Link href="/" className="inline-flex items-center">
-                    Start Planning Now
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                <Button
+                  render={<Link href="/" className="inline-flex items-center" />}
+                  size="lg"
+                  className="group"
+                >
+                  Start Planning Now
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
-                <Button asChild size="lg" variant="outline">
-                  <a
-                    href="https://github.com/INQTR/poker-planning"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center"
-                  >
-                    <GithubIcon className="mr-2 h-5 w-5" />
-                    View on GitHub
-                  </a>
+                <Button
+                  render={
+                    <a
+                      href="https://github.com/INQTR/poker-planning"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center"
+                    />
+                  }
+                  size="lg"
+                  variant="outline"
+                >
+                  <GithubIcon className="mr-2 h-5 w-5" />
+                  View on GitHub
                 </Button>
               </div>
             </div>
@@ -388,22 +394,28 @@ export default function FeaturesPage() {
                 Join thousands of teams already using AgileKit
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-6">
-                <Button asChild size="lg" className="group">
-                  <Link href="/" className="inline-flex items-center">
-                    Get Started Free
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Link>
+                <Button
+                  render={<Link href="/" className="inline-flex items-center" />}
+                  size="lg"
+                  className="group"
+                >
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
-                <Button asChild size="lg" variant="link">
-                  <a
-                    href="https://github.com/INQTR/poker-planning"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center"
-                  >
-                    Contribute on GitHub
-                    <GithubIcon className="ml-2 h-4 w-4" />
-                  </a>
+                <Button
+                  render={
+                    <a
+                      href="https://github.com/INQTR/poker-planning"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center"
+                    />
+                  }
+                  size="lg"
+                  variant="link"
+                >
+                  Contribute on GitHub
+                  <GithubIcon className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </div>

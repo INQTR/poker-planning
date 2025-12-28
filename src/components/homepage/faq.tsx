@@ -74,7 +74,7 @@ export function FAQ() {
               Everything you need to know about planning poker and our tool
             </p>
           </div>
-          <Accordion type="single" collapsible className="mt-10">
+          <Accordion className="mt-10">
             {faqs.map((faq, index) => (
               <AccordionItem
                 key={faq.question}
