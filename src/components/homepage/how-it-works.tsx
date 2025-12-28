@@ -1,171 +1,134 @@
-import { ArrowRight, Users, Vote, ChartBar, Zap } from "lucide-react";
+"use client";
+
+import { Users, Vote, ChartBar, Zap, MoveRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const steps = [
   {
     id: 1,
     title: "Create a Room",
     description:
-      "Start a new planning session with one click. No registration required - just share the link with your team.",
+      "Start a new planning session with one click. No registration required.",
     icon: Zap,
-    gradient: "from-blue-500 to-cyan-500",
-    shadowColor: "shadow-blue-500/25",
   },
   {
     id: 2,
     title: "Invite Your Team",
     description:
-      "Share the room URL with your team members. They can join instantly from any device, anywhere in the world.",
+      "Share the room URL. Team members join instantly from any device.",
     icon: Users,
-    gradient: "from-green-500 to-emerald-500",
-    shadowColor: "shadow-green-500/25",
   },
   {
     id: 3,
     title: "Vote on Stories",
     description:
-      "Present user stories and have everyone vote simultaneously. Cards remain hidden until everyone has voted.",
+      "Everyone votes simultaneously. Cards stay hidden until revealed.",
     icon: Vote,
-    gradient: "from-purple-500 to-pink-500",
-    shadowColor: "shadow-purple-500/25",
   },
   {
     id: 4,
     title: "Reach Consensus",
     description:
-      "Reveal all votes at once, discuss differences, and quickly reach team consensus on story point estimates.",
+      "Reveal votes, discuss differences, and align on story points.",
     icon: ChartBar,
-    gradient: "from-orange-500 to-red-500",
-    shadowColor: "shadow-orange-500/25",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <div id="how-it-works" className="relative isolate overflow-hidden bg-gray-50 dark:bg-gray-900">
-      {/* Background pattern */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <svg
-          className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-gray-200 dark:stroke-gray-800 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
-          aria-hidden="true"
-        >
-          <defs>
-            <pattern
-              id="how-it-works-pattern"
-              width={200}
-              height={200}
-              x="50%"
-              y={-1}
-              patternUnits="userSpaceOnUse"
-            >
-              <path d="M100 200V.5M.5 .5H200" fill="none" />
-            </pattern>
-          </defs>
-          <svg
-            x="50%"
-            y={-1}
-            className="overflow-visible fill-gray-100/20 dark:fill-gray-800/20"
-          >
-            <path
-              d="M-100.5 0h201v201h-201Z M699.5 0h201v201h-201Z M499.5 400h201v201h-201Z M-300.5 600h201v201h-201Z"
-              strokeWidth={0}
-            />
-          </svg>
-          <rect
-            width="100%"
-            height="100%"
-            strokeWidth={0}
-            fill="url(#how-it-works-pattern)"
-          />
-        </svg>
+    <section
+      id="how-it-works"
+      className="relative isolate overflow-hidden bg-white dark:bg-black py-24 sm:py-32"
+    >
+      {/* Subtle radial gradient backdrop */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-gradient-to-r from-primary/[0.07] via-transparent to-primary/[0.07] blur-3xl rounded-full" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-            How
-            <span className="relative">
-              <span className="relative bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                {" "}
-                Planning Poker{" "}
-              </span>
-            </span>
-            Works
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-20">
+          <p className="text-sm font-medium tracking-[0.2em] uppercase text-primary mb-4">
+            How It Works
+          </p>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Four simple steps
           </h2>
-          <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Our streamlined process makes sprint planning efficient and
-            enjoyable. Follow these simple steps to transform your estimation
-            sessions.
+          <p className="mt-5 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+            Transform your sprint planning in minutes
           </p>
         </div>
 
-        <div className="mx-auto mt-16 max-w-7xl">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+        {/* Steps Timeline */}
+        <div className="relative">
+          {/* Horizontal connector line - desktop only */}
+          <div className="hidden lg:block absolute top-[3.25rem] left-[calc(12.5%+1rem)] right-[calc(12.5%+1rem)] h-px">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 dark:via-zinc-700 to-transparent" />
+            {/* Animated gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-[shimmer_3s_ease-in-out_infinite] opacity-0 group-hover:opacity-100" />
+          </div>
+
+          {/* Steps Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
             {steps.map((step, index) => (
-              <div key={step.id} className="group relative">
-                {/* Connection line for desktop */}
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-20 left-full w-full">
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t-2 border-dashed border-gray-300 dark:border-gray-700" />
-                      </div>
-                      <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <ArrowRight className="h-5 w-5 text-gray-400 dark:text-gray-600 bg-gray-50 dark:bg-gray-900" />
-                      </div>
-                    </div>
-                  </div>
-                )}
+              <div
+                key={step.id}
+                className="group relative"
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                }}
+              >
+                {/* Step Card */}
+                <div className="relative flex flex-col items-center text-center">
+                  {/* Step Number + Icon Container */}
+                  <div className="relative mb-6">
+                    {/* Outer ring */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 scale-[1.4] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
 
-                <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-8 shadow-lg ring-1 ring-gray-200 dark:ring-gray-700 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                  {/* Gradient overlay */}
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-5 dark:opacity-10`}
-                  />
-
-                  {/* Step number */}
-                  <div className="absolute top-3 right-3">
-                    <div className="relative">
-                      <div className="text-5xl font-bold bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 bg-clip-text text-transparent select-none">
-                        {step.id}
-                      </div>
-                      <div className="absolute inset-0 text-5xl font-bold text-gray-300/30 dark:text-gray-600/30 blur-sm select-none">
-                        {step.id}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Icon */}
-                  <div className="relative mb-4">
+                    {/* Main circle */}
                     <div
-                      className={`inline-flex rounded-2xl bg-gradient-to-br ${step.gradient} p-3 shadow-lg ${step.shadowColor}`}
+                      className={cn(
+                        "relative w-[6.5rem] h-[6.5rem] rounded-full",
+                        "bg-gray-50 dark:bg-zinc-900/80",
+                        "border border-gray-200 dark:border-zinc-800",
+                        "flex items-center justify-center",
+                        "transition-all duration-500",
+                        "group-hover:border-primary/50 group-hover:bg-primary/5 dark:group-hover:bg-primary/10"
+                      )}
                     >
+                      {/* Step number - positioned top-right */}
+                      <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 flex items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400 group-hover:border-primary/50 group-hover:text-primary transition-all duration-300">
+                        {step.id}
+                      </span>
+
+                      {/* Icon */}
                       <step.icon
-                        className="h-8 w-8 text-white"
-                        aria-hidden="true"
+                        className="w-8 h-8 text-gray-600 dark:text-gray-400 group-hover:text-primary transition-colors duration-300"
+                        strokeWidth={1.5}
                       />
                     </div>
                   </div>
 
+                  {/* Arrow connector for mobile/tablet - between cards */}
+                  {index < steps.length - 1 && (
+                    <div className="lg:hidden absolute -bottom-4 left-1/2 -translate-x-1/2 text-gray-300 dark:text-zinc-700">
+                      <MoveRight className="w-5 h-5 rotate-90 md:rotate-0" />
+                    </div>
+                  )}
+
                   {/* Content */}
-                  <h3 className="relative text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors duration-300">
                     {step.title}
                   </h3>
-                  <p className="relative text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-sm text-gray-600 dark:text-gray-500 leading-relaxed max-w-[220px]">
                     {step.description}
                   </p>
-
-                  {/* Hover effect indicator */}
-                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div
-                      className={`h-2 w-2 rounded-full bg-gradient-to-r ${step.gradient} animate-pulse`}
-                    />
-                  </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

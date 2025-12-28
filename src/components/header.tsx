@@ -4,7 +4,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 export function Header() {
   return (
-    <header className="relative z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-800/50">
+    <header className="relative z-50 bg-white/80 dark:bg-black/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-zinc-900/50">
       <nav
         aria-label="Global"
         className="flex items-center justify-between p-6 lg:px-8"

@@ -43,7 +43,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-24 sm:py-32">
+    <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-black dark:to-zinc-950 py-24 sm:py-32">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-56 left-[50%] w-[600px] h-[600px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent blur-3xl" />
@@ -74,8 +74,8 @@ export function FeaturesSection() {
 
           {/* Features Grid */}
           <div className="mt-16 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 dark:from-gray-700 dark:via-gray-700 dark:to-gray-700 rounded-3xl blur-[1px]" />
-            <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-12">
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-200 to-gray-200 dark:from-zinc-800 dark:via-zinc-800 dark:to-zinc-800 rounded-3xl blur-[1px]" />
+            <div className="relative bg-white dark:bg-zinc-950 rounded-3xl p-8 sm:p-12">
               <div className="grid grid-cols-1 gap-y-8 sm:grid-cols-2 sm:gap-x-8 lg:gap-x-12">
                 {features.map((feature) => (
                   <div
@@ -90,7 +90,7 @@ export function FeaturesSection() {
                         "shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300",
                         feature.available
                           ? "bg-primary/10 group-hover:bg-primary/20"
-                          : "bg-gray-100 dark:bg-gray-700",
+                          : "bg-gray-100 dark:bg-zinc-900",
                       )}
                     >
                       <Check
@@ -130,7 +130,7 @@ export function FeaturesSection() {
               </div>
 
               {/* Bottom CTA */}
-              <div className="mt-12 pt-12 border-t border-gray-200 dark:border-gray-700">
+              <div className="mt-12 pt-12 border-t border-gray-200 dark:border-zinc-800">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/10">
