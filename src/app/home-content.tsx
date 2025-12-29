@@ -216,8 +216,8 @@ export function HomeContent() {
         {/* Bottom gradient fade */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-white dark:from-black to-transparent" />
 
-        <AppPreview />
         <HowItWorks />
+        <AppPreview />
         <FeaturesSection />
         <UseCases />
         {/* TODO: we need to get real testimonials from real users */}
