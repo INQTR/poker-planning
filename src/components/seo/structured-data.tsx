@@ -1,11 +1,64 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+const baseUrl = "https://agilekit.app";
 
-const faqs = [
+export function WebApplicationSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "AgileKit Planning Poker",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "All",
+    offers: {
+      "@type": "Offer",
+      price: "0.00",
+      priceCurrency: "USD",
+    },
+    description:
+      "Free online planning poker tool for agile teams. Real-time collaboration, no registration required.",
+    url: baseUrl,
+    author: {
+      "@type": "Organization",
+      name: "AgileKit",
+      url: "https://github.com/INQTR/poker-planning",
+    },
+    screenshot: `${baseUrl}/og-image.png`,
+    featureList: [
+      "Real-time voting",
+      "No registration required",
+      "Unlimited team members",
+      "Multiple card scales (Fibonacci, T-shirt sizes)",
+      "Results analytics with average, median, and consensus",
+      "Synchronized timer",
+      "Whiteboard canvas interface",
+    ],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+export function OrganizationSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "AgileKit",
+    url: baseUrl,
+    logo: `${baseUrl}/logo.svg`,
+    sameAs: ["https://github.com/INQTR/poker-planning"],
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+const faqData = [
   {
     question: "What is Planning Poker?",
     answer:
@@ -53,57 +106,48 @@ const faqs = [
   },
 ];
 
-export function FAQ() {
+export function FAQSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqData.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
-    <div id="faq" className="bg-white dark:bg-black">
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
-        <div className="mx-auto max-w-4xl">
-          <div className="text-center">
-            <p className="text-base font-semibold leading-7 text-gray-900 dark:text-gray-100">
-              FAQs
-            </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Frequently Asked Questions
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Everything you need to know about planning poker and our tool
-            </p>
-          </div>
-          <Accordion className="mt-10">
-            {faqs.map((faq, index) => (
-              <AccordionItem
-                key={faq.question}
-                value={`item-${index}`}
-                className="border-gray-200 dark:border-zinc-800"
-              >
-                <AccordionTrigger className="text-base font-semibold leading-7 text-gray-900 dark:text-white hover:no-underline">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-base leading-7 text-gray-600 dark:text-gray-300">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          <div className="mt-16 text-center">
-            <p className="text-base font-semibold text-gray-900 dark:text-white">
-              Still have questions?
-            </p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Check out our{" "}
-              <a
-                href="https://github.com/INQTR/poker-planning"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-primary hover:text-primary/80 dark:text-primary dark:hover:text-primary/80"
-              >
-                GitHub repository
-              </a>{" "}
-              or open an issue for support.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+export function BreadcrumbSchema({
+  items,
+}: {
+  items: { name: string; url: string }[];
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
   );
 }

@@ -19,10 +19,73 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl = "https://agilekit.app";
+
 export const metadata: Metadata = {
-  title: "Planning Poker for Teams | AgileKit",
+  metadataBase: new URL(baseUrl),
+  title: {
+    default: "Free Planning Poker Online | AgileKit - Scrum Estimation Tool",
+    template: "%s | AgileKit",
+  },
   description:
-    "Free online planning poker tool for agile teams. Real-time collaboration, no registration required.",
+    "Run free online planning poker sessions with your Scrum team. No signup required. Estimate user stories in real-time with AgileKit's open-source tool.",
+  keywords: [
+    "planning poker",
+    "scrum poker",
+    "agile estimation",
+    "story points",
+    "sprint planning",
+    "free planning poker",
+    "planning poker online",
+    "scrum poker online",
+    "agile poker",
+    "estimation poker",
+  ],
+  authors: [{ name: "AgileKit Team" }],
+  creator: "AgileKit",
+  publisher: "AgileKit",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: baseUrl,
+    siteName: "AgileKit",
+    title: "Free Planning Poker Online | AgileKit",
+    description:
+      "Run free online planning poker sessions with your Scrum team. No signup required. Estimate user stories in real-time.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AgileKit - Free Planning Poker Tool for Scrum Teams",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Free Planning Poker Online | AgileKit",
+    description:
+      "Run free online planning poker sessions with your Scrum team. No signup required.",
+    images: ["/og-image.png"],
+  },
+  alternates: {
+    canonical: baseUrl,
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
