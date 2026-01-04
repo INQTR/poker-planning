@@ -291,7 +291,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                   className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-surface-3/50"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-300 shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-surface-3 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-300 shrink-0">
                       {u.name.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
