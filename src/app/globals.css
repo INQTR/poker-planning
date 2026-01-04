@@ -97,10 +97,10 @@
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
 
-  /* Surface levels - progressive depth (1 > 2 > 3 in lightness for light mode) */
+  /* Surface levels - stacking depth (1=base, 2=elevated, 3=highest) */
   --surface-1: oklch(1 0 0);             /* base: cards, panels */
   --surface-2: oklch(0.985 0 0);         /* elevated: secondary containers */
-  --surface-3: oklch(0.967 0.001 286.375); /* interactive: handles, hovers */
+  --surface-3: oklch(0.967 0.001 286.375); /* highest: handles, hovers */
 
   /* Status backgrounds */
   --status-info-bg: oklch(0.95 0.02 250);
@@ -148,10 +148,10 @@
   --sidebar-border: oklch(1 0 0 / 6%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
 
-  /* Surface levels - progressive elevation (1 < 2 < 3 in lightness) */
+  /* Surface levels - stacking depth (1=base, 2=elevated, 3=highest) */
   --surface-1: oklch(0.145 0.005 285);  /* base: cards, panels */
   --surface-2: oklch(0.16 0.005 285);   /* elevated: secondary containers */
-  --surface-3: oklch(0.18 0.006 285);   /* interactive: handles, hovers */
+  --surface-3: oklch(0.18 0.006 285);   /* highest: handles, hovers */
 
   /* Status backgrounds - darker versions */
   --status-info-bg: oklch(0.18 0.04 250);

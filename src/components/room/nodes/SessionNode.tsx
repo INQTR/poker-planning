@@ -185,7 +185,7 @@ export const SessionNode = memo(
             <Zap
               className={cn(
                 "h-3.5 w-3.5",
-                autoCompleteVoting && "text-amber-500 dark:text-amber-400",
+                autoCompleteVoting && "text-amber-500 dark:text-status-warning-fg",
               )}
             />
             <span>Auto-reveal: {autoCompleteVoting ? "On" : "Off"}</span>
