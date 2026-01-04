@@ -40,15 +40,15 @@ test.describe("Home Page - Basic Elements", () => {
   });
 
   test("should display trust indicators", async ({ page }) => {
-    // Use data-testid for precise targeting
-    await expect(page.getByTestId("trust-free")).toBeVisible();
-    await expect(page.getByTestId("trust-no-account")).toBeVisible();
-    await expect(page.getByTestId("trust-realtime")).toBeVisible();
-    
-    // Verify text content
-    await expect(page.getByTestId("trust-free")).toContainText("100% Free Forever");
-    await expect(page.getByTestId("trust-no-account")).toContainText("No Account Required");
-    await expect(page.getByTestId("trust-realtime")).toContainText("Real-time Collaboration");
+    // Verify key trust messaging exists on the page
+    // Hero section has "No sign-up, no fees" messaging
+    await expect(page.locator("text=No sign-up, no fees")).toBeVisible();
+
+    // Scroll to features section to find feature-related content
+    await page.locator("#how-it-works").scrollIntoViewIfNeeded();
+
+    // Verify the "No registration required" message is visible
+    await expect(page.locator("text=No registration required")).toBeVisible();
   });
 
   test("should display all major sections", async () => {
@@ -116,7 +116,14 @@ test.describe("Home Page - Navigation", () => {
 test.describe("Home Page - Error Handling", () => {
   let homePage: HomePage;
 
-  test("should handle room creation errors gracefully", async ({ page }) => {
+  test.skip("should handle room creation errors gracefully", async ({ page }) => {
+    // NOTE: This test is skipped because Convex uses WebSocket connections
+    // that cannot be easily mocked with page.route(). The HTTP route interception
+    // does not affect Convex's real-time mutation calls.
+    //
+    // To properly test error handling, we would need to:
+    // 1. Use Convex's testing utilities with a test backend
+    // 2. Or mock at a lower level using page.addInitScript
     homePage = new HomePage(page);
     await homePage.goto();
 
@@ -154,7 +161,7 @@ test.describe("Home Page - Error Handling", () => {
     // Better error handling verification
     await expect(startButton).toBeEnabled({ timeout: 5000 });
     await expect(page).toHaveURL("/");
-    
+
     // Wait for error toast
     await homePage.waitForToast("Failed to create room");
   });

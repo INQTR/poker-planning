@@ -132,8 +132,32 @@ export class HomePage {
   }
 
   async waitForToast(text: string): Promise<void> {
-    const toast = this.page.locator(`text=${text}`);
-    await expect(toast).toBeVisible({ timeout: 5000 });
+    // Sonner toasts are rendered in a specific container
+    // Try multiple selectors to find the toast
+    const toastSelectors = [
+      `[data-sonner-toaster] >> text=${text}`,
+      `[role="status"] >> text=${text}`,
+      `li:has-text("${text}")`,
+      `text=${text}`,
+    ];
+
+    let found = false;
+    for (const selector of toastSelectors) {
+      try {
+        const toast = this.page.locator(selector);
+        await expect(toast).toBeVisible({ timeout: 2000 });
+        found = true;
+        break;
+      } catch {
+        // Try next selector
+      }
+    }
+
+    if (!found) {
+      // Last resort: check if any toast-like element exists with partial text match
+      const anyToast = this.page.locator(`text="${text}"`);
+      await expect(anyToast).toBeVisible({ timeout: 3000 });
+    }
   }
 
   async isButtonEnabled(): Promise<boolean> {

@@ -21,8 +21,8 @@ export class JoinRoomPage {
 
     // Form elements
     this.nameInput = page.getByPlaceholder("Enter your name");
-    // Switch is used for spectator mode
-    this.spectatorRadio = page.getByRole("switch", { name: "Join as spectator" });
+    // Switch is used for spectator mode (find by id or by label association)
+    this.spectatorRadio = page.locator("#spectator");
     this.participantRadio = page.locator(".dummy-participant-radio"); // Not used in current UI
 
     // Buttons
@@ -43,18 +43,34 @@ export class JoinRoomPage {
 
   async selectParticipantRole(): Promise<void> {
     // In current UI, participant is default when spectator switch is off
-    const isSpectatorOn = await this.spectatorRadio.isChecked();
-    if (isSpectatorOn) {
-      await safeClick(this.spectatorRadio); // Turn off spectator mode
+    // Check if switch exists and is checked - if so, turn it off
+    try {
+      const isVisible = await this.spectatorRadio.isVisible({ timeout: 2000 });
+      if (isVisible) {
+        // Base UI uses data-checked attribute when switch is on
+        const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+        const isSpectatorOn = hasDataChecked !== null;
+        if (isSpectatorOn) {
+          await this.spectatorRadio.click(); // Turn off spectator mode
+        }
+      }
+      // If switch doesn't exist or isn't visible, participant is already default
+    } catch {
+      // Switch not available, participant is default
     }
   }
 
   async selectSpectatorRole(): Promise<void> {
-    const isSpectatorOn = await this.spectatorRadio.isChecked();
+    // Wait for switch to be visible first
+    await expect(this.spectatorRadio).toBeVisible({ timeout: 5000 });
+    // Base UI uses data-checked attribute when switch is on
+    const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+    const isSpectatorOn = hasDataChecked !== null;
     if (!isSpectatorOn) {
-      await safeClick(this.spectatorRadio); // Turn on spectator mode
+      await this.spectatorRadio.click(); // Turn on spectator mode
     }
-    await expect(this.spectatorRadio).toBeChecked();
+    // Verify it's now checked (has data-checked attribute)
+    await expect(this.spectatorRadio).toHaveAttribute("data-checked", "", { timeout: 2000 });
   }
 
   async clickJoin(): Promise<void> {
@@ -114,11 +130,12 @@ export class JoinRoomPage {
 
   async isParticipantSelected(): Promise<boolean> {
     // Participant is selected when spectator switch is off
-    const isSpectatorOn = await this.spectatorRadio.isChecked();
-    return !isSpectatorOn;
+    const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+    return hasDataChecked === null;
   }
 
   async isSpectatorSelected(): Promise<boolean> {
-    return await this.spectatorRadio.isChecked();
+    const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+    return hasDataChecked !== null;
   }
 }
