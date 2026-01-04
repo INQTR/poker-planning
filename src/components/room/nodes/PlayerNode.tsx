@@ -1,105 +1,32 @@
 "use client";
 
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { ReactElement, memo, useMemo } from "react";
-
-import { cn } from "@/lib/utils";
+import { ReactElement, memo } from "react";
 
 import type { PlayerNodeType } from "../types";
 
 export const PlayerNode = memo(
   ({ data }: NodeProps<PlayerNodeType>): ReactElement => {
-    const { user, isCurrentUser, isCardPicked, card } = data;
+    const { user, isCurrentUser, isCardPicked, card, isGameOver } = data;
 
-    const initials = useMemo(
-      () =>
-        user.name
-          .split(" ")
-          .map((n: string) => n[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2),
-      [user.name],
-    );
+    // Match VotingCardNode card style
+    const cardClasses =
+      "h-24 w-16 rounded-xl border-2 flex items-center justify-center text-2xl font-bold bg-white dark:bg-surface-1 border-gray-300 dark:border-border shadow-md";
 
-    const nodeClasses = useMemo(
-      () =>
-        cn(
-          "flex flex-col items-center gap-2 p-3 rounded-lg shadow-lg border-2 transition-all",
-          "bg-white dark:bg-surface-1",
-          isCurrentUser
-            ? "border-blue-500 dark:border-blue-400"
-            : "border-gray-200 dark:border-border",
-          isCardPicked &&
-            "ring-2 ring-green-400 dark:ring-green-500 ring-offset-2 dark:ring-offset-background",
-        ),
-      [isCurrentUser, isCardPicked],
-    );
-
-    const avatarClasses = useMemo(
-      () =>
-        cn(
-          "w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg",
-          isCurrentUser ? "bg-blue-500" : "bg-gray-500",
-        ),
-      [isCurrentUser],
-    );
+    // Vote status emoji logic:
+    // - 🤔 thinking (voting in progress, hasn't voted)
+    // - ✅ voted (voting in progress, vote hidden)
+    // - 😴 didn't vote (game over, no vote)
+    // - card value (game over, voted)
+    const getVoteDisplay = () => {
+      if (isGameOver) {
+        return isCardPicked ? card : "😴";
+      }
+      return isCardPicked ? "✅" : "🤔";
+    };
 
     return (
       <div className="relative">
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          id="bottom"
-          className="bg-gray-400! dark:bg-surface-3!"
-          aria-hidden="true"
-        />
-        <div
-          className={nodeClasses}
-          role="article"
-          aria-label={`Player ${user.name}${isCurrentUser ? " (you)" : ""}${
-            isCardPicked ? " has voted" : " has not voted yet"
-          }`}
-        >
-          <div className={avatarClasses} aria-hidden="true">
-            {initials}
-          </div>
-
-          <div
-            className="text-sm font-medium text-gray-900 dark:text-gray-100 max-w-[100px] truncate"
-            title={user.name}
-          >
-            {user.name}
-          </div>
-
-          {isCardPicked && (
-            <div
-              className="absolute -top-2 -right-2"
-              aria-label={card ? `Voted: ${card}` : "Vote submitted"}
-            >
-              {card ? (
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                  {card}
-                </div>
-              ) : (
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 13l4 4L19 7"></path>
-                  </svg>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
         <Handle
           type="target"
           position={Position.Top}
@@ -107,6 +34,24 @@ export const PlayerNode = memo(
           className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
+        <div
+          className="flex flex-col items-center gap-2"
+          role="article"
+          aria-label={`Player ${user.name}${isCurrentUser ? " (you)" : ""}${
+            isCardPicked ? ", has voted" : ", has not voted yet"
+          }${card ? `, voted ${card}` : ""}`}
+        >
+          {/* Card */}
+          <div className={cardClasses}>{getVoteDisplay()}</div>
+
+          {/* Player Name */}
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
+            {user.name}
+            {isCurrentUser && (
+              <span className="text-gray-400 dark:text-gray-500"> (you)</span>
+            )}
+          </span>
+        </div>
       </div>
     );
   },

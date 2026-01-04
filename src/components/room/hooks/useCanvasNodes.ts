@@ -66,6 +66,7 @@ export function useCanvasNodes({
             isCurrentUser: userId === currentUserId,
             isCardPicked: userVote?.hasVoted || false,
             card: room.isGameOver ? userVote?.cardLabel || null : null,
+            isGameOver: room.isGameOver,
           },
           draggable: !node.isLocked,
         };
@@ -149,7 +150,7 @@ export function useCanvasNodes({
     const { room, users } = roomData;
     const allEdges: Edge[] = [];
 
-    // Session to Players edges
+    // Session to Players edges (subtle, consistent with timer edge)
     users.forEach((user: Doc<"users">) => {
       allEdges.push({
         id: `session-to-player-${user._id}`,
@@ -160,9 +161,9 @@ export function useCanvasNodes({
         type: "default",
         animated: false,
         style: {
-          stroke: "#3b82f6",
+          stroke: "#64748b",
           strokeWidth: 2,
-          strokeOpacity: 0.8,
+          strokeOpacity: 0.6,
         },
       });
     });

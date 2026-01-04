@@ -80,6 +80,7 @@ export function useCanvasLayout({
             isCurrentUser: user._id === currentUserId,
             isCardPicked: userVote?.hasVoted || false,
             card: room.isGameOver ? userVote?.cardLabel || null : null,
+            isGameOver: room.isGameOver,
           },
         };
 

@@ -8,6 +8,7 @@ export type PlayerNodeData = {
   isCurrentUser: boolean;
   isCardPicked: boolean;
   card: string | null;
+  isGameOver: boolean;
 };
 
 export type StoryNodeData = {
