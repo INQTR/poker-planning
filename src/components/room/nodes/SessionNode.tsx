@@ -94,8 +94,8 @@ export const SessionNode = memo(
         cn(
           "p-4 rounded-lg shadow-lg border-2 transition-all min-w-[280px] max-w-[320px]",
           isActive
-            ? "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-status-info-bg dark:to-status-info-bg border-blue-400 dark:border-blue-600"
-            : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-status-success-bg dark:to-status-success-bg border-green-400 dark:border-green-600",
+            ? "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-400 dark:border-blue-600"
+            : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-400 dark:border-green-600",
         ),
       [isActive],
     );

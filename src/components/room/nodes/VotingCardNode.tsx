@@ -65,7 +65,7 @@ export const VotingCardNode = memo(
           isHovered &&
             isSelectable &&
             !isCardSelected &&
-            "border-gray-400 dark:border-border shadow-lg",
+            "border-gray-400 dark:border-gray-500 shadow-lg",
           !isSelectable && "opacity-50 cursor-not-allowed shadow-sm",
         ),
       [isCardSelected, isSelectable, isHovered],
