@@ -21,6 +21,11 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Convex generated files
     "convex/_generated/**",
+    // playwright generated files
+    "test-results/**",
+    "playwright-report/**",
+    "blob-report/**",
+    "playwright/.cache/**",
   ]),
 ]);
 
