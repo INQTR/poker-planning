@@ -29,11 +29,11 @@ export const AgreementAnalysis: FC<AgreementAnalysisProps> = ({
   const getAgreementColor = () => {
     switch (agreementLevel) {
       case "high":
-        return "text-green-600 dark:text-green-400";
+        return "text-green-600 dark:text-status-success-fg";
       case "medium":
-        return "text-amber-600 dark:text-amber-400";
+        return "text-amber-600 dark:text-status-warning-fg";
       case "low":
-        return "text-red-600 dark:text-red-400";
+        return "text-red-600 dark:text-status-error-fg";
     }
   };
 
@@ -67,8 +67,8 @@ export const AgreementAnalysis: FC<AgreementAnalysisProps> = ({
       </div>
 
       {hasSplit && splitGroups && (
-        <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 rounded-md">
-          <p className="text-xs text-amber-700 dark:text-amber-300">
+        <div className="mt-2 p-2 bg-amber-50 dark:bg-status-warning-bg rounded-md">
+          <p className="text-xs text-amber-700 dark:text-status-warning-fg">
             Team opinion is split:
           </p>
           <div className="mt-1 space-y-1">
@@ -82,8 +82,8 @@ export const AgreementAnalysis: FC<AgreementAnalysisProps> = ({
       )}
 
       {voteClusters.length > 0 && voteClusters[0].percentage > 60 && (
-        <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded-md">
-          <p className="text-xs text-green-700 dark:text-green-300">
+        <div className="mt-2 p-2 bg-green-50 dark:bg-status-success-bg rounded-md">
+          <p className="text-xs text-green-700 dark:text-status-success-fg">
             Majority ({voteClusters[0].percentage.toFixed(0)}%) agrees on: {voteClusters[0].value}
           </p>
         </div>

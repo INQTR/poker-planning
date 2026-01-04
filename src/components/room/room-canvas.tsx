@@ -285,7 +285,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
           variant={BackgroundVariant.Dots}
           gap={20}
           size={1}
-          className="*:stroke-gray-300 dark:*:stroke-gray-700"
+          className="*:stroke-gray-300 dark:*:stroke-surface-3"
         />
       </ReactFlow>
     </div>

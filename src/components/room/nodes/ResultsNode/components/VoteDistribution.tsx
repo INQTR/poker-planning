@@ -53,19 +53,19 @@ export const VoteDistribution: FC<VoteDistributionProps> = ({
               <div 
                 className={cn(
                   "w-8 text-center text-sm font-medium",
-                  isMedian && "text-blue-600 dark:text-blue-400"
+                  isMedian && "text-blue-600 dark:text-status-info-fg"
                 )}
               >
                 {value}
               </div>
               <div className="flex-1">
-                <div className="relative h-6 bg-gray-100 dark:bg-gray-700 rounded">
+                <div className="relative h-6 bg-gray-100 dark:bg-surface-2 rounded">
                   <div
                     className={cn(
                       "absolute left-0 top-0 h-full rounded transition-all",
-                      isMedian 
-                        ? "bg-blue-500 dark:bg-blue-400"
-                        : "bg-gray-400 dark:bg-gray-500"
+                      isMedian
+                        ? "bg-blue-500 dark:bg-status-info-fg"
+                        : "bg-gray-400 dark:bg-surface-3"
                     )}
                     style={{ width: `${percentage}%` }}
                   />

@@ -97,7 +97,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   };
 
   const buttonClass =
-    "h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors";
+    "h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-surface-3 rounded-md transition-colors";
 
   if (!roomData) return null;
 
@@ -112,7 +112,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         aria-label="Canvas Room Controls"
         data-testid="canvas-navigation"
       >
-        <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50">
+        <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
           {/* Logo/Home */}
           <Link href="/" className="flex items-center">
             <Tooltip>
@@ -178,7 +178,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         className="absolute top-4 right-4 z-50"
         data-testid="canvas-zoom-controls"
       >
-        <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50">
+        <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
           {/* Zoom Controls */}
           <div className="flex items-center gap-1 px-2">
             <Tooltip>
@@ -300,7 +300,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                     className={cn(
                       buttonClass,
-                      isSettingsOpen && "bg-gray-100 dark:bg-gray-700"
+                      isSettingsOpen && "bg-gray-100 dark:bg-surface-3"
                     )}
                     aria-label="Room settings"
                     aria-expanded={isSettingsOpen}

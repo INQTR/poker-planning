@@ -51,10 +51,10 @@ export const TimerNode = memo(
             type="source"
             position={Position.Right}
             id="right"
-            className="bg-gray-400! dark:bg-gray-600!"
+            className="bg-gray-400! dark:bg-surface-3!"
             aria-hidden="true"
           />
-          <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
+          <div className="p-3 bg-white dark:bg-surface-1 rounded-lg shadow-md border border-gray-200 dark:border-border">
             <div className="flex items-center gap-3">
               <div
                 className="w-2 h-2 rounded-full bg-gray-400 animate-pulse"
@@ -64,10 +64,10 @@ export const TimerNode = memo(
                 --:--
               </span>
               <div className="flex items-center gap-1">
-                <div className="p-1.5 rounded bg-gray-100 dark:bg-gray-700">
+                <div className="p-1.5 rounded bg-gray-100 dark:bg-surface-3">
                   <Play className="h-4 w-4 text-gray-400" />
                 </div>
-                <div className="p-1.5 rounded bg-gray-100 dark:bg-gray-700">
+                <div className="p-1.5 rounded bg-gray-100 dark:bg-surface-3">
                   <RotateCcw className="h-4 w-4 text-gray-400" />
                 </div>
               </div>
@@ -83,10 +83,10 @@ export const TimerNode = memo(
           type="source"
           position={Position.Right}
           id="right"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
-        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
+        <div className="p-3 bg-white dark:bg-surface-1 rounded-lg shadow-md border border-gray-200 dark:border-border">
           {error && (
             <div className="mb-2 text-xs text-red-500 dark:text-red-400">
               {error}

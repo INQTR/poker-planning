@@ -130,16 +130,16 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
       ref={panelRef}
       className={cn(
         "absolute top-26 right-4 z-50 w-80",
-        "bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm",
+        "bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm",
         "rounded-xl shadow-2xl",
-        "border border-gray-200/50 dark:border-gray-700/50",
+        "border border-gray-200/50 dark:border-border",
         "animate-in fade-in-0 slide-in-from-top-2 duration-200"
       )}
       role="dialog"
       aria-label="Room settings"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/50 dark:border-gray-700/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/50 dark:border-border">
         <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
           Room Settings
         </h2>
@@ -150,7 +150,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3 rounded-md"
                 aria-label="Close settings"
               >
                 <X className="h-4 w-4" />
@@ -197,7 +197,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           </div>
         </div>
 
-        <Separator className="bg-gray-200/50 dark:bg-gray-700/50" />
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50" />
 
         {/* Auto-Reveal Section */}
         <div className="flex items-center justify-between">
@@ -219,7 +219,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           />
         </div>
 
-        <Separator className="bg-gray-200/50 dark:bg-gray-700/50" />
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50" />
 
         {/* Theme Section */}
         <div className="space-y-2">
@@ -233,7 +233,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
               onClick={() => setTheme("light")}
               className={cn(
                 "flex-1 h-8 gap-1.5 text-xs",
-                theme === "light" && "bg-gray-100 dark:bg-gray-700"
+                theme === "light" && "bg-gray-100 dark:bg-surface-3"
               )}
             >
               <Sun className="h-3.5 w-3.5" />
@@ -245,7 +245,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
               onClick={() => setTheme("dark")}
               className={cn(
                 "flex-1 h-8 gap-1.5 text-xs",
-                theme === "dark" && "bg-gray-100 dark:bg-gray-700"
+                theme === "dark" && "bg-gray-100 dark:bg-surface-3"
               )}
             >
               <Moon className="h-3.5 w-3.5" />
@@ -257,7 +257,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
               onClick={() => setTheme("system")}
               className={cn(
                 "flex-1 h-8 gap-1.5 text-xs",
-                theme === "system" && "bg-gray-100 dark:bg-gray-700"
+                theme === "system" && "bg-gray-100 dark:bg-surface-3"
               )}
             >
               <Monitor className="h-3.5 w-3.5" />
@@ -266,7 +266,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           </div>
         </div>
 
-        <Separator className="bg-gray-200/50 dark:bg-gray-700/50" />
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50" />
 
         {/* Users Section */}
         <div className="space-y-2">
@@ -288,7 +288,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
               otherUsers.map((u) => (
                 <div
                   key={u._id}
-                  className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-gray-700/50"
+                  className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-surface-3/50"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-300 shrink-0">

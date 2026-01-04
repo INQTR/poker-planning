@@ -38,6 +38,22 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Surface colors */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  /* Status colors */
+  --color-status-info-bg: var(--status-info-bg);
+  --color-status-info-fg: var(--status-info-fg);
+  --color-status-success-bg: var(--status-success-bg);
+  --color-status-success-fg: var(--status-success-fg);
+  --color-status-warning-bg: var(--status-warning-bg);
+  --color-status-warning-fg: var(--status-warning-fg);
+  --color-status-error-bg: var(--status-error-bg);
+  --color-status-error-fg: var(--status-error-fg);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -80,6 +96,23 @@
   --sidebar-accent-foreground: oklch(0.98 0.02 320);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+
+  /* Surface levels - for layered UI elements */
+  --surface-1: oklch(1 0 0);
+  --surface-2: oklch(0.985 0 0);
+  --surface-3: oklch(0.967 0.001 286.375);
+
+  /* Status backgrounds */
+  --status-info-bg: oklch(0.95 0.02 250);
+  --status-success-bg: oklch(0.95 0.02 150);
+  --status-warning-bg: oklch(0.95 0.03 85);
+  --status-error-bg: oklch(0.95 0.03 25);
+
+  /* Status foregrounds */
+  --status-info-fg: oklch(0.45 0.15 250);
+  --status-success-fg: oklch(0.45 0.15 150);
+  --status-warning-fg: oklch(0.45 0.15 85);
+  --status-error-fg: oklch(0.50 0.20 25);
 }
 
 .dark {
@@ -114,6 +147,23 @@
   --sidebar-accent-foreground: oklch(0.98 0.02 320);
   --sidebar-border: oklch(1 0 0 / 6%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
+
+  /* Surface levels - near-black for dark mode */
+  --surface-1: oklch(0.145 0.005 285);
+  --surface-2: oklch(0.12 0.004 285);
+  --surface-3: oklch(0.18 0.006 285);
+
+  /* Status backgrounds - darker versions */
+  --status-info-bg: oklch(0.18 0.04 250);
+  --status-success-bg: oklch(0.18 0.04 150);
+  --status-warning-bg: oklch(0.18 0.05 85);
+  --status-error-bg: oklch(0.18 0.05 25);
+
+  /* Status foregrounds - vibrant on dark */
+  --status-info-fg: oklch(0.70 0.15 250);
+  --status-success-fg: oklch(0.70 0.15 150);
+  --status-warning-fg: oklch(0.75 0.15 85);
+  --status-error-fg: oklch(0.70 0.18 25);
 }
 
 @layer base {

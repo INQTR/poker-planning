@@ -94,8 +94,8 @@ export const SessionNode = memo(
         cn(
           "p-4 rounded-lg shadow-lg border-2 transition-all min-w-[280px] max-w-[320px]",
           isActive
-            ? "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-400 dark:border-blue-600"
-            : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-400 dark:border-green-600",
+            ? "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-status-info-bg dark:to-status-info-bg border-blue-400 dark:border-blue-600"
+            : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-status-success-bg dark:to-status-success-bg border-green-400 dark:border-green-600",
         ),
       [isActive],
     );
@@ -106,28 +106,28 @@ export const SessionNode = memo(
           type="target"
           position={Position.Top}
           id="top"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
         <Handle
           type="source"
           position={Position.Right}
           id="right"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
         <Handle
           type="source"
           position={Position.Bottom}
           id="bottom"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
         <Handle
           type="source"
           position={Position.Left}
           id="left"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
 
@@ -172,8 +172,8 @@ export const SessionNode = memo(
             className={cn(
               "flex items-center gap-2 w-full px-3 py-1.5 mb-3 rounded-md text-xs font-medium transition-colors",
               autoCompleteVoting
-                ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/50"
-                : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700",
+                ? "bg-amber-100 dark:bg-status-warning-bg text-amber-700 dark:text-status-warning-fg hover:bg-amber-200 dark:hover:bg-status-warning-bg/80"
+                : "bg-gray-100 dark:bg-surface-1 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-surface-3",
             )}
             aria-label={
               autoCompleteVoting
@@ -192,12 +192,12 @@ export const SessionNode = memo(
           </button>
 
           {/* Status */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+          <div className="border-t border-gray-200 dark:border-border pt-3">
             {isActive ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <div
-                    className="flex-1 bg-blue-200 dark:bg-blue-800 rounded-full h-2 overflow-hidden"
+                    className="flex-1 bg-blue-200 dark:bg-status-info-bg rounded-full h-2 overflow-hidden"
                     role="progressbar"
                     aria-label="Voting progress"
                     aria-valuemin={0}
@@ -205,7 +205,7 @@ export const SessionNode = memo(
                     aria-valuenow={voteCount}
                   >
                     <div
-                      className="bg-blue-500 dark:bg-blue-400 h-2 transition-all duration-300"
+                      className="bg-blue-500 dark:bg-status-info-fg h-2 transition-all duration-300"
                       style={{
                         width: `${
                           participantCount > 0
@@ -215,24 +215,24 @@ export const SessionNode = memo(
                       }}
                     />
                   </div>
-                  <span className="text-xs text-blue-700 dark:text-blue-300 font-medium whitespace-nowrap">
+                  <span className="text-xs text-blue-700 dark:text-status-info-fg font-medium whitespace-nowrap">
                     {voteCount}/{participantCount}
                   </span>
                 </div>
 
                 {isCountdownActive ? (
                   <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-2 py-2 bg-amber-100 dark:bg-amber-900/30 rounded-md">
-                      <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+                    <div className="flex items-center justify-center gap-2 py-2 bg-amber-100 dark:bg-status-warning-bg rounded-md">
+                      <div className="text-2xl font-bold text-amber-600 dark:text-status-warning-fg tabular-nums">
                         {countdownSeconds}
                       </div>
-                      <span className="text-sm text-amber-700 dark:text-amber-300">
+                      <span className="text-sm text-amber-700 dark:text-status-warning-fg">
                         Revealing...
                       </span>
                     </div>
                     <button
                       onClick={onCancelAutoReveal}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-surface-3 dark:hover:bg-surface-3/80 text-gray-700 dark:text-gray-200 transition-colors"
                       aria-label="Cancel auto-reveal"
                     >
                       <X className="h-4 w-4" />
@@ -252,7 +252,7 @@ export const SessionNode = memo(
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center justify-center gap-2 text-green-700 dark:text-green-300">
+                <div className="flex items-center justify-center gap-2 text-green-700 dark:text-status-success-fg">
                   <svg
                     className="h-5 w-5"
                     fill="none"
@@ -274,8 +274,8 @@ export const SessionNode = memo(
                   className={cn(
                     "w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors",
                     resetCooldown > 0
-                      ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                      : "bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200",
+                      ? "bg-gray-200 dark:bg-surface-3 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      : "bg-gray-200 hover:bg-gray-300 dark:bg-surface-3 dark:hover:bg-surface-3/80 text-gray-700 dark:text-gray-200",
                   )}
                   aria-label={
                     resetCooldown > 0

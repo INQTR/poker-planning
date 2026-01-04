@@ -26,12 +26,12 @@ export const PlayerNode = memo(
       () =>
         cn(
           "flex flex-col items-center gap-2 p-3 rounded-lg shadow-lg border-2 transition-all",
-          "bg-white dark:bg-gray-800",
+          "bg-white dark:bg-surface-1",
           isCurrentUser
             ? "border-blue-500 dark:border-blue-400"
-            : "border-gray-200 dark:border-gray-600",
+            : "border-gray-200 dark:border-border",
           isCardPicked &&
-            "ring-2 ring-green-400 dark:ring-green-500 ring-offset-2 dark:ring-offset-gray-900",
+            "ring-2 ring-green-400 dark:ring-green-500 ring-offset-2 dark:ring-offset-background",
         ),
       [isCurrentUser, isCardPicked],
     );
@@ -51,7 +51,7 @@ export const PlayerNode = memo(
           type="source"
           position={Position.Bottom}
           id="bottom"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
         <div
@@ -104,7 +104,7 @@ export const PlayerNode = memo(
           type="target"
           position={Position.Top}
           id="top"
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
       </div>
