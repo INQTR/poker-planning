@@ -67,8 +67,8 @@ export const StatisticsPanel: FC<StatisticsPanelProps> = ({
       </div>
 
       {stats.standardDeviation > 5 && (
-        <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 rounded-md">
-          <p className="text-xs text-amber-700 dark:text-amber-300">
+        <div className="mt-2 p-2 bg-amber-50 dark:bg-status-warning-bg rounded-md">
+          <p className="text-xs text-amber-700 dark:text-status-warning-fg">
             High variance in estimates suggests need for discussion
           </p>
         </div>

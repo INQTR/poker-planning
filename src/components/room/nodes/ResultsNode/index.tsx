@@ -31,12 +31,12 @@ export const ResultsNode = memo(
         <Handle
           type="source"
           position={Position.Left}
-          className="bg-gray-400! dark:bg-gray-600!"
+          className="bg-gray-400! dark:bg-surface-3!"
         />
 
         <div
           className={cn(
-            "bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-green-400 dark:border-green-600 transition-all",
+            "bg-white dark:bg-surface-1 rounded-lg shadow-lg border-2 border-green-400 dark:border-green-600 transition-all",
             isExpanded ? "min-w-[320px] max-w-[400px]" : "min-w-[250px]",
           )}
         >
@@ -101,10 +101,10 @@ export const ResultsNode = memo(
                   className={cn(
                     "text-lg font-bold",
                     agreementQuality.consensusStrength > 80
-                      ? "text-green-600 dark:text-green-400"
+                      ? "text-green-600 dark:text-status-success-fg"
                       : agreementQuality.consensusStrength > 60
-                      ? "text-amber-600 dark:text-amber-400"
-                      : "text-red-600 dark:text-red-400",
+                      ? "text-amber-600 dark:text-status-warning-fg"
+                      : "text-red-600 dark:text-status-error-fg",
                   )}
                 >
                   {agreementQuality.consensusStrength.toFixed(0)}%
@@ -116,7 +116,7 @@ export const ResultsNode = memo(
 
           {/* Expanded Content */}
           {isExpanded && (
-            <div className="px-4 pb-4 space-y-4 border-t dark:border-gray-700">
+            <div className="px-4 pb-4 space-y-4 border-t dark:border-border">
               {/* Vote Distribution */}
               <div className="pt-4">
                 <VoteDistribution

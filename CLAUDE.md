@@ -94,6 +94,38 @@ tests/
 └── *.spec.ts           # Test files
 ```
 
+### Design Tokens
+
+The project uses semantic design tokens defined in `src/app/globals.css`. These tokens ensure consistent theming across light and dark modes.
+
+**Surface Tokens** - For layered UI elements (stacking depth: 1=base, 2=elevated, 3=highest):
+- `surface-1`: Primary containers (cards, panels)
+- `surface-2`: Secondary/elevated containers
+- `surface-3`: Interactive elements (handles, hover states)
+
+**Status Tokens** - For contextual feedback with `-bg` (background) and `-fg` (foreground) variants:
+- `status-info-*`: Informational states (blue)
+- `status-success-*`: Success states (green)
+- `status-warning-*`: Warning states (amber)
+- `status-error-*`: Error states (red)
+
+**Usage in Tailwind**:
+```tsx
+// Surface tokens
+className="bg-white dark:bg-surface-1"
+className="hover:bg-gray-100 dark:hover:bg-surface-3"
+
+// Status tokens
+className="bg-green-50 dark:bg-status-success-bg"
+className="text-green-700 dark:text-status-success-fg"
+```
+
+**When to use tokens vs hardcoded values**:
+- Use surface tokens for container backgrounds in dark mode
+- Use status tokens for semantic feedback colors
+- Keep hardcoded values for gradients (tokens don't support gradient pairs)
+- Keep hardcoded values for hover states that need distinct visual feedback
+
 ## Important Notes
 
 - **shadcn/ui components**: Always use `npx shadcn@latest add [component-name]` - never create manually

@@ -56,12 +56,12 @@ export const VotingCardNode = memo(
         cn(
           "h-24 w-16 text-2xl rounded-xl",
           "flex items-center justify-center font-bold",
-          "bg-white dark:bg-gray-800 transition-all duration-200",
+          "bg-white dark:bg-surface-1 transition-all duration-200",
           "border-2 relative overflow-hidden",
           isSelectable && "cursor-pointer",
           isCardSelected
             ? "border-blue-500 dark:border-blue-400 bg-blue-500 text-white dark:bg-blue-600 shadow-lg shadow-blue-500/30"
-            : "border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 shadow-md",
+            : "border-gray-300 dark:border-border text-gray-900 dark:text-gray-100 shadow-md",
           isHovered &&
             isSelectable &&
             !isCardSelected &&

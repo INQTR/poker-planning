@@ -22,7 +22,7 @@ export const InsightsPanel: FC<InsightsPanelProps> = ({
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Lightbulb className="h-4 w-4 text-amber-500" />
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h4 className="text-sm font-medium text-foreground/80 dark:text-foreground/80">
               Insights
             </h4>
           </div>
@@ -30,7 +30,7 @@ export const InsightsPanel: FC<InsightsPanelProps> = ({
             {insights.map((insight, idx) => (
               <li
                 key={idx}
-                className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1"
+                className="text-xs text-muted-foreground flex items-start gap-1"
               >
                 <span className="text-amber-500 mt-0.5">•</span>
                 <span>{insight}</span>
@@ -44,7 +44,7 @@ export const InsightsPanel: FC<InsightsPanelProps> = ({
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-blue-500" />
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <h4 className="text-sm font-medium text-foreground/80 dark:text-foreground/80">
               Recommendations
             </h4>
           </div>
@@ -52,7 +52,7 @@ export const InsightsPanel: FC<InsightsPanelProps> = ({
             {recommendations.map((rec, idx) => (
               <li
                 key={idx}
-                className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1"
+                className="text-xs text-muted-foreground flex items-start gap-1"
               >
                 <span className="text-blue-500 mt-0.5">→</span>
                 <span>{rec}</span>
