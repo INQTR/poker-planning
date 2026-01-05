@@ -8,7 +8,7 @@ const TIMER_Y = -250;
 const SESSION_Y = -300;
 const VOTING_CARD_Y = 450;
 const VOTING_CARD_SPACING = 70;
-const DEFAULT_CARDS = ["0", "1", "2", "3", "5", "8", "13", "21", "?"];
+const DEFAULT_CARDS = ["0", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "∞", "?", "☕"];
 
 // Layout configuration for session + player node positioning
 const LAYOUT_CONFIG = {
