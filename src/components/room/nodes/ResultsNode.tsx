@@ -48,7 +48,7 @@ export const ResultsNode = memo(
       const agreement = total > 0 ? Math.round((maxCount / total) * 100) : 0;
 
       return {
-        average: avg,
+        average: numericVotes.length > 0 ? avg : null,
         agreement,
         voteGroups: sorted,
         totalVotes: total,
@@ -84,7 +84,7 @@ export const ResultsNode = memo(
     return (
       <div className="relative">
         <Handle
-          type="source"
+          type="target"
           position={Position.Left}
           id="left"
           className="bg-gray-400! dark:bg-surface-3!"
@@ -104,7 +104,7 @@ export const ResultsNode = memo(
                 Avg
               </span>
               <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300">
-                {average.toFixed(1)}
+                {average !== null ? average.toFixed(1) : "—"}
               </span>
             </div>
 
