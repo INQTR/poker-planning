@@ -11,20 +11,6 @@
 
 ![AgileKit Planning Poker Room - Free Scrum Estimation Tool](public/agilekit-screenshot.png "AgileKit Planning Poker Room")
 
-## Why AgileKit?
-
-Unlike other planning poker tools that charge **$8-30/month per user**, AgileKit is:
-
-| Feature | AgileKit | Competitors |
-|---------|----------|-------------|
-| **Price** | Free forever | $8-30/user/month |
-| **Registration** | Not required | Usually required |
-| **Source Code** | Open source (MIT) | Closed source |
-| **Real-time Sync** | Instant updates | Varies |
-| **Data Privacy** | Self-hostable | Third-party only |
-
-**Perfect for:** Remote Scrum teams, distributed agile teams, sprint planning sessions, backlog refinement, and user story estimation.
-
 ## Features
 
 - **100% Free** - No premium tier, no hidden costs, no credit card required
@@ -72,13 +58,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|------------|
+| Layer        | Technology                                    |
+| ------------ | --------------------------------------------- |
 | **Frontend** | Next.js 15 (App Router), React 19, TypeScript |
-| **Backend** | Convex (serverless with real-time reactivity) |
-| **Styling** | Tailwind CSS 4, shadcn/ui |
-| **Canvas** | @xyflow/react |
-| **State** | Convex reactive queries |
+| **Backend**  | Convex (serverless with real-time reactivity) |
+| **Styling**  | Tailwind CSS 4, shadcn/ui                     |
+| **Canvas**   | @xyflow/react                                 |
+| **State**    | Convex reactive queries                       |
 
 ## Running Tests
 
