@@ -123,44 +123,13 @@ export function HomeContent() {
             {/* Left side: Content - 50% */}
             <div className="text-center lg:text-left px-6 lg:pl-16 xl:pl-36 lg:pr-8">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
-                Estimate stories with
-                <span className="relative">
-                  <span className="relative bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                    {" "}
-                    AgileKit
-                  </span>
-                  <svg
-                    className="absolute -bottom-1.5 left-0 w-full"
-                    viewBox="0 0 300 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2 8.5C2 8.5 101 2 149.5 2C198 2 298 8.5 298 8.5"
-                      stroke="url(#hero-gradient)"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                    <defs>
-                      <linearGradient
-                        id="hero-gradient"
-                        x1="0%"
-                        y1="0%"
-                        x2="100%"
-                        y2="0%"
-                      >
-                        <stop offset="0%" stopColor="#7c3aed" />
-                        <stop offset="100%" stopColor="#a78bfa" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </span>
+                Free Planning Poker Online
               </h1>
 
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 lg:max-w-xl">
-                Join thousands of Agile teams using our intuitive platform for
-                collaborative story point estimation. No sign-up, no fees, just
-                pure efficiency.
+                Join thousands of Scrum teams using our intuitive platform for
+                sprint planning and story point estimation. Perfect for remote
+                teams. No sign-up, no fees.
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
@@ -201,11 +170,6 @@ export function HomeContent() {
                   title="Live Planning Poker Demo"
                   sandbox="allow-scripts allow-same-origin"
                 />
-                {/* Live indicator */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium">
-                  <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                  Live Demo
-                </div>
               </div>
               {/* Subtle glow effect */}
               <div className="absolute -inset-4 right-0 -z-10 bg-linear-to-tr from-primary/15 to-purple-600/15 rounded-3xl lg:rounded-r-none blur-2xl" />

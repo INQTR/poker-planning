@@ -52,7 +52,7 @@ export function HowItWorks() {
             How It Works
           </p>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Four simple steps
+            How Planning Poker Works
           </h2>
           <p className="mt-5 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
             Transform your sprint planning in minutes

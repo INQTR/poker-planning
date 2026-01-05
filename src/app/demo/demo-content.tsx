@@ -32,7 +32,7 @@ export function DemoContent() {
   return (
     <div className="relative h-screen bg-white dark:bg-black">
       {/* Demo mode badge */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-primary/90 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg backdrop-blur-sm">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-50 dark:bg-zinc-900 text-gray-900 dark:text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
         Live Demo - View Only
       </div>
 

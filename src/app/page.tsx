@@ -4,6 +4,7 @@ import {
   WebApplicationSchema,
   OrganizationSchema,
   FAQSchema,
+  HowToSchema,
 } from "@/components/seo/structured-data";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function HomePage() {
       <WebApplicationSchema />
       <OrganizationSchema />
       <FAQSchema />
+      <HowToSchema />
       <HomeContent />
     </>
   );
