@@ -22,9 +22,9 @@ export class RoomPage {
 
     // Voting elements - React Flow nodes have specific structure
     this.votingCards = page.locator('[role="button"][aria-label*="Vote"]');
-    this.revealButton = page.getByRole("button", { name: "Reveal Cards" });
+    this.revealButton = page.getByRole("button", { name: /Reveal (all )?[Cc]ards/i });
     this.resetButton = page.getByRole("button", { name: /New Round|Start new round/i });
-    this.voteCountIndicator = page.locator('[aria-label="Voting progress"]').locator('..').locator('span.text-xs')
+    this.voteCountIndicator = page.locator('[aria-label="Voting progress"]').locator('..').locator('span.text-xs');
 
     // Room information
     this.roomTitle = page.locator('.font-semibold').filter({ hasText: "Planning Session" });
@@ -42,9 +42,9 @@ export class RoomPage {
     // Player elements - these are React Flow nodes
     this.playerList = page.locator(".react-flow__node-player");
 
-    // Timer and results
+    // Timer and results (results shown in session node when voting complete)
     this.timerButton = page.locator(".react-flow__node-timer");
-    this.resultsSection = page.locator(".react-flow__node-results");
+    this.resultsSection = page.locator(".react-flow__node-session").locator("text=Voting Complete");
 
     // Canvas
     this.canvasContainer = page.locator(".react-flow");
@@ -93,13 +93,15 @@ export class RoomPage {
     playerName: string,
     hasVoted: boolean = true
   ): Promise<void> {
-    // Vote indicators would be shown in player nodes
+    // Vote indicators are shown in player nodes as emojis
+    // ✅ = has voted (hidden), 🤔 = thinking/not voted yet
     const player = this.page.locator(".react-flow__node-player").filter({ hasText: playerName });
     if (hasVoted) {
-      // Look for some visual indicator of voting
-      await expect(player.locator(".voted-indicator, [data-voted='true']")).toBeVisible();
+      // Look for checkmark emoji indicating player has voted
+      await expect(player.locator("text=✅")).toBeVisible();
     } else {
-      await expect(player.locator(".voted-indicator, [data-voted='true']")).not.toBeVisible();
+      // Look for thinking emoji indicating player hasn't voted
+      await expect(player.locator("text=🤔")).toBeVisible();
     }
   }
 

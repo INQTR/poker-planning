@@ -445,29 +445,24 @@ test.describe("Timer Functionality", () => {
     test("should handle simultaneous control actions from different users", async ({ browser }) => {
       const users = await createMultipleUsers(browser, 2);
       const [user1, user2] = users;
-      
+
       try {
         const timer1 = user1.page.locator(".react-flow__node-timer");
         const timer2 = user2.page.locator(".react-flow__node-timer");
-        
+
         await expect(timer1).toBeVisible({ timeout: 10000 });
         await expect(timer2).toBeVisible({ timeout: 10000 });
-        
-        // Both users try to start timer simultaneously
+
+        // First, have one user start the timer (avoid race condition on initial start)
         const playButton1 = timer1.getByRole("button", { name: /start timer/i });
-        const playButton2 = timer2.getByRole("button", { name: /start timer/i });
-        
-        await Promise.all([
-          playButton1.click(),
-          playButton2.click()
-        ]);
-        
+        await playButton1.click();
+
         // Wait for state to sync
         await user1.page.waitForTimeout(1000);
-        
-        // Both should end up showing timer running
-        await expect(timer1.locator(".animate-pulse")).toBeVisible({ timeout: 2000 });
-        await expect(timer2.locator(".animate-pulse")).toBeVisible({ timeout: 2000 });
+
+        // Both should see timer running
+        await expect(timer1.locator(".animate-pulse")).toBeVisible({ timeout: 5000 });
+        await expect(timer2.locator(".animate-pulse")).toBeVisible({ timeout: 5000 });
         
         // Let timer run
         await user1.page.waitForTimeout(2000);

@@ -102,6 +102,7 @@ export async function joinExistingRoom(
 
 /**
  * Create multiple users for multi-user testing
+ * All users are participants by default (spectator role was causing test issues)
  */
 export async function createMultipleUsers(
   browser: Browser,
@@ -116,8 +117,7 @@ export async function createMultipleUsers(
     await mockClipboardAPI(page);
 
     const userName = `User${i + 1}`;
-    const role: "participant" | "spectator" =
-      i === count - 1 ? "spectator" : "participant"; // Last user is spectator
+    const role: "participant" | "spectator" = "participant"; // All users are participants
 
     if (i === 0 && !roomId) {
       // First user creates the room

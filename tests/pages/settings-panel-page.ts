@@ -37,8 +37,9 @@ export class SettingsPanelPage {
     this.roomNameInput = page.locator("#room-name");
     this.saveButton = this.settingsPanel.getByRole("button", { name: "Save" });
 
-    // Auto-reveal toggle
-    this.autoRevealSwitch = page.locator("#auto-reveal");
+    // Auto-reveal toggle (the Switch component from Base UI)
+    // Find the switch using its data-slot attribute within the settings panel
+    this.autoRevealSwitch = this.settingsPanel.locator('[data-slot="switch"]');
 
     // Theme buttons
     this.themeButtons = {
@@ -110,24 +111,27 @@ export class SettingsPanelPage {
   }
 
   async isAutoRevealEnabled(): Promise<boolean> {
-    const checked = await this.autoRevealSwitch.getAttribute("data-state");
-    return checked === "checked";
+    // Base UI uses data-checked attribute when switch is on
+    const hasDataChecked = await this.autoRevealSwitch.getAttribute("data-checked");
+    return hasDataChecked !== null;
   }
 
   async toggleAutoReveal(): Promise<void> {
     const wasEnabled = await this.isAutoRevealEnabled();
-    await safeClick(this.autoRevealSwitch);
+    await this.autoRevealSwitch.click();
     // Wait for toggle to take effect
+    await this.page.waitForTimeout(500);
     if (wasEnabled) {
-      await expect(this.autoRevealSwitch).toHaveAttribute(
-        "data-state",
-        "unchecked",
+      // Should no longer have data-checked
+      await expect(this.autoRevealSwitch).not.toHaveAttribute(
+        "data-checked",
         { timeout: 3000 }
       );
     } else {
+      // Should now have data-checked
       await expect(this.autoRevealSwitch).toHaveAttribute(
-        "data-state",
-        "checked",
+        "data-checked",
+        "",
         { timeout: 3000 }
       );
     }

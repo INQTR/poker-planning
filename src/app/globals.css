@@ -239,3 +239,15 @@
     opacity: 0.5;
   }
 }
+
+/* React Flow node animations for smooth repositioning */
+.react-flow__node-player,
+.react-flow__node-session {
+  transition: transform 300ms ease-out;
+}
+
+/* Disable transition during drag operations */
+.react-flow__node-player.dragging,
+.react-flow__node-session.dragging {
+  transition: none;
+}

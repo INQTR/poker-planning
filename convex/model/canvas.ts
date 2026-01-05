@@ -6,11 +6,21 @@ const CANVAS_CENTER = { x: 0, y: 0 };
 const TIMER_X = -500;
 const TIMER_Y = -250;
 const SESSION_Y = -300;
-const PLAYERS_Y = 200;
-const PLAYER_SPACING = 200;
 const VOTING_CARD_Y = 450;
 const VOTING_CARD_SPACING = 70;
 const DEFAULT_CARDS = ["0", "1", "2", "3", "5", "8", "13", "21", "?"];
+
+// Layout configuration for session + player node positioning
+const LAYOUT_CONFIG = {
+  nodesep: 150, // Horizontal spacing between players
+  ranksep: 300, // Vertical spacing between session and players
+};
+
+// Node dimensions for layout calculations
+const NODE_DIMENSIONS = {
+  session: { width: 280, height: 150 },
+  player: { width: 80, height: 130 },
+};
 
 export interface Position {
   x: number;
@@ -27,6 +37,102 @@ export interface CanvasNode {
   isLocked?: boolean;
   lastUpdatedBy?: Id<"users">;
   lastUpdatedAt: number;
+}
+
+interface NodePosition {
+  nodeId: string;
+  position: Position;
+}
+
+/**
+ * Computes horizontal layout for session and player nodes.
+ * Places session node centered at (0, SESSION_Y) and player nodes
+ * in a horizontal row below, evenly spaced.
+ * Returns positions as top-left coordinates (React Flow format).
+ */
+function computeHorizontalLayout(
+  sessionNodeId: string,
+  playerNodeIds: string[]
+): NodePosition[] {
+  const positions: NodePosition[] = [];
+
+  // Session node: centered horizontally at CANVAS_CENTER.x
+  positions.push({
+    nodeId: sessionNodeId,
+    position: {
+      x: CANVAS_CENTER.x - NODE_DIMENSIONS.session.width / 2,
+      y: SESSION_Y,
+    },
+  });
+
+  // Player nodes: horizontally distributed below session
+  if (playerNodeIds.length > 0) {
+    const spacing = LAYOUT_CONFIG.nodesep;
+    const totalWidth = (playerNodeIds.length - 1) * spacing;
+    const startX = CANVAS_CENTER.x - totalWidth / 2;
+    const playerY =
+      SESSION_Y + NODE_DIMENSIONS.session.height / 2 + LAYOUT_CONFIG.ranksep;
+
+    playerNodeIds.forEach((playerId, index) => {
+      const centerX = startX + index * spacing;
+      positions.push({
+        nodeId: playerId,
+        position: {
+          x: centerX - NODE_DIMENSIONS.player.width / 2,
+          y: playerY - NODE_DIMENSIONS.player.height / 2,
+        },
+      });
+    });
+  }
+
+  return positions;
+}
+
+/**
+ * Recalculates layout for all session/player nodes.
+ * Called when players join or leave to maintain balanced layout.
+ */
+export async function relayoutNodes(
+  ctx: MutationCtx,
+  roomId: Id<"rooms">
+): Promise<void> {
+  // Get all nodes for the room
+  const nodes = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .collect();
+
+  // Find session and player nodes
+  const sessionNode = nodes.find((n) => n.type === "session");
+  const playerNodes = nodes.filter((n) => n.type === "player");
+
+  if (!sessionNode) return;
+
+  // Compute new layout
+  const playerNodeIds = playerNodes.map((n) => n.nodeId);
+  const newPositions = computeHorizontalLayout(
+    sessionNode.nodeId,
+    playerNodeIds
+  );
+
+  // Build update operations for unlocked nodes
+  const now = Date.now();
+  const updateOperations = newPositions
+    .map((pos) => {
+      const node = nodes.find((n) => n.nodeId === pos.nodeId);
+      return node && !node.isLocked ? { node, position: pos.position } : null;
+    })
+    .filter((op): op is NonNullable<typeof op> => op !== null);
+
+  // Execute all updates in parallel
+  await Promise.all(
+    updateOperations.map((op) =>
+      ctx.db.patch(op.node._id, {
+        position: op.position,
+        lastUpdatedAt: now,
+      })
+    )
+  );
 }
 
 /**
@@ -153,22 +259,10 @@ export async function upsertPlayerNode(
     return existingNode._id;
   }
 
-  // Calculate default position based on existing players
-  let position = args.position;
-  if (!position) {
-    const playerNodes = await ctx.db
-      .query("canvasNodes")
-      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-      .filter((q) => q.eq(q.field("type"), "player"))
-      .collect();
+  // Create with temporary position (will be updated by relayout)
+  const position = args.position ?? { x: 0, y: 0 };
 
-    const playerCount = playerNodes.length;
-    const totalWidth = playerCount * PLAYER_SPACING;
-    const startX = CANVAS_CENTER.x - totalWidth / 2;
-    position = { x: startX + playerCount * PLAYER_SPACING, y: PLAYERS_Y };
-  }
-
-  return await ctx.db.insert("canvasNodes", {
+  const id = await ctx.db.insert("canvasNodes", {
     roomId: args.roomId,
     nodeId,
     type: "player",
@@ -176,6 +270,11 @@ export async function upsertPlayerNode(
     data: { userId: args.userId },
     lastUpdatedAt: Date.now(),
   });
+
+  // Trigger relayout to position all nodes correctly
+  await relayoutNodes(ctx, args.roomId);
+
+  return id;
 }
 
 /**
@@ -280,6 +379,9 @@ export async function removePlayerNodeAndCards(
 
   // Delete all nodes in parallel
   await Promise.all(nodesToDelete.map((node) => ctx.db.delete(node._id)));
+
+  // Trigger relayout to rebalance remaining nodes
+  await relayoutNodes(ctx, args.roomId);
 }
 
 /**
