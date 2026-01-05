@@ -33,7 +33,7 @@ Unlike other planning poker tools that charge **$8-30/month per user**, AgileKit
 - **Modern Canvas Interface** - Whiteboard-style room with intuitive drag-and-drop
 - **Visual Voting Progress** - See who has voted at a glance with emoji indicators
 - **Instant Results** - Charts and statistics displayed immediately after reveal
-- **Fibonacci & Custom Scales** - Support for Fibonacci, T-shirt sizing, and custom point scales
+- **Fibonacci Scale** - Industry-standard Fibonacci sequence for story point estimation
 - **Built-in Timer** - Session timer for timeboxed estimation rounds
 - **Auto-cleanup** - Rooms automatically cleaned up after 5 days of inactivity
 - **Open Source** - Fully transparent codebase, self-host if you prefer
@@ -117,8 +117,8 @@ npx convex deploy --prod
 ## Roadmap
 
 - [ ] Jira integration
+- [ ] T-shirt sizing and custom card decks
 - [ ] Voting history export
-- [ ] Custom card decks
 - [ ] Team velocity tracking
 
 ## Contributing

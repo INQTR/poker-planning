@@ -27,9 +27,9 @@ const faqs = [
       "There's no limit on the number of participants in a planning session. Whether you have 5 or 500 team members, everyone can join and participate seamlessly.",
   },
   {
-    question: "Can I customize the voting cards?",
+    question: "What voting scale does AgileKit use?",
     answer:
-      "Yes! You can choose from popular card sets like Fibonacci (1, 2, 3, 5, 8...), T-shirt sizes (XS, S, M, L, XL), or create custom values that match your team's estimation scale.",
+      "AgileKit uses the Fibonacci sequence (0, 1, 2, 3, 5, 8, 13, 21, ?) which is the industry standard for story point estimation. We're working on adding T-shirt sizes and custom scales in a future update.",
   },
   {
     question: "Can I use this tool offline or self-host it?",
@@ -44,7 +44,7 @@ const faqs = [
   {
     question: "How does it compare to other planning poker tools?",
     answer:
-      "Unlike other tools that charge monthly fees or limit features, we offer everything for free with no restrictions. Our tool is open-source, requires no registration, and includes all features like real-time voting, multiple card sets, and team collaboration.",
+      "Unlike other tools that charge monthly fees or limit features, we offer everything for free with no restrictions. Our tool is open-source, requires no registration, and includes all features like real-time voting, Fibonacci estimation, and team collaboration.",
   },
   {
     question: "Can I contribute to the project?",

@@ -109,7 +109,7 @@ const testimonials: Testimonial[][][] = [
     ],
     [
       {
-        body: "We use it for everything from sprint planning to t-shirt sizing for quarterly roadmaps. The flexibility and ease of use make it our go-to estimation tool.",
+        body: "We use it for everything from sprint planning to quarterly roadmap estimation. The simplicity and ease of use make it our go-to estimation tool.",
         author: {
           name: "David Kim",
           handle: "davidkim",
