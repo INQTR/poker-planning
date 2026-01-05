@@ -170,11 +170,6 @@ export function HomeContent() {
                   title="Live Planning Poker Demo"
                   sandbox="allow-scripts allow-same-origin"
                 />
-                {/* Live indicator */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-black/70 dark:bg-white/10 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium">
-                  <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
-                  Live Demo
-                </div>
               </div>
               {/* Subtle glow effect */}
               <div className="absolute -inset-4 right-0 -z-10 bg-linear-to-tr from-primary/15 to-purple-600/15 rounded-3xl lg:rounded-r-none blur-2xl" />
