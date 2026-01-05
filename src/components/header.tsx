@@ -33,7 +33,7 @@ export function Header() {
           <Link href="/" className="-m-1.5 p-1.5 flex items-center group">
             <Image
               src="/logo.svg"
-              alt="AgileKit Logo"
+              alt="AgileKit - Free Planning Poker Tool"
               width={32}
               height={32}
               className="h-8 w-8 mr-2 transition-transform duration-300 group-hover:scale-105"

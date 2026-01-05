@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Accordion,
   AccordionContent,
@@ -63,7 +64,7 @@ export function FAQ() {
               FAQs
             </p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Frequently Asked Questions
+              Planning Poker FAQ
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
               Everything you need to know about planning poker and our tool
@@ -90,16 +91,30 @@ export function FAQ() {
               Still have questions?
             </p>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-              Check out our{" "}
+              Learn more about our{" "}
+              <Link
+                href="/features"
+                className="font-medium text-primary hover:text-primary/80"
+              >
+                features
+              </Link>
+              , see{" "}
+              <Link
+                href="/#how-it-works"
+                className="font-medium text-primary hover:text-primary/80"
+              >
+                how it works
+              </Link>
+              , or check out our{" "}
               <a
                 href="https://github.com/INQTR/poker-planning"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-primary hover:text-primary/80 dark:text-primary dark:hover:text-primary/80"
+                className="font-medium text-primary hover:text-primary/80"
               >
                 GitHub repository
-              </a>{" "}
-              or open an issue for support.
+              </a>
+              .
             </p>
           </div>
         </div>

@@ -128,6 +128,49 @@ export function FAQSchema() {
   );
 }
 
+const howToSteps = [
+  {
+    name: "Create a Room",
+    text: "Start a new planning session with one click. No registration required.",
+  },
+  {
+    name: "Invite Your Team",
+    text: "Share the room URL. Team members join instantly from any device.",
+  },
+  {
+    name: "Vote on Stories",
+    text: "Everyone votes simultaneously. Cards stay hidden until revealed.",
+  },
+  {
+    name: "Reach Consensus",
+    text: "Reveal votes, discuss differences, and align on story points.",
+  },
+];
+
+export function HowToSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: "How to Run a Planning Poker Session",
+    description:
+      "Start free online planning poker sessions with your Scrum team in 4 easy steps. No registration required.",
+    totalTime: "PT5M",
+    step: howToSteps.map((step, index) => ({
+      "@type": "HowToStep",
+      position: index + 1,
+      name: step.name,
+      text: step.text,
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
 export function BreadcrumbSchema({
   items,
 }: {
