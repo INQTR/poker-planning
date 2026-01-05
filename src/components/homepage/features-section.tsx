@@ -35,9 +35,8 @@ const features = [
     comingSoon: true,
   },
   {
-    name: "Timer functionality",
-    available: false,
-    comingSoon: true,
+    name: "Session timer",
+    available: true,
   },
 ];
 
