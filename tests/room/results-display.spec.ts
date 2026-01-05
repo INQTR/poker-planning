@@ -142,6 +142,7 @@ test.describe("Results Display Suite", () => {
 
   test.describe("Agreement color coding", () => {
     test("should show green for high agreement (>80%)", async ({ browser }) => {
+      test.slow(); // 5 users requires more time
       const users = await createMultipleUsers(browser, 5);
 
       try {
@@ -166,6 +167,7 @@ test.describe("Results Display Suite", () => {
     test("should show amber for medium agreement (60-80%)", async ({
       browser,
     }) => {
+      test.slow(); // 5 users requires more time
       const users = await createMultipleUsers(browser, 5);
 
       try {
