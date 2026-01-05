@@ -12,6 +12,7 @@ export class RoomPage {
   readonly copyUrlButton: Locator;
   readonly timerButton: Locator;
   readonly resultsSection: Locator;
+  readonly resultsNode: Locator;
   readonly canvasContainer: Locator;
   readonly roomNameInHeader: Locator;
   readonly userCountInHeader: Locator;
@@ -45,6 +46,7 @@ export class RoomPage {
     // Timer and results (results shown in session node when voting complete)
     this.timerButton = page.locator(".react-flow__node-timer");
     this.resultsSection = page.locator(".react-flow__node-session").locator("text=Voting Complete");
+    this.resultsNode = page.locator(".react-flow__node-results");
 
     // Canvas
     this.canvasContainer = page.locator(".react-flow");
@@ -198,5 +200,58 @@ export class RoomPage {
 
   async expectNoAutoRevealCountdown(): Promise<void> {
     await expect(this.autoRevealCountdown).not.toBeVisible({ timeout: 3000 });
+  }
+
+  // Results Node methods
+  async expectResultsNodeVisible(): Promise<void> {
+    await expect(this.resultsNode).toBeVisible({ timeout: 5000 });
+  }
+
+  async expectResultsNodeNotVisible(): Promise<void> {
+    await expect(this.resultsNode).not.toBeVisible({ timeout: 3000 });
+  }
+
+  async getResultsAverage(): Promise<string> {
+    await this.expectResultsNodeVisible();
+    // Get the average value from the results node (Avg label followed by value)
+    const avgText = await this.resultsNode.locator("text=Avg").locator("..").locator("span.text-lg").textContent();
+    return avgText?.trim() || "";
+  }
+
+  async getResultsAgreement(): Promise<string> {
+    await this.expectResultsNodeVisible();
+    // Get the agreement value from the results node (Agree label followed by value)
+    const agreeText = await this.resultsNode.locator("text=Agree").locator("..").locator("span.text-lg").textContent();
+    return agreeText?.trim() || "";
+  }
+
+  async getResultsDistribution(): Promise<{ label: string; count: string }[]> {
+    await this.expectResultsNodeVisible();
+    const bars = await this.resultsNode.locator(".flex.items-center.gap-1\\.5.h-4").all();
+    const distribution: { label: string; count: string }[] = [];
+
+    for (const bar of bars) {
+      const label = await bar.locator("span").first().textContent();
+      const count = await bar.locator("span").last().textContent();
+      distribution.push({
+        label: label?.trim() || "",
+        count: count?.trim() || "",
+      });
+    }
+
+    return distribution;
+  }
+
+  async getAgreementColor(): Promise<"green" | "amber" | "gray"> {
+    await this.expectResultsNodeVisible();
+    const agreeSpan = this.resultsNode.locator("text=Agree").locator("..").locator("span.text-lg");
+    const classes = await agreeSpan.getAttribute("class") || "";
+
+    if (classes.includes("text-green")) {
+      return "green";
+    } else if (classes.includes("text-amber")) {
+      return "amber";
+    }
+    return "gray";
   }
 }

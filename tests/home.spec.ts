@@ -20,11 +20,9 @@ test.describe("Home Page - Basic Elements", () => {
   });
 
   test("should display description text", async ({ page }) => {
-    const description = page.locator("text=Join thousands of Agile teams");
+    const description = page.locator("text=Join thousands of Scrum teams");
     await expect(description).toBeVisible();
-    await expect(description).toContainText(
-      "collaborative story point estimation"
-    );
+    await expect(description).toContainText("story point estimation");
   });
 
   test("should display key action buttons", async ({ page }) => {

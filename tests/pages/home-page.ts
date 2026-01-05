@@ -19,7 +19,7 @@ export class HomePage {
 
     // Hero section elements
     this.heroHeading = page.locator("h1");
-    this.heroDescription = page.locator("text=Join thousands of Agile teams");
+    this.heroDescription = page.locator("text=Join thousands of Scrum teams");
     this.startGameButton = page.getByRole("button", {
       name: /start new game/i,
     });
@@ -49,12 +49,11 @@ export class HomePage {
 
   async verifyHeroSection(): Promise<void> {
     await expect(this.heroHeading).toBeVisible();
-    await expect(this.heroHeading).toContainText("Estimate stories with");
-    await expect(this.heroHeading).toContainText("AgileKit");
+    await expect(this.heroHeading).toContainText("Free Planning Poker Online");
 
     await expect(this.heroDescription).toBeVisible();
     await expect(this.heroDescription).toContainText(
-      "collaborative story point estimation"
+      "story point estimation"
     );
   }
 

@@ -173,12 +173,16 @@ export function useCanvasNodes({
       allEdges.push({
         id: "session-to-results",
         source: "session-current",
+        sourceHandle: "right",
         target: "results",
-        type: "smoothstep",
-        animated: true,
+        targetHandle: "left",
+        type: "straight",
+        animated: false,
         style: {
           stroke: "#10b981",
-          strokeWidth: 3,
+          strokeWidth: 2,
+          strokeDasharray: "5,5",
+          strokeOpacity: 0.6,
         },
       });
     }
