@@ -34,6 +34,7 @@ Unlike other planning poker tools that charge **$8-30/month per user**, AgileKit
 - **Visual Voting Progress** - See who has voted at a glance with emoji indicators
 - **Instant Results** - Charts and statistics displayed immediately after reveal
 - **Fibonacci & Custom Scales** - Support for Fibonacci, T-shirt sizing, and custom point scales
+- **Built-in Timer** - Session timer for timeboxed estimation rounds
 - **Auto-cleanup** - Rooms automatically cleaned up after 5 days of inactivity
 - **Open Source** - Fully transparent codebase, self-host if you prefer
 
@@ -116,7 +117,6 @@ npx convex deploy --prod
 ## Roadmap
 
 - [ ] Jira integration
-- [ ] Timer functionality
 - [ ] Voting history export
 - [ ] Custom card decks
 - [ ] Team velocity tracking
