@@ -1,24 +1,22 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import dagre from "@dagrejs/dagre";
 
 // Layout constants for default positions
 const CANVAS_CENTER = { x: 0, y: 0 };
 const TIMER_X = -500;
 const TIMER_Y = -250;
-const SESSION_Y = -300; // Initial session Y position (will be updated by Dagre relayout)
+const SESSION_Y = -300;
 const VOTING_CARD_Y = 450;
 const VOTING_CARD_SPACING = 70;
 const DEFAULT_CARDS = ["0", "1", "2", "3", "5", "8", "13", "21", "?"];
 
-// Dagre layout configuration (for session + player node positioning)
-const DAGRE_CONFIG = {
-  rankdir: "TB" as const, // Top-to-bottom (session → players)
+// Layout configuration for session + player node positioning
+const LAYOUT_CONFIG = {
   nodesep: 150, // Horizontal spacing between players
   ranksep: 300, // Vertical spacing between session and players
 };
 
-// Node dimensions for dagre layout
+// Node dimensions for layout calculations
 const NODE_DIMENSIONS = {
   session: { width: 280, height: 150 },
   player: { width: 80, height: 130 },
@@ -47,79 +45,41 @@ interface NodePosition {
 }
 
 /**
- * Computes Dagre layout for session and player nodes.
- * Returns positions with top-left coordinates (React Flow format).
+ * Computes horizontal layout for session and player nodes.
+ * Places session node centered at (0, SESSION_Y) and player nodes
+ * in a horizontal row below, evenly spaced.
+ * Returns positions as top-left coordinates (React Flow format).
  */
-function computeDagreLayout(
+function computeHorizontalLayout(
   sessionNodeId: string,
   playerNodeIds: string[]
 ): NodePosition[] {
-  const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  dagreGraph.setGraph(DAGRE_CONFIG);
-
-  // Add session node
-  dagreGraph.setNode(sessionNodeId, NODE_DIMENSIONS.session);
-
-  // Add player nodes and edges from session to each player
-  playerNodeIds.forEach((playerId) => {
-    dagreGraph.setNode(playerId, NODE_DIMENSIONS.player);
-    dagreGraph.setEdge(sessionNodeId, playerId);
-  });
-
-  // Compute layout
-  dagre.layout(dagreGraph);
-
-  // Get session position to calculate centering offset
-  const sessionPos = dagreGraph.node(sessionNodeId);
-
-  // Calculate offset to center the session node at CANVAS_CENTER
-  // Dagre positions are center-based, so we offset to put session center at (0, SESSION_Y + session height/2)
-  const offsetX = sessionPos.x - CANVAS_CENTER.x;
-  const offsetY = sessionPos.y - (SESSION_Y + NODE_DIMENSIONS.session.height / 2);
-
-  // Extract positions with centering offset (convert from center to top-left coordinates)
   const positions: NodePosition[] = [];
 
+  // Session node: centered horizontally at CANVAS_CENTER.x
   positions.push({
     nodeId: sessionNodeId,
     position: {
-      x: sessionPos.x - offsetX - NODE_DIMENSIONS.session.width / 2,
-      y: sessionPos.y - offsetY - NODE_DIMENSIONS.session.height / 2,
+      x: CANVAS_CENTER.x - NODE_DIMENSIONS.session.width / 2,
+      y: SESSION_Y,
     },
   });
 
-  // Check if Dagre properly spread the player nodes horizontally
-  const playerDagrePositions = playerNodeIds.map((id) => dagreGraph.node(id));
-  const allSameX =
-    playerDagrePositions.length > 1 &&
-    playerDagrePositions.every((p) => p.x === playerDagrePositions[0].x);
-
-  if (allSameX) {
-    // Dagre didn't spread nodes - manually calculate horizontal positions
-    const spacing = DAGRE_CONFIG.nodesep;
+  // Player nodes: horizontally distributed below session
+  if (playerNodeIds.length > 0) {
+    const spacing = LAYOUT_CONFIG.nodesep;
     const totalWidth = (playerNodeIds.length - 1) * spacing;
     const startX = CANVAS_CENTER.x - totalWidth / 2;
-    const playerY = SESSION_Y + NODE_DIMENSIONS.session.height / 2 + DAGRE_CONFIG.ranksep;
+    const playerY =
+      SESSION_Y + NODE_DIMENSIONS.session.height / 2 + LAYOUT_CONFIG.ranksep;
 
     playerNodeIds.forEach((playerId, index) => {
-      const manualX = startX + index * spacing;
+      const centerX = startX + index * spacing;
       positions.push({
         nodeId: playerId,
         position: {
-          x: manualX - NODE_DIMENSIONS.player.width / 2,
+          x: centerX - NODE_DIMENSIONS.player.width / 2,
           y: playerY - NODE_DIMENSIONS.player.height / 2,
-        },
-      });
-    });
-  } else {
-    // Dagre worked correctly - use computed positions
-    playerNodeIds.forEach((playerId) => {
-      const pos = dagreGraph.node(playerId);
-      positions.push({
-        nodeId: playerId,
-        position: {
-          x: pos.x - offsetX - NODE_DIMENSIONS.player.width / 2,
-          y: pos.y - offsetY - NODE_DIMENSIONS.player.height / 2,
         },
       });
     });
@@ -129,7 +89,7 @@ function computeDagreLayout(
 }
 
 /**
- * Recalculates layout for all session/player nodes using Dagre.
+ * Recalculates layout for all session/player nodes.
  * Called when players join or leave to maintain balanced layout.
  */
 export async function relayoutNodes(
@@ -148,22 +108,30 @@ export async function relayoutNodes(
 
   if (!sessionNode) return;
 
-  // Compute new layout using Dagre
+  // Compute new layout
   const playerNodeIds = playerNodes.map((n) => n.nodeId);
-  const newPositions = computeDagreLayout(sessionNode.nodeId, playerNodeIds);
+  const newPositions = computeHorizontalLayout(
+    sessionNode.nodeId,
+    playerNodeIds
+  );
 
-  // Update positions in DB (skip locked nodes)
+  // Build update operations for unlocked nodes
   const now = Date.now();
-  await Promise.all(
-    newPositions.map((pos) => {
+  const updateOperations = newPositions
+    .map((pos) => {
       const node = nodes.find((n) => n.nodeId === pos.nodeId);
-      if (node && !node.isLocked) {
-        return ctx.db.patch(node._id, {
-          position: pos.position,
-          lastUpdatedAt: now,
-        });
-      }
+      return node && !node.isLocked ? { node, position: pos.position } : null;
     })
+    .filter((op): op is NonNullable<typeof op> => op !== null);
+
+  // Execute all updates in parallel
+  await Promise.all(
+    updateOperations.map((op) =>
+      ctx.db.patch(op.node._id, {
+        position: op.position,
+        lastUpdatedAt: now,
+      })
+    )
   );
 }
 
@@ -303,7 +271,7 @@ export async function upsertPlayerNode(
     lastUpdatedAt: Date.now(),
   });
 
-  // Trigger relayout to position all nodes correctly using Dagre
+  // Trigger relayout to position all nodes correctly
   await relayoutNodes(ctx, args.roomId);
 
   return id;
