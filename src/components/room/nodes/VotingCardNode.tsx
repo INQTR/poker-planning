@@ -9,8 +9,7 @@ import type { VotingCardNodeType } from "../types";
 
 export const VotingCardNode = memo(
   ({ data, selected }: NodeProps<VotingCardNodeType>): ReactElement => {
-    const { card, userId, isSelectable, onCardSelect, isSelected } =
-      data;
+    const { card, userId, isSelectable, onCardSelect, isSelected } = data;
     const [isHovered, setIsHovered] = useState(false);
     const [isClicking, setIsClicking] = useState(false);
 
@@ -29,12 +28,7 @@ export const VotingCardNode = memo(
 
       // Reset clicking state after animation
       setTimeout(() => setIsClicking(false), 200);
-    }, [
-      isSelectable,
-      userId,
-      card.value,
-      onCardSelect,
-    ]);
+    }, [isSelectable, userId, card.value, onCardSelect]);
 
     const containerClasses = useMemo(
       () =>
@@ -46,9 +40,9 @@ export const VotingCardNode = memo(
             !isCardSelected &&
             "transform -translate-y-1",
           isClicking && "transform scale-95",
-          !isSelectable && "cursor-not-allowed",
+          !isSelectable && "cursor-not-allowed"
         ),
-      [isCardSelected, isSelectable, isHovered, isClicking],
+      [isCardSelected, isSelectable, isHovered, isClicking]
     );
 
     const cardClasses = useMemo(
@@ -66,9 +60,9 @@ export const VotingCardNode = memo(
             isSelectable &&
             !isCardSelected &&
             "border-gray-400 dark:border-gray-500 shadow-lg",
-          !isSelectable && "opacity-50 cursor-not-allowed shadow-sm",
+          !isSelectable && "opacity-50 cursor-not-allowed shadow-sm"
         ),
-      [isCardSelected, isSelectable, isHovered],
+      [isCardSelected, isSelectable, isHovered]
     );
 
     const handleKeyDown = useCallback(
@@ -78,7 +72,7 @@ export const VotingCardNode = memo(
           handleClick();
         }
       },
-      [handleClick, isSelectable],
+      [handleClick, isSelectable]
     );
 
     return (
@@ -101,7 +95,7 @@ export const VotingCardNode = memo(
           {/* Shimmer effect for selected cards */}
           {isCardSelected && (
             <div
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
+              className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent -skew-x-12"
               style={{
                 animation: "shimmer 2s infinite",
               }}
@@ -111,7 +105,7 @@ export const VotingCardNode = memo(
           {/* Hover glow effect */}
           {isHovered && isSelectable && !isCardSelected && (
             <div
-              className="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent"
+              className="absolute inset-0 bg-linear-to-t from-blue-500/10 to-transparent"
               style={{
                 animation: "fadeIn 0.2s ease-in-out",
               }}
@@ -122,7 +116,7 @@ export const VotingCardNode = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 VotingCardNode.displayName = "VotingCardNode";
