@@ -63,6 +63,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+> **Note:** The repository is named `poker-planning` while the product is branded as **AgileKit**. This reflects our [evolution from a single-purpose tool to a broader Agile toolkit](https://github.com/INQTR/poker-planning/discussions/87).
+
 ### Prerequisites
 
 - Node.js 20+
