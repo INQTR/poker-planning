@@ -13,6 +13,7 @@ import {
   Share2,
   Settings,
   Home,
+  Menu,
 } from "lucide-react";
 import { FC, useState, useRef } from "react";
 
@@ -32,6 +33,13 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { RoomSettingsPanel } from "./room-settings-panel";
 import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
 
 interface CanvasNavigationProps {
@@ -51,6 +59,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
     typeof document !== 'undefined' && document.fullscreenEnabled
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleCopyRoomUrl = async () => {
@@ -105,9 +114,127 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
 
   return (
     <>
-      {/* Left Navigation Bar */}
-      <div 
-        className="absolute top-4 left-4 z-50"
+      {/* Mobile Navigation Header */}
+      <div className="md:hidden absolute top-2 left-2 right-2 z-50">
+        <div className="flex items-center justify-between px-2 py-1.5 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 dark:border-border">
+          {/* Home Button */}
+          <Link href="/">
+            <Button
+              variant="ghost"
+              className="h-11 w-11 p-0 hover:bg-gray-100 dark:hover:bg-surface-3"
+              aria-label="Back to home"
+            >
+              <Home className="h-5 w-5" />
+            </Button>
+          </Link>
+
+          {/* Room Name */}
+          <span className="flex-1 mx-2 text-sm font-semibold text-gray-800 dark:text-gray-200 truncate text-center">
+            {room.name || `Room ${room._id.slice(0, 6)}`}
+          </span>
+
+          {/* User Count Badge */}
+          <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-surface-2 rounded-full">
+            <Users className="h-3 w-3 text-gray-600 dark:text-gray-400" />
+            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+              {users.length}
+            </span>
+          </div>
+
+          {/* Hamburger Menu */}
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  className="h-11 w-11 p-0 ml-1 hover:bg-gray-100 dark:hover:bg-surface-3"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              }
+            />
+            <SheetContent side="right" className="w-[280px] px-4">
+              <SheetHeader className="pb-2">
+                <SheetTitle>Menu</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-3 px-2">
+                {/* Copy Room Link */}
+                <Button
+                  variant="outline"
+                  onClick={handleCopyRoomUrl}
+                  className="w-full h-11 justify-start gap-3"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy Room Link
+                </Button>
+
+                {/* View Controls */}
+                <div className="space-y-2">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                    View Controls
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleZoomOut}
+                      className="h-11"
+                      aria-label="Zoom out"
+                    >
+                      <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleFitView}
+                      className="h-11"
+                      aria-label="Fit to view"
+                    >
+                      <Grid3X3 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleZoomIn}
+                      className="h-11"
+                      aria-label="Zoom in"
+                    >
+                      <ZoomIn className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Fullscreen */}
+                {isFullscreenSupported && (
+                  <Button
+                    variant="outline"
+                    onClick={handleFullscreen}
+                    className="w-full h-11 justify-start gap-3"
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                    {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                  </Button>
+                )}
+
+                {/* Room Settings */}
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsSettingsOpen(true);
+                  }}
+                  className="w-full h-11 justify-start gap-3"
+                >
+                  <Settings className="h-4 w-4" />
+                  Room Settings
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      {/* Left Navigation Bar - Desktop only */}
+      <div
+        className="hidden md:block absolute top-4 left-4 z-50"
         role="navigation"
         aria-label="Canvas Room Controls"
         data-testid="canvas-navigation"
@@ -173,9 +300,9 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         </div>
       </div>
 
-      {/* Right Navigation Bar */}
-      <div 
-        className="absolute top-4 right-4 z-50"
+      {/* Right Navigation Bar - Desktop only */}
+      <div
+        className="hidden md:block absolute top-4 right-4 z-50"
         data-testid="canvas-zoom-controls"
       >
         <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
