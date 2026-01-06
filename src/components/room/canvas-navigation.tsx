@@ -115,13 +115,17 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   return (
     <>
       {/* Mobile Navigation Header */}
-      <div className="md:hidden absolute top-2 left-2 right-2 z-50">
+      <div
+        className="md:hidden absolute top-2 left-2 right-2 z-50"
+        role="navigation"
+        data-testid="mobile-navigation"
+      >
         <div className="flex items-center justify-between px-2 py-1.5 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 dark:border-border">
           {/* Home Button */}
           <Link href="/">
             <Button
               variant="ghost"
-              className="h-11 w-11 p-0 hover:bg-gray-100 dark:hover:bg-surface-3"
+              className="h-11 w-11 p-0"
               aria-label="Back to home"
             >
               <Home className="h-5 w-5" />
@@ -129,12 +133,18 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           </Link>
 
           {/* Room Name */}
-          <span className="flex-1 mx-2 text-sm font-semibold text-gray-800 dark:text-gray-200 truncate text-center">
+          <span
+            className="flex-1 mx-2 text-sm font-semibold text-gray-800 dark:text-gray-200 truncate text-center"
+            data-testid="mobile-room-name"
+          >
             {room.name || `Room ${room._id.slice(0, 6)}`}
           </span>
 
           {/* User Count Badge */}
-          <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-surface-2 rounded-full">
+          <div
+            className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-surface-2 rounded-full"
+            data-testid="mobile-user-count"
+          >
             <Users className="h-3 w-3 text-gray-600 dark:text-gray-400" />
             <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
               {users.length}
@@ -147,14 +157,18 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
               render={
                 <Button
                   variant="ghost"
-                  className="h-11 w-11 p-0 ml-1 hover:bg-gray-100 dark:hover:bg-surface-3"
+                  className="h-11 w-11 p-0 ml-1"
                   aria-label="Open menu"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
               }
             />
-            <SheetContent side="right" className="w-[280px] px-4">
+            <SheetContent
+              side="right"
+              className="w-[280px] px-4"
+              aria-label="Room menu"
+            >
               <SheetHeader className="pb-2">
                 <SheetTitle>Menu</SheetTitle>
               </SheetHeader>
