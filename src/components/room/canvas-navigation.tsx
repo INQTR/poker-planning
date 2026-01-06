@@ -116,7 +116,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
     <>
       {/* Mobile Navigation Header */}
       <div
-        className="md:hidden absolute top-2 left-2 right-2 z-50"
+        className="md:hidden fixed top-2 left-2 right-2 z-50"
         role="navigation"
         data-testid="mobile-navigation"
       >
