@@ -97,9 +97,9 @@ export function PrivacyContent() {
           <div className="mx-auto max-w-7xl px-6 py-32 sm:py-40 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
               <div className="flex items-center gap-x-4 text-xs">
-                <time dateTime="2024-01-01" className="text-gray-500">
+                <time dateTime="2025-01-07" className="text-gray-500">
                   <Calendar className="mr-1 inline h-3 w-3" />
-                  Last updated: January 1, 2024
+                  Last updated: January 7, 2025
                 </time>
               </div>
               <h1 className="mt-2 text-5xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
@@ -244,7 +244,7 @@ export function PrivacyContent() {
                   Effective Date
                 </h3>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  This privacy policy is effective as of January 1, 2024 and
+                  This privacy policy is effective as of January 7, 2025 and
                   will remain in effect except with respect to any changes in
                   its provisions in the future.
                 </p>
