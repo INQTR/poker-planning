@@ -16,6 +16,8 @@ export class RoomPage {
   readonly canvasContainer: Locator;
   readonly roomNameInHeader: Locator;
   readonly userCountInHeader: Locator;
+  readonly roomNameInHeaderMobile: Locator;
+  readonly userCountInHeaderMobile: Locator;
   readonly autoRevealCountdown: Locator;
 
   constructor(page: Page) {
@@ -36,6 +38,10 @@ export class RoomPage {
 
     // User count in navigation header
     this.userCountInHeader = page.locator('[data-testid="canvas-navigation"]').locator('text=/\\d+ users?/');
+
+    // Mobile navigation elements
+    this.roomNameInHeaderMobile = page.locator('[data-testid="mobile-room-name"]');
+    this.userCountInHeaderMobile = page.locator('[data-testid="mobile-user-count"]');
 
     // Auto-reveal countdown display in session node
     this.autoRevealCountdown = page.locator('.react-flow__node-session').locator('text=/Revealing.../');
@@ -176,22 +182,26 @@ export class RoomPage {
   }
 
   async getRoomNameFromHeader(): Promise<string> {
-    await expect(this.roomNameInHeader).toBeVisible({ timeout: 5000 });
-    return (await this.roomNameInHeader.textContent()) || "";
+    const locator = this.roomNameInHeader.or(this.roomNameInHeaderMobile);
+    await expect(locator.first()).toBeVisible({ timeout: 5000 });
+    return (await locator.first().textContent()) || "";
   }
 
   async getParticipantCount(): Promise<number> {
-    const text = await this.userCountInHeader.textContent();
+    const locator = this.userCountInHeader.or(this.userCountInHeaderMobile);
+    const text = await locator.first().textContent();
     const match = text?.match(/(\d+)/);
     return match ? parseInt(match[1]) : 0;
   }
 
   async expectRoomNameInHeader(name: string): Promise<void> {
-    await expect(this.roomNameInHeader).toContainText(name, { timeout: 5000 });
+    const locator = this.roomNameInHeader.or(this.roomNameInHeaderMobile);
+    await expect(locator.first()).toContainText(name, { timeout: 5000 });
   }
 
   async expectParticipantCount(count: number): Promise<void> {
-    await expect(this.userCountInHeader).toContainText(`${count}`, { timeout: 5000 });
+    const locator = this.userCountInHeader.or(this.userCountInHeaderMobile);
+    await expect(locator.first()).toContainText(`${count}`, { timeout: 5000 });
   }
 
   async expectAutoRevealCountdown(): Promise<void> {
