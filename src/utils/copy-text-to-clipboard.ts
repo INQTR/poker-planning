@@ -4,8 +4,12 @@ export async function copyTextToClipboard(text: string): Promise<boolean> {
     try {
       await navigator.clipboard.writeText(text);
       return true;
-    } catch {
+    } catch (error) {
       // Safari iOS may reject clipboard access even with user gesture
+      // Log in development for debugging
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Clipboard API failed, falling back to execCommand:", error);
+      }
       // Fall through to legacy method
     }
   }
@@ -27,7 +31,10 @@ function copyWithExecCommand(text: string): boolean {
   try {
     const success = document.execCommand("copy");
     return success;
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("execCommand copy failed:", error);
+    }
     return false;
   } finally {
     document.body.removeChild(textarea);

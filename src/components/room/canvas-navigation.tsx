@@ -41,6 +41,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
+import { copyTextToClipboard } from "@/utils/copy-text-to-clipboard";
 
 interface CanvasNavigationProps {
   roomData: RoomWithRelatedData;
@@ -65,13 +66,13 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   const handleCopyRoomUrl = async () => {
     if (roomData?.room) {
       const url = `${window.location.origin}/room/${roomData.room._id}`;
-      try {
-        await navigator.clipboard.writeText(url);
+      const success = await copyTextToClipboard(url);
+      if (success) {
         toast({
           title: "Room URL copied!",
           description: "Share this link with others to join the room.",
         });
-      } catch {
+      } else {
         toast({
           title: "Failed to copy URL",
           description: "Please copy the URL from your browser's address bar.",
