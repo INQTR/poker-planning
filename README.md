@@ -119,6 +119,12 @@ Contributions are welcome! Whether it's bug fixes, new features, or documentatio
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Privacy & Analytics
+
+The hosted version at [agilekit.app](https://agilekit.app) uses Google Analytics 4 for basic usage analytics (page views, session duration). No personal data is collected beyond standard analytics. Self-hosted instances do not include analytics by default.
+
+See our [Privacy Policy](https://agilekit.app/privacy) for details.
+
 ## License
 
 This project is open source under the [MIT License](LICENSE).

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { Providers } from "@/components/providers";
@@ -103,6 +104,9 @@ export default function RootLayout({
           <SpeedInsights />
           <Toaster />
         </Providers>
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </body>
     </html>
   );
