@@ -251,3 +251,30 @@
 .react-flow__node-session.dragging {
   transition: none;
 }
+
+/* =============================================================================
+   BLOG CODE BLOCK THEME SWITCHING
+   Uses shiki dual theme with CSS variables for light/dark mode support
+   ============================================================================= */
+
+/* Light mode: use github-light theme colors */
+[data-rehype-pretty-code-figure] pre {
+  background-color: oklch(0.98 0 0);
+}
+
+[data-rehype-pretty-code-figure] code[data-theme*=" "],
+[data-rehype-pretty-code-figure] code[data-theme*=" "] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+/* Dark mode: use github-dark theme colors */
+.dark [data-rehype-pretty-code-figure] pre {
+  background-color: oklch(0.145 0.005 285);
+}
+
+.dark [data-rehype-pretty-code-figure] code[data-theme*=" "],
+.dark [data-rehype-pretty-code-figure] code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}

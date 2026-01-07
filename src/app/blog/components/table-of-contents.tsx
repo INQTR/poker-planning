@@ -59,6 +59,10 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                   : "text-muted-foreground hover:text-foreground"
               }`}
               onClick={(e) => {
+                // Only handle left clicks, allow middle-click and Ctrl/Cmd+click default behavior
+                if (e.button !== 0 || e.metaKey || e.ctrlKey) {
+                  return;
+                }
                 e.preventDefault();
                 const element = document.getElementById(item.id);
                 if (element) {

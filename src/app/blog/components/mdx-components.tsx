@@ -82,22 +82,36 @@ function Img({
 }: ComponentProps<"img"> & { src?: string; alt?: string }) {
   if (!src) return null;
 
-  // For local images in the blog post directory
-  if (src.startsWith("./") || (!src.startsWith("http") && !src.startsWith("/"))) {
+  // Check if it's a local image (relative path or simple filename)
+  const isLocalImage =
+    src.startsWith("./") ||
+    (!src.startsWith("http") && !src.startsWith("/") && !src.includes("://"));
+
+  if (isLocalImage) {
+    // Security: block path traversal and protocol-like patterns
+    if (src.includes("..") || src.includes("//") || /^[a-z]+:/i.test(src)) {
+      console.warn(`Blocked potentially unsafe image src: ${src}`);
+      return null;
+    }
+
+    // Sanitize alt text to prevent XSS
+    const sanitizedAlt = alt?.replace(/[<>"'&]/g, "") || "";
+
     return (
       <span className="block my-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
-          alt={alt || ""}
+          alt={sanitizedAlt}
           className="rounded-lg max-w-full h-auto mx-auto"
+          loading="lazy"
           {...props}
         />
       </span>
     );
   }
 
-  // For external images or absolute paths
+  // For external images or absolute paths - use Next.js Image
   return (
     <span className="block my-6">
       <Image

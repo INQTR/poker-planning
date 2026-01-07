@@ -1,41 +1,42 @@
 import { Feed } from "feed";
 import { getPosts } from "../posts";
+import { siteConfig } from "@/lib/site-config";
 
-const SITE_URL = "https://agilekit.app";
+// Revalidate every hour
+export const revalidate = 3600;
 
 export async function GET() {
   const posts = await getPosts();
 
   const feed = new Feed({
-    title: "AgileKit Blog",
-    description:
-      "Tips, guides, and insights on planning poker and agile estimation.",
-    id: SITE_URL,
-    link: SITE_URL,
+    title: siteConfig.blog.title,
+    description: siteConfig.blog.description,
+    id: siteConfig.url,
+    link: siteConfig.url,
     language: "en",
-    favicon: `${SITE_URL}/favicon.ico`,
-    copyright: `All rights reserved ${new Date().getFullYear()}, AgileKit`,
+    favicon: `${siteConfig.url}/favicon.ico`,
+    copyright: `All rights reserved ${new Date().getFullYear()}, ${siteConfig.name}`,
     feedLinks: {
-      rss2: `${SITE_URL}/blog/rss.xml`,
-      atom: `${SITE_URL}/blog/atom.xml`,
+      rss2: `${siteConfig.url}/blog/rss.xml`,
+      atom: `${siteConfig.url}/blog/atom.xml`,
     },
     author: {
-      name: "AgileKit Team",
-      link: SITE_URL,
+      name: siteConfig.author.name,
+      link: siteConfig.url,
     },
   });
 
   posts.forEach((post) => {
     feed.addItem({
       title: post.title,
-      id: `${SITE_URL}/blog/${post.slug}`,
-      link: `${SITE_URL}/blog/${post.slug}`,
+      id: `${siteConfig.url}/blog/${post.slug}`,
+      link: `${siteConfig.url}/blog/${post.slug}`,
       description: post.spoiler,
       date: new Date(post.date),
       author: [
         {
-          name: "AgileKit Team",
-          link: SITE_URL,
+          name: siteConfig.author.name,
+          link: siteConfig.url,
         },
       ],
     });

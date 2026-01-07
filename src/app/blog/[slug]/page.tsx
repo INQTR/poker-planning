@@ -19,6 +19,7 @@ import { TableOfContents } from "../components/table-of-contents";
 import { RelatedPosts } from "../components/related-posts";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { siteConfig } from "@/lib/site-config";
 import Link from "next/link";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 
@@ -44,18 +45,18 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${post.title} - AgileKit Blog`,
+    title: `${post.title} - ${siteConfig.blog.title}`,
     description: post.spoiler,
     openGraph: {
       title: post.title,
       description: post.spoiler,
-      url: `https://agilekit.app/blog/${slug}`,
+      url: `${siteConfig.url}/blog/${slug}`,
       type: "article",
       publishedTime: post.date,
-      authors: ["AgileKit Team"],
+      authors: [siteConfig.author.name],
     },
     alternates: {
-      canonical: `https://agilekit.app/blog/${slug}`,
+      canonical: `${siteConfig.url}/blog/${slug}`,
     },
   };
 }
@@ -142,8 +143,11 @@ export default async function BlogPostPage({ params }: PageProps) {
                         [
                           rehypePrettyCode,
                           {
-                            theme: "github-dark",
-                            keepBackground: true,
+                            theme: {
+                              dark: "github-dark",
+                              light: "github-light",
+                            },
+                            keepBackground: false, // Let CSS handle backgrounds for theme switching
                           },
                         ],
                       ],

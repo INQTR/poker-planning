@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
+import GithubSlugger from "github-slugger";
 
 export interface Post {
   slug: string;
@@ -47,17 +48,28 @@ export async function getPosts(): Promise<PostMeta[]> {
     const filePath = path.join(BLOG_DIR, entry.name, "index.md");
     if (!fs.existsSync(filePath)) continue;
 
-    const fileContent = fs.readFileSync(filePath, "utf-8");
-    const { data, content } = matter(fileContent);
+    try {
+      const fileContent = fs.readFileSync(filePath, "utf-8");
+      const { data, content } = matter(fileContent);
 
-    posts.push({
-      slug: entry.name,
-      title: data.title || entry.name,
-      date: data.date || new Date().toISOString(),
-      spoiler: data.spoiler || "",
-      tags: data.tags || [],
-      readingTime: readingTime(content).text,
-    });
+      // Validate required frontmatter
+      if (!data.date) {
+        console.warn(`Blog post missing date: ${filePath}`);
+        continue; // Skip posts without dates
+      }
+
+      posts.push({
+        slug: entry.name,
+        title: data.title || entry.name,
+        date: String(data.date),
+        spoiler: data.spoiler || "",
+        tags: data.tags || [],
+        readingTime: readingTime(content).text,
+      });
+    } catch (error) {
+      console.error(`Failed to read blog post: ${filePath}`, error);
+      continue;
+    }
   }
 
   // Sort by date (newest first)
@@ -76,18 +88,29 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     return null;
   }
 
-  const fileContent = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(fileContent);
+  try {
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    const { data, content } = matter(fileContent);
 
-  return {
-    slug,
-    title: data.title || slug,
-    date: data.date || new Date().toISOString(),
-    spoiler: data.spoiler || "",
-    tags: data.tags || [],
-    content,
-    readingTime: readingTime(content).text,
-  };
+    // Validate required frontmatter
+    if (!data.date) {
+      console.warn(`Blog post missing date: ${filePath}`);
+      return null;
+    }
+
+    return {
+      slug,
+      title: data.title || slug,
+      date: String(data.date),
+      spoiler: data.spoiler || "",
+      tags: data.tags || [],
+      content,
+      readingTime: readingTime(content).text,
+    };
+  } catch (error) {
+    console.error(`Failed to read blog post: ${filePath}`, error);
+    return null;
+  }
 }
 
 /**
@@ -110,20 +133,25 @@ export async function getAllSlugs(): Promise<string[]> {
 
 /**
  * Extract table of contents from markdown content
+ * Uses github-slugger to match rehype-slug's ID generation
  */
 export function getTableOfContents(content: string): TocItem[] {
+  const slugger = new GithubSlugger();
+
+  // Remove code blocks before parsing headings to avoid false matches
+  const contentWithoutCode = content
+    .replace(/```[\s\S]*?```/g, "") // Fenced code blocks
+    .replace(/`[^`]+`/g, ""); // Inline code
+
   const headingRegex = /^(#{2,3})\s+(.+)$/gm;
   const toc: TocItem[] = [];
   let match;
 
-  while ((match = headingRegex.exec(content)) !== null) {
+  while ((match = headingRegex.exec(contentWithoutCode)) !== null) {
     const level = match[1].length;
     const text = match[2].trim();
-    // Create slug from heading text
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    // Use github-slugger to match rehype-slug's ID generation
+    const id = slugger.slug(text);
 
     toc.push({ id, text, level });
   }

@@ -3,21 +3,22 @@ import { getPosts } from "./posts";
 import { PostCard } from "./components/post-card";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { siteConfig } from "@/lib/site-config";
 import Link from "next/link";
 import { Rss } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Blog - AgileKit | Planning Poker Tips & Agile Estimation Guides",
+  title: `Blog - ${siteConfig.name} | Planning Poker Tips & Agile Estimation Guides`,
   description:
     "Learn about planning poker, Scrum estimation techniques, and agile best practices. Free guides and tutorials from the AgileKit team.",
   openGraph: {
-    title: "Blog - AgileKit | Planning Poker Tips & Agile Estimation Guides",
+    title: `Blog - ${siteConfig.name} | Planning Poker Tips & Agile Estimation Guides`,
     description:
       "Learn about planning poker, Scrum estimation techniques, and agile best practices.",
-    url: "https://agilekit.app/blog",
+    url: `${siteConfig.url}/blog`,
   },
   alternates: {
-    canonical: "https://agilekit.app/blog",
+    canonical: `${siteConfig.url}/blog`,
     types: {
       "application/rss+xml": "/blog/rss.xml",
       "application/atom+xml": "/blog/atom.xml",
