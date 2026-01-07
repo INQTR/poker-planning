@@ -65,6 +65,7 @@ export type VotingCardNodeData = {
 export type ResultsNodeData = {
   votes: SanitizedVote[];
   users: Doc<"users">[];
+  isNumericScale: boolean;
 };
 
 // Node types

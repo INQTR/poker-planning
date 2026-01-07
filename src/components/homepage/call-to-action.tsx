@@ -1,11 +1,7 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-interface CallToActionProps {
-  onStartGame: () => void;
-  loading?: boolean;
-}
-
-export const CallToAction = ({ onStartGame, loading }: CallToActionProps) => {
+export const CallToAction = () => {
   return (
     <div className="relative isolate overflow-hidden bg-gray-900 dark:bg-black">
       {/* Background gradient effects */}
@@ -97,10 +93,9 @@ export const CallToAction = ({ onStartGame, loading }: CallToActionProps) => {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={onStartGame}
-              disabled={loading}
-              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            <Link
+              href="/room/new"
+              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Start Planning Now
@@ -108,7 +103,7 @@ export const CallToAction = ({ onStartGame, loading }: CallToActionProps) => {
               </span>
               {/* Animated glow effect */}
               <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
-            </button>
+            </Link>
 
             <a
               href="https://github.com/INQTR/poker-planning"

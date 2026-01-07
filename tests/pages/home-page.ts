@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from "@playwright/test";
-import { safeClick, waitForRoomNavigation } from "../utils/test-helpers";
+import { safeClick } from "../utils/test-helpers";
 
 export class HomePage {
   readonly page: Page;
@@ -20,9 +20,7 @@ export class HomePage {
     // Hero section elements
     this.heroHeading = page.locator("h1");
     this.heroDescription = page.locator("text=Join thousands of Scrum teams");
-    this.startGameButton = page.getByRole("button", {
-      name: /start new game/i,
-    });
+    this.startGameButton = page.getByTestId("hero-start-button");
     this.githubLink = page
       .getByRole("link", { name: /view on github/i })
       .first();
@@ -74,16 +72,23 @@ export class HomePage {
   async createNewRoom(): Promise<string> {
     // Wait for button to be ready
     await expect(this.startGameButton.first()).toBeVisible();
-    await expect(this.startGameButton.first()).toBeEnabled();
 
-    // Click and wait for navigation
-    const navigationPromise = waitForRoomNavigation(this.page);
+    // Click to navigate to /room/new
     await safeClick(this.startGameButton.first());
-    await navigationPromise;
+    await this.page.waitForURL(/\/room\/new/);
+
+    // Click "Create Game" button on the create page
+    const createButton = this.page.getByRole("button", { name: /create game/i });
+    await expect(createButton).toBeVisible();
+    await expect(createButton).toBeEnabled();
+
+    // Click and wait for navigation to the actual room (not /room/new)
+    await safeClick(createButton);
+    await this.page.waitForURL(/\/room\/(?!new)[a-z0-9]+/);
 
     // Extract and return room ID
     const url = this.page.url();
-    const roomId = url.split("/room/")[1];
+    const roomId = url.split("/room/")[1]?.split(/[?#]/)[0];
     return roomId;
   }
 
@@ -164,9 +169,9 @@ export class HomePage {
   }
 
   async getCallToActionButtonCount(): Promise<number> {
-    const ctaButtons = this.page
-      .locator("button")
-      .filter({ hasText: /start|game/i });
-    return await ctaButtons.count();
+    // CTA elements are now links to /room/new
+    const ctaLinks = this.page
+      .locator('a[href="/room/new"]');
+    return await ctaLinks.count();
   }
 }

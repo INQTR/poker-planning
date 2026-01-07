@@ -10,6 +10,18 @@ export default defineSchema({
     roomType: v.optional(v.literal("canvas")), // Optional for backward compatibility
     isGameOver: v.boolean(),
     isDemoRoom: v.optional(v.boolean()), // Mark the global demo room
+    votingScale: v.optional(
+      v.object({
+        type: v.union(
+          v.literal("fibonacci"),
+          v.literal("standard"),
+          v.literal("tshirt"),
+          v.literal("custom")
+        ),
+        cards: v.array(v.string()),
+        isNumeric: v.boolean(),
+      })
+    ),
     createdAt: v.number(),
     lastActivityAt: v.number(),
   })

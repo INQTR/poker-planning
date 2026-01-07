@@ -1,12 +1,17 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
+import { VOTING_SCALES, VotingScaleType } from "../scales";
 
 export interface CreateRoomArgs {
   name: string;
   roomType?: "canvas"; // Optional, defaults to canvas
   votingCategorized?: boolean;
   autoCompleteVoting?: boolean;
+  votingScale?: {
+    type: VotingScaleType | "custom";
+    cards?: string[]; // Required only for custom type
+  };
 }
 
 export interface SanitizedVote extends Doc<"votes"> {
@@ -20,18 +25,56 @@ export interface RoomWithRelatedData {
 }
 
 /**
+ * Resolves voting scale configuration from user input
+ */
+function resolveVotingScale(scaleConfig?: CreateRoomArgs["votingScale"]) {
+  // Default to Fibonacci if no scale provided
+  if (!scaleConfig) {
+    const fibonacci = VOTING_SCALES.fibonacci;
+    return {
+      type: fibonacci.type,
+      cards: [...fibonacci.cards],
+      isNumeric: fibonacci.isNumeric,
+    };
+  }
+
+  // Handle custom scales
+  if (scaleConfig.type === "custom") {
+    if (!scaleConfig.cards || scaleConfig.cards.length === 0) {
+      throw new Error("Custom scale requires cards array");
+    }
+    return {
+      type: "custom" as const,
+      cards: scaleConfig.cards,
+      isNumeric: false, // Custom scales default to non-numeric
+    };
+  }
+
+  // Handle predefined scales
+  const predefinedScale = VOTING_SCALES[scaleConfig.type];
+  return {
+    type: predefinedScale.type,
+    cards: [...predefinedScale.cards],
+    isNumeric: predefinedScale.isNumeric,
+  };
+}
+
+/**
  * Creates a new room with the specified configuration
  */
 export async function createRoom(
   ctx: MutationCtx,
   args: CreateRoomArgs
 ): Promise<Id<"rooms">> {
+  const votingScale = resolveVotingScale(args.votingScale);
+
   const roomId = await ctx.db.insert("rooms", {
     name: args.name,
     roomType: "canvas", // Always canvas now
     votingCategorized: args.votingCategorized ?? true,
     autoCompleteVoting: args.autoCompleteVoting ?? false,
     isGameOver: false,
+    votingScale,
     createdAt: Date.now(),
     lastActivityAt: Date.now(),
   });

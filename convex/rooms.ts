@@ -10,6 +10,17 @@ export const create = mutation({
     roomType: v.optional(v.literal("canvas")), // Optional, defaults to canvas
     votingCategorized: v.optional(v.boolean()),
     autoCompleteVoting: v.optional(v.boolean()),
+    votingScale: v.optional(
+      v.object({
+        type: v.union(
+          v.literal("fibonacci"),
+          v.literal("standard"),
+          v.literal("tshirt"),
+          v.literal("custom")
+        ),
+        cards: v.optional(v.array(v.string())), // Required only for custom type
+      })
+    ),
   },
   handler: async (ctx, args) => {
     return await Rooms.createRoom(ctx, args);

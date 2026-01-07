@@ -134,6 +134,7 @@ export function useCanvasNodes({
           data: {
             votes: votes.filter((v: SanitizedVote) => v.hasVoted),
             users: users,
+            isNumericScale: room.votingScale?.isNumeric ?? true,
           },
           draggable: !node.isLocked,
         };
