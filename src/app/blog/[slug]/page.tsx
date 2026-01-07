@@ -20,6 +20,10 @@ import { RelatedPosts } from "../components/related-posts";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { siteConfig } from "@/lib/site-config";
+import {
+  BlogPostingSchema,
+  BreadcrumbSchema,
+} from "@/components/seo/structured-data";
 import Link from "next/link";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 
@@ -53,7 +57,13 @@ export async function generateMetadata({
       url: `${siteConfig.url}/blog/${slug}`,
       type: "article",
       publishedTime: post.date,
+      modifiedTime: post.modifiedDate || post.date,
       authors: [siteConfig.author.name],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.spoiler,
     },
     alternates: {
       canonical: `${siteConfig.url}/blog/${slug}`,
@@ -73,8 +83,23 @@ export default async function BlogPostPage({ params }: PageProps) {
   const allPosts = await getPosts();
   const relatedPosts = await getRelatedPosts(post, allPosts);
 
+  const breadcrumbItems = [
+    { name: "Home", url: siteConfig.url },
+    { name: "Blog", url: `${siteConfig.url}/blog` },
+    { name: post.title, url: `${siteConfig.url}/blog/${slug}` },
+  ];
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black">
+      <BlogPostingSchema
+        title={post.title}
+        description={post.spoiler}
+        datePublished={post.date}
+        dateModified={post.modifiedDate}
+        slug={slug}
+        wordCount={post.wordCount}
+      />
+      <BreadcrumbSchema items={breadcrumbItems} />
       <Header />
       <main className="flex-1">
         <article className="max-w-6xl mx-auto px-6 py-16">

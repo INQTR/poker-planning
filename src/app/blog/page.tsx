@@ -4,6 +4,7 @@ import { PostCard } from "./components/post-card";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { siteConfig } from "@/lib/site-config";
+import { BreadcrumbSchema } from "@/components/seo/structured-data";
 import Link from "next/link";
 import { Rss } from "lucide-react";
 
@@ -29,8 +30,14 @@ export const metadata: Metadata = {
 export default async function BlogPage() {
   const posts = await getPosts();
 
+  const breadcrumbItems = [
+    { name: "Home", url: siteConfig.url },
+    { name: "Blog", url: `${siteConfig.url}/blog` },
+  ];
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black">
+      <BreadcrumbSchema items={breadcrumbItems} />
       <Header />
       <main className="flex-1">
         <div className="max-w-3xl mx-auto px-6 py-16">

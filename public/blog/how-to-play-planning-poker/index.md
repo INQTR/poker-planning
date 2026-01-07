@@ -5,6 +5,10 @@ spoiler: "Learn how to run effective planning poker sessions with your team. Thi
 tags: ["planning-poker", "estimation", "scrum", "agile"]
 ---
 
+<Tldr>
+Planning poker is a team estimation technique where everyone votes simultaneously using numbered cards, then discusses differences to reach consensus. Use the Fibonacci scale (1, 2, 3, 5, 8, 13...), focus on relative sizing not hours, and keep stories small enough to estimate quickly.
+</Tldr>
+
 Planning poker is a consensus-based estimation technique that helps agile teams estimate the effort required for user stories and tasks. It combines expert opinion, analogy, and decomposition into a fun, engaging process that produces accurate estimates while building team alignment.
 
 ## What is Planning Poker?
@@ -145,7 +149,9 @@ AgileKit makes planning poker simple for remote and hybrid teams:
 4. **Vote together** - Real-time synchronization across all devices
 5. **Reveal results** - See the spread and discuss outliers
 
-[Try AgileKit free →](https://agilekit.app)
+<Cta>
+Start your next sprint planning with a free planning poker session.
+</Cta>
 
 ## Common Mistakes to Avoid
 
@@ -174,6 +180,26 @@ Track these metrics to improve your estimation:
 - **Story completion rate** - Are you finishing what you commit to?
 - **Discussion quality** - Are outliers sparking useful conversations?
 
+## Frequently Asked Questions
+
+<Faq>
+<FaqItem question="How long should a planning poker session last?">
+A typical session runs 1-2 hours, covering 10-20 user stories. Timebox each story to 2-3 minutes of discussion. If you can't estimate quickly, the story likely needs refinement.
+</FaqItem>
+
+<FaqItem question="What's the difference between story points and hours?">
+Story points measure relative complexity, not time. A 5-point story is roughly 2-3x the effort of a 2-point story, regardless of who works on it. Hours vary by person; points are team-consistent.
+</FaqItem>
+
+<FaqItem question="Can planning poker work for remote teams?">
+Yes! Online tools like AgileKit enable real-time voting across time zones. Remote planning poker often produces better estimates because simultaneous reveals prevent in-person social pressure.
+</FaqItem>
+
+<FaqItem question="Should QA and designers participate in planning poker?">
+Absolutely. Anyone who contributes to completing a story should estimate. Testers catch complexity developers miss, and designers ensure UI effort is accounted for.
+</FaqItem>
+</Faq>
+
 ## Conclusion
 
 Planning poker transforms estimation from a tedious chore into a collaborative exercise that builds team understanding. The technique works because it:
@@ -183,8 +209,6 @@ Planning poker transforms estimation from a tedious chore into a collaborative e
 3. Builds shared understanding
 4. Creates accurate relative estimates
 
-Start your next sprint planning with a planning poker session and see the difference it makes.
-
----
-
-*Ready to try planning poker with your team? [Start a free session with AgileKit](https://agilekit.app) — no signup required.*
+<Cta label="Start Free Planning Poker Session">
+Ready to try planning poker with your team? No signup required.
+</Cta>

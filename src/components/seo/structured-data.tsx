@@ -194,3 +194,56 @@ export function BreadcrumbSchema({
     />
   );
 }
+
+interface BlogPostingSchemaProps {
+  title: string;
+  description: string;
+  datePublished: string;
+  dateModified?: string;
+  slug: string;
+  wordCount?: number;
+}
+
+export function BlogPostingSchema({
+  title,
+  description,
+  datePublished,
+  dateModified,
+  slug,
+  wordCount,
+}: BlogPostingSchemaProps) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description: description,
+    datePublished: datePublished,
+    dateModified: dateModified || datePublished,
+    author: {
+      "@type": "Organization",
+      name: "AgileKit",
+      url: baseUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "AgileKit",
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/blog/${slug}`,
+    },
+    image: `${baseUrl}/blog/${slug}/opengraph-image`,
+    ...(wordCount && { wordCount }),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}

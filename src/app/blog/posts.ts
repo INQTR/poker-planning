@@ -8,19 +8,23 @@ export interface Post {
   slug: string;
   title: string;
   date: string;
+  modifiedDate?: string;
   spoiler: string;
   tags: string[];
   content: string;
   readingTime: string;
+  wordCount: number;
 }
 
 export interface PostMeta {
   slug: string;
   title: string;
   date: string;
+  modifiedDate?: string;
   spoiler: string;
   tags: string[];
   readingTime: string;
+  wordCount: number;
 }
 
 export interface TocItem {
@@ -58,13 +62,16 @@ export async function getPosts(): Promise<PostMeta[]> {
         continue; // Skip posts without dates
       }
 
+      const stats = readingTime(content);
       posts.push({
         slug: entry.name,
         title: data.title || entry.name,
         date: String(data.date),
+        modifiedDate: data.updated ? String(data.updated) : undefined,
         spoiler: data.spoiler || "",
         tags: data.tags || [],
-        readingTime: readingTime(content).text,
+        readingTime: stats.text,
+        wordCount: stats.words,
       });
     } catch (error) {
       console.error(`Failed to read blog post: ${filePath}`, error);
@@ -98,14 +105,17 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       return null;
     }
 
+    const stats = readingTime(content);
     return {
       slug,
       title: data.title || slug,
       date: String(data.date),
+      modifiedDate: data.updated ? String(data.updated) : undefined,
       spoiler: data.spoiler || "",
       tags: data.tags || [],
       content,
-      readingTime: readingTime(content).text,
+      readingTime: stats.text,
+      wordCount: stats.words,
     };
   } catch (error) {
     console.error(`Failed to read blog post: ${filePath}`, error);

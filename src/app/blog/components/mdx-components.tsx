@@ -1,7 +1,8 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
 import Image from "next/image";
-import type { ComponentProps, HTMLAttributes } from "react";
+import type { ComponentProps, HTMLAttributes, ReactNode } from "react";
+import { Lightbulb, ArrowRight, HelpCircle, ChevronDown } from "lucide-react";
 
 // Wrapper for code blocks with syntax highlighting (handled by rehype-pretty-code)
 function Pre({ children, ...props }: HTMLAttributes<HTMLPreElement>) {
@@ -171,6 +172,112 @@ function Td({ children, ...props }: HTMLAttributes<HTMLTableCellElement>) {
   );
 }
 
+// TL;DR summary component for article tops
+function Tldr({ children }: { children: ReactNode }) {
+  return (
+    <div className="my-8 p-6 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900">
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+          <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-200 uppercase tracking-wide mb-2">
+            TL;DR
+          </h4>
+          <div className="text-blue-800 dark:text-blue-100 prose-p:my-2 prose-ul:my-2 prose-li:my-0">
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// CTA component for "Try AgileKit" sections
+function Cta({
+  children,
+  href = "https://agilekit.app",
+  label = "Try AgileKit Free",
+}: {
+  children?: ReactNode;
+  href?: string;
+  label?: string;
+}) {
+  return (
+    <div className="my-10 p-8 rounded-xl bg-gradient-to-br from-primary/5 via-purple-500/5 to-blue-500/5 border border-primary/20 text-center">
+      {children && (
+        <div className="mb-4 text-gray-700 dark:text-gray-300">{children}</div>
+      )}
+      <Link
+        href={href}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+      >
+        {label}
+        <ArrowRight className="w-4 h-4" />
+      </Link>
+    </div>
+  );
+}
+
+// FAQ components with schema support
+interface FaqItemProps {
+  question: string;
+  children: ReactNode;
+}
+
+function FaqItem({ question, children }: FaqItemProps) {
+  return (
+    <details className="group">
+      <summary className="flex items-center justify-between gap-4 px-4 py-3 cursor-pointer list-none text-left font-medium text-gray-900 dark:text-white hover:text-primary transition-colors">
+        <span className="flex items-center gap-3">
+          <HelpCircle className="w-5 h-5 text-primary flex-shrink-0" />
+          {question}
+        </span>
+        <ChevronDown className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180 flex-shrink-0" />
+      </summary>
+      <div className="px-4 pb-3 pl-12 text-gray-600 dark:text-gray-400 [&>p]:my-0">
+        {children}
+      </div>
+    </details>
+  );
+}
+
+interface FaqProps {
+  children: ReactNode;
+  items?: Array<{ question: string; answer: string }>;
+}
+
+function Faq({ children, items }: FaqProps) {
+  // Generate FAQ schema for SEO
+  const schemaItems = items || [];
+  const schema = schemaItems.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: schemaItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  } : null;
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl border border-gray-200 dark:border-zinc-800 divide-y divide-gray-200 dark:divide-zinc-800">
+        {children}
+      </div>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      )}
+    </div>
+  );
+}
+
 export const mdxComponents: MDXComponents = {
   // Headings with anchor links (handled by rehype-slug and rehype-autolink-headings)
   h1: ({ children, ...props }) => (
@@ -266,4 +373,10 @@ export const mdxComponents: MDXComponents = {
       {children}
     </em>
   ),
+
+  // Custom components for SEO and content structure
+  Tldr,
+  Cta,
+  Faq,
+  FaqItem,
 };
