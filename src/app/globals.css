@@ -251,3 +251,69 @@
 .react-flow__node-session.dragging {
   transition: none;
 }
+
+/* =============================================================================
+   BLOG CODE BLOCK THEME SWITCHING
+   Uses shiki dual theme with CSS variables for light/dark mode support
+   ============================================================================= */
+
+/* Light mode: use github-light theme colors */
+[data-rehype-pretty-code-figure] pre {
+  background-color: oklch(0.98 0 0);
+}
+
+[data-rehype-pretty-code-figure] code[data-theme*=" "],
+[data-rehype-pretty-code-figure] code[data-theme*=" "] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+/* Dark mode: use github-dark theme colors */
+.dark [data-rehype-pretty-code-figure] pre {
+  background-color: oklch(0.145 0.005 285);
+}
+
+.dark [data-rehype-pretty-code-figure] code[data-theme*=" "],
+.dark [data-rehype-pretty-code-figure] code[data-theme*=" "] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+/* =============================================================================
+   TABLE OF CONTENTS SCROLLBAR
+   Subtle scrollbar for the sticky TOC sidebar
+   ============================================================================= */
+
+.toc-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.8 0 0) transparent;
+}
+
+.toc-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toc-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toc-scrollbar::-webkit-scrollbar-thumb {
+  background-color: oklch(0.8 0 0);
+  border-radius: 2px;
+}
+
+.toc-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.7 0 0);
+}
+
+.dark .toc-scrollbar {
+  scrollbar-color: oklch(0.4 0 0) transparent;
+}
+
+.dark .toc-scrollbar::-webkit-scrollbar-thumb {
+  background-color: oklch(0.4 0 0);
+}
+
+.dark .toc-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: oklch(0.5 0 0);
+}

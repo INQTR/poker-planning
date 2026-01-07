@@ -15,6 +15,7 @@ import {
 const navigation = [
   { name: "Features", href: "/features" },
   { name: "How It Works", href: "/#how-it-works" },
+  { name: "Blog", href: "/blog" },
   { name: "About", href: "/about" },
 ];
 
