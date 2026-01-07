@@ -1,5 +1,6 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
+import { DEFAULT_SCALE } from "../scales";
 
 // Layout constants for default positions
 const CANVAS_CENTER = { x: 0, y: 0 };
@@ -8,7 +9,6 @@ const TIMER_Y = -250;
 const SESSION_Y = -300;
 const VOTING_CARD_Y = 450;
 const VOTING_CARD_SPACING = 70;
-const DEFAULT_CARDS = ["0", "1", "2", "3", "5", "8", "13", "21", "34", "55", "89", "∞", "?", "☕"];
 
 // Layout configuration for session + player node positioning
 const LAYOUT_CONFIG = {
@@ -284,8 +284,17 @@ export async function createVotingCardNodes(
   ctx: MutationCtx,
   args: { roomId: Id<"rooms">; userId: Id<"users"> }
 ): Promise<void> {
+  // Get room to access its voting scale
+  const room = await ctx.db.get(args.roomId);
+  if (!room) {
+    throw new Error("Room not found");
+  }
+
+  // Use room's voting scale or default to Fibonacci for backward compatibility
+  const cards = room.votingScale?.cards ?? DEFAULT_SCALE.cards;
+
   const now = Date.now();
-  const cardCount = DEFAULT_CARDS.length;
+  const cardCount = cards.length;
   const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
   const startX = CANVAS_CENTER.x - totalWidth / 2;
 
@@ -303,7 +312,7 @@ export async function createVotingCardNodes(
 
   // Create voting card nodes in parallel
   await Promise.all(
-    DEFAULT_CARDS.map((card, index) => {
+    cards.map((card, index) => {
       const x = startX + index * VOTING_CARD_SPACING;
       const y = VOTING_CARD_Y;
 

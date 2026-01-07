@@ -8,21 +8,24 @@ import type { ResultsNodeType } from "../types";
 
 export const ResultsNode = memo(
   ({ data }: NodeProps<ResultsNodeType>): ReactElement => {
-    const { votes } = data;
+    const { votes, isNumericScale } = data;
 
     // Calculate average, agreement, and vote groups inline
     const { average, agreement, voteGroups, totalVotes } = useMemo(() => {
       const validVotes = votes.filter((v) => v.hasVoted && v.cardLabel);
 
-      // Get numeric votes for average (exclude "?" and special cards)
-      const numericVotes = validVotes
-        .map((v) => parseFloat(v.cardLabel || ""))
-        .filter((v) => !isNaN(v));
+      // Get numeric votes for average (only for numeric scales, exclude "?" and special cards)
+      let avg = null;
+      if (isNumericScale) {
+        const numericVotes = validVotes
+          .map((v) => parseFloat(v.cardLabel || ""))
+          .filter((v) => !isNaN(v));
 
-      const avg =
-        numericVotes.length > 0
-          ? numericVotes.reduce((sum, v) => sum + v, 0) / numericVotes.length
-          : 0;
+        avg =
+          numericVotes.length > 0
+            ? numericVotes.reduce((sum, v) => sum + v, 0) / numericVotes.length
+            : null;
+      }
 
       // Group votes by value
       const groups: Record<string, number> = {};
@@ -48,12 +51,12 @@ export const ResultsNode = memo(
       const agreement = total > 0 ? Math.round((maxCount / total) * 100) : 0;
 
       return {
-        average: numericVotes.length > 0 ? avg : null,
+        average: avg,
         agreement,
         voteGroups: sorted,
         totalVotes: total,
       };
-    }, [votes]);
+    }, [votes, isNumericScale]);
 
     // Empty state
     if (totalVotes === 0) {
@@ -98,15 +101,17 @@ export const ResultsNode = memo(
               aria-hidden="true"
             />
 
-            {/* Average display */}
-            <div className="flex flex-col">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                Avg
-              </span>
-              <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300">
-                {average !== null ? average.toFixed(1) : "—"}
-              </span>
-            </div>
+            {/* Average display - only for numeric scales */}
+            {isNumericScale && (
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Avg
+                </span>
+                <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300">
+                  {average !== null ? average.toFixed(1) : "—"}
+                </span>
+              </div>
+            )}
 
             {/* Agreement display */}
             <div className="flex flex-col">

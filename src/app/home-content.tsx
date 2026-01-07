@@ -1,12 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { toast } from "@/lib/toast";
-import { useCopyRoomUrlToClipboard } from "@/hooks/use-copy-room-url-to-clipboard";
 import {
   HowItWorks,
   FAQ,
@@ -20,38 +15,6 @@ import { Footer } from "@/components/footer";
 import { GithubIcon } from "@/components/icons";
 
 export function HomeContent() {
-  const router = useRouter();
-  const createRoom = useMutation(api.rooms.create);
-  const { copyRoomUrlToClipboard } = useCopyRoomUrlToClipboard();
-  const [isCreating, setIsCreating] = useState(false);
-
-  const handleCreateRoom = async () => {
-    setIsCreating(true);
-
-    let roomId: string | undefined = undefined;
-
-    try {
-      roomId = await createRoom({
-        name: `Game ${new Date().toLocaleTimeString()}`,
-        roomType: "canvas",
-      });
-      router.push(`/room/${roomId}`);
-    } catch (error) {
-      console.error("Failed to create room:", error);
-      toast.error("Failed to create room. Please try again.");
-    } finally {
-      setIsCreating(false);
-    }
-
-    if (roomId) {
-      try {
-        await copyRoomUrlToClipboard(roomId);
-      } catch (error) {
-        console.error("Failed to copy room URL to clipboard:", error);
-      }
-    }
-  };
-
   return (
     <div className="bg-white dark:bg-black">
       <a
@@ -133,11 +96,10 @@ export function HomeContent() {
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                <button
-                  onClick={handleCreateRoom}
-                  disabled={isCreating}
+                <Link
+                  href="/room/new"
                   data-testid="hero-start-button"
-                  className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Start New Game
@@ -145,7 +107,7 @@ export function HomeContent() {
                   </span>
                   {/* Animated glow effect */}
                   <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
-                </button>
+                </Link>
 
                 <a
                   href="https://github.com/INQTR/poker-planning"
@@ -187,7 +149,7 @@ export function HomeContent() {
         {/* TODO: we need to get real testimonials from real users */}
         {/* <Testimonials /> */}
         <FAQ />
-        <CallToAction onStartGame={handleCreateRoom} loading={isCreating} />
+        <CallToAction />
       </main>
 
       <Footer />
