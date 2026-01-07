@@ -8,7 +8,7 @@ import { Lightbulb, ArrowRight, HelpCircle, ChevronDown } from "lucide-react";
 function Pre({ children, ...props }: HTMLAttributes<HTMLPreElement>) {
   return (
     <pre
-      className="overflow-x-auto rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 p-4 text-sm my-6"
+      className="overflow-x-auto rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 px-3 py-4 text-sm my-6"
       {...props}
     >
       {children}
@@ -20,9 +20,14 @@ function Code({
   children,
   ...props
 }: HTMLAttributes<HTMLElement> & { "data-language"?: string }) {
-  // Inline code (not in a pre block)
-  const isInline = !props["data-language"];
-  if (isInline) {
+  // Check if this is inline code (not in a pre block)
+  // Inline code is single-line and doesn't have data-language
+  const hasLanguage = !!props["data-language"];
+  const isMultiline =
+    typeof children === "string" && children.includes("\n");
+
+  // Only apply inline styling for single-line code without a language
+  if (!hasLanguage && !isMultiline) {
     return (
       <code
         className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-zinc-800 text-sm font-mono text-primary"
@@ -32,7 +37,7 @@ function Code({
       </code>
     );
   }
-  // Code inside pre block (handled by rehype-pretty-code)
+  // Code inside pre block (with or without syntax highlighting)
   return <code {...props}>{children}</code>;
 }
 

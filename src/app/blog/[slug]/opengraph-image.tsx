@@ -1,7 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getPostBySlug, getAllSlugs } from "../posts";
-
-export const runtime = "edge";
+import { getPostBySlug } from "../posts";
 
 export const alt = "AgileKit Blog";
 export const size = {
@@ -9,11 +7,6 @@ export const size = {
   height: 630,
 };
 export const contentType = "image/png";
-
-export async function generateStaticParams() {
-  const slugs = await getAllSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
 
 export default async function Image({ params }: { params: { slug: string } }) {
   const post = await getPostBySlug(params.slug);

@@ -41,11 +41,11 @@ export function TableOfContents({ items }: TableOfContentsProps) {
   }
 
   return (
-    <nav className="sticky top-24">
-      <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+    <nav className="sticky top-24 max-h-[calc(100vh-8rem)] flex flex-col">
+      <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex-shrink-0">
         On this page
       </h4>
-      <ul className="space-y-2.5 text-sm">
+      <ul className="space-y-2.5 text-sm overflow-y-auto pr-2 toc-scrollbar">
         {items.map((item) => (
           <li
             key={item.id}
