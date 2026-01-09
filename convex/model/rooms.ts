@@ -1,6 +1,7 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
+import * as Issues from "./issues";
 import { VOTING_SCALES, VotingScaleType } from "../scales";
 
 export interface CreateRoomArgs {
@@ -164,6 +165,20 @@ export async function showRoomCards(
   if (room && room.roomType === "canvas") {
     await Canvas.upsertResultsNode(ctx, { roomId });
   }
+
+  // Auto-populate final estimate and vote stats on current issue
+  if (room?.currentIssueId) {
+    const consensus = await Issues.calculateConsensus(ctx, roomId);
+    const voteStats = await Issues.calculateVoteStats(ctx, roomId);
+    if (consensus) {
+      await Issues.completeIssueVoting(ctx, {
+        roomId,
+        issueId: room.currentIssueId,
+        finalEstimate: consensus,
+        voteStats,
+      });
+    }
+  }
 }
 
 /**
@@ -173,6 +188,16 @@ export async function resetRoomGame(
   ctx: MutationCtx,
   roomId: Id<"rooms">
 ): Promise<void> {
+  const room = await ctx.db.get(roomId);
+
+  // Reset current issue status to pending (if it was voting/completed)
+  if (room?.currentIssueId) {
+    const currentIssue = await ctx.db.get(room.currentIssueId);
+    if (currentIssue && currentIssue.status === "voting") {
+      await ctx.db.patch(room.currentIssueId, { status: "pending" });
+    }
+  }
+
   // Update room state
   await ctx.db.patch(roomId, {
     isGameOver: false,

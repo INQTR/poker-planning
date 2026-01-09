@@ -10,21 +10,29 @@ export const ResultsNode = memo(
   ({ data }: NodeProps<ResultsNodeType>): ReactElement => {
     const { votes, isNumericScale } = data;
 
-    // Calculate average, agreement, and vote groups inline
-    const { average, agreement, voteGroups, totalVotes } = useMemo(() => {
+    // Calculate average, median, agreement, and vote groups inline
+    const { average, median, agreement, voteGroups, totalVotes } = useMemo(() => {
       const validVotes = votes.filter((v) => v.hasVoted && v.cardLabel);
 
-      // Get numeric votes for average (only for numeric scales, exclude "?" and special cards)
+      // Get numeric votes for average and median (only for numeric scales, exclude "?" and special cards)
       let avg = null;
+      let med = null;
       if (isNumericScale) {
         const numericVotes = validVotes
           .map((v) => parseFloat(v.cardLabel || ""))
           .filter((v) => !isNaN(v));
 
-        avg =
-          numericVotes.length > 0
-            ? numericVotes.reduce((sum, v) => sum + v, 0) / numericVotes.length
-            : null;
+        if (numericVotes.length > 0) {
+          // Calculate average
+          avg = numericVotes.reduce((sum, v) => sum + v, 0) / numericVotes.length;
+
+          // Calculate median
+          const sorted = [...numericVotes].sort((a, b) => a - b);
+          const mid = Math.floor(sorted.length / 2);
+          med = sorted.length % 2 !== 0
+            ? sorted[mid]
+            : (sorted[mid - 1] + sorted[mid]) / 2;
+        }
       }
 
       // Group votes by value
@@ -35,7 +43,7 @@ export const ResultsNode = memo(
       });
 
       // Sort: numeric first (ascending), then special chars
-      const sorted = Object.entries(groups).sort(([a], [b]) => {
+      const sortedGroups = Object.entries(groups).sort(([a], [b]) => {
         const numA = parseFloat(a);
         const numB = parseFloat(b);
         if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
@@ -52,8 +60,9 @@ export const ResultsNode = memo(
 
       return {
         average: avg,
+        median: med,
         agreement,
-        voteGroups: sorted,
+        voteGroups: sortedGroups,
         totalVotes: total,
       };
     }, [votes, isNumericScale]);
@@ -109,6 +118,18 @@ export const ResultsNode = memo(
                 </span>
                 <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300">
                   {average !== null ? average.toFixed(1) : "—"}
+                </span>
+              </div>
+            )}
+
+            {/* Median display - only for numeric scales */}
+            {isNumericScale && (
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  Med
+                </span>
+                <span className="text-lg font-mono font-medium text-gray-700 dark:text-gray-300">
+                  {median !== null ? median.toFixed(1) : "—"}
                 </span>
               </div>
             )}

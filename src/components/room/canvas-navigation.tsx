@@ -14,6 +14,7 @@ import {
   Settings,
   Home,
   Menu,
+  ListTodo,
 } from "lucide-react";
 import { FC, useState, useRef } from "react";
 
@@ -32,6 +33,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { RoomSettingsPanel } from "./room-settings-panel";
+import { IssuesPanel } from "./issues-panel";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -47,12 +49,16 @@ interface CanvasNavigationProps {
   roomData: RoomWithRelatedData;
   onToggleFullscreen?: () => void;
   isFullscreen?: boolean;
+  isIssuesPanelOpen: boolean;
+  onIssuesPanelChange: (open: boolean) => void;
 }
 
 export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   roomData,
   onToggleFullscreen,
   isFullscreen = false,
+  isIssuesPanelOpen,
+  onIssuesPanelChange,
 }) => {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   const { toast } = useToast();
@@ -228,6 +234,19 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                     {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
                   </Button>
                 )}
+
+                {/* Issues Panel */}
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    onIssuesPanelChange(true);
+                  }}
+                  className="w-full h-11 justify-start gap-3"
+                >
+                  <ListTodo className="h-4 w-4" />
+                  Issues
+                </Button>
 
                 {/* Room Settings */}
                 <Button
@@ -406,6 +425,29 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
               </Tooltip>
             )}
 
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onIssuesPanelChange(!isIssuesPanelOpen)}
+                    className={cn(
+                      buttonClass,
+                      isIssuesPanelOpen && "bg-gray-100 dark:bg-surface-3"
+                    )}
+                    aria-label="Issues panel"
+                    aria-expanded={isIssuesPanelOpen}
+                  >
+                    <ListTodo className="h-4 w-4" />
+                  </Button>
+                }
+              />
+              <TooltipContent>
+                <p>Issues</p>
+              </TooltipContent>
+            </Tooltip>
+
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -465,6 +507,14 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         triggerRef={settingsButtonRef}
+      />
+
+      {/* Issues Panel */}
+      <IssuesPanel
+        roomId={room._id}
+        roomName={room.name}
+        isOpen={isIssuesPanelOpen}
+        onClose={() => onIssuesPanelChange(false)}
       />
     </>
   );

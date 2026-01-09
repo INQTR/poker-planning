@@ -29,11 +29,15 @@ export type SessionNodeData = {
   hasVotes: boolean;
   autoCompleteVoting: boolean;
   autoRevealCountdownStartedAt: number | null;
+  currentIssue?: {
+    title: string;
+  } | null;
   onRevealCards?: () => void;
   onResetGame?: () => void;
   onToggleAutoComplete?: () => void;
   onCancelAutoReveal?: () => void;
   onExecuteAutoReveal?: () => void;
+  onOpenIssuesPanel?: () => void;
 };
 
 export type TimerNodeData = {
