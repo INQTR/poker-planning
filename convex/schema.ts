@@ -22,11 +22,40 @@ export default defineSchema({
         isNumeric: v.boolean(),
       })
     ),
+    // Issues panel feature
+    currentIssueId: v.optional(v.id("issues")), // Currently active issue being voted
+    nextIssueNumber: v.optional(v.number()), // Counter for sequential IDs (1, 2, 3...)
     createdAt: v.number(),
     lastActivityAt: v.number(),
   })
     .index("by_activity", ["lastActivityAt"])
     .index("by_created", ["createdAt"]), // For querying recent rooms
+
+  issues: defineTable({
+    roomId: v.id("rooms"),
+    sequentialId: v.number(), // 1, 2, 3... displayed as PP-1, PP-2, etc.
+    title: v.string(), // e.g., "CC-278" or "User authentication"
+    finalEstimate: v.optional(v.string()), // Consensus value after reveal
+    status: v.union(
+      v.literal("pending"), // Not yet voted
+      v.literal("voting"), // Currently being voted on
+      v.literal("completed") // Voting complete
+    ),
+    votedAt: v.optional(v.number()), // Timestamp when voting completed
+    // Vote statistics snapshot (stored when voting is revealed)
+    voteStats: v.optional(
+      v.object({
+        average: v.optional(v.number()), // Average of numeric votes
+        median: v.optional(v.number()), // Median of numeric votes
+        agreement: v.number(), // Percentage of votes matching consensus
+        voteCount: v.number(), // Total votes cast
+      })
+    ),
+    createdAt: v.number(),
+    order: v.number(), // For ordering in the list
+  })
+    .index("by_room", ["roomId"])
+    .index("by_room_order", ["roomId", "order"]),
 
   users: defineTable({
     roomId: v.id("rooms"),

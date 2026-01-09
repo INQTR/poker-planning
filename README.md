@@ -17,10 +17,15 @@
 - **No Registration** - Create a room and start estimating in seconds
 - **Real-time Collaboration** - Instant vote synchronization across all participants
 - **Modern Canvas Interface** - Whiteboard-style room with intuitive drag-and-drop
+- **Multiple Voting Scales** - Fibonacci, Standard, T-Shirt sizes, or create custom scales
+- **Issues Management** - Create, edit, and track issues within planning sessions
+- **CSV Export** - Export issues with vote statistics (average, median, agreement)
+- **Auto-Complete Voting** - Automatic reveal with countdown when all participants vote
+- **Vote Analytics** - Average, median, and consensus percentage for each round
 - **Visual Voting Progress** - See who has voted at a glance with emoji indicators
-- **Instant Results** - Charts and statistics displayed immediately after reveal
-- **Fibonacci Scale** - Industry-standard Fibonacci sequence for story point estimation
 - **Built-in Timer** - Session timer for timeboxed estimation rounds
+- **Spectator Mode** - Join sessions as an observer without voting
+- **Dark/Light Theme** - Toggle themes or follow system preference
 - **Auto-cleanup** - Rooms automatically cleaned up after 5 days of inactivity
 - **Open Source** - Fully transparent codebase, self-host if you prefer
 
@@ -105,9 +110,8 @@ npx convex deploy --prod
 ## Roadmap
 
 - [ ] Jira integration
-- [ ] T-shirt sizing and custom card decks
-- [ ] Voting history export
 - [ ] Team velocity tracking
+- [ ] Session history (view past sessions)
 
 ## Contributing
 

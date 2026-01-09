@@ -114,6 +114,13 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     null
   );
 
+  // Issues panel state - lifted up so it can be passed to SessionNode
+  const [isIssuesPanelOpen, setIsIssuesPanelOpen] = useState(false);
+
+  const handleOpenIssuesPanel = useCallback(() => {
+    setIsIssuesPanelOpen(true);
+  }, []);
+
   // Reset selected card when game is reset
   useEffect(() => {
     if (!roomData || !user) return;
@@ -168,6 +175,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     onToggleAutoComplete: handleToggleAutoComplete,
     onCancelAutoReveal: handleCancelAutoReveal,
     onExecuteAutoReveal: handleExecuteAutoReveal,
+    onOpenIssuesPanel: handleOpenIssuesPanel,
   });
 
   // Update nodes and edges when layout changes
@@ -251,8 +259,14 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   }
 
   return (
-    <div className="w-full h-screen relative">
-      {!isDemoMode && <CanvasNavigation roomData={roomData} />}
+    <div className="w-full h-screen relative overflow-hidden">
+      {!isDemoMode && (
+        <CanvasNavigation
+          roomData={roomData}
+          isIssuesPanelOpen={isIssuesPanelOpen}
+          onIssuesPanelChange={setIsIssuesPanelOpen}
+        />
+      )}
       <ReactFlow
         nodes={nodes}
         edges={edges}

@@ -9,7 +9,6 @@ import {
   Layout,
   PlayCircle,
   UserPlus,
-  Folder,
   FileText,
   Moon,
   Smartphone,
@@ -45,9 +44,9 @@ const coreFeatures = [
     gradient: "from-violet-500 to-purple-600",
   },
   {
-    name: "Synchronized Timer",
-    description: "Server-synced countdown with start, pause, and reset controls",
-    icon: Timer,
+    name: "Multiple Voting Scales",
+    description: "Fibonacci, Standard, T-Shirt sizes, or create your own custom scale",
+    icon: Layers,
     gradient: "from-amber-500 to-orange-600",
   },
   {
@@ -64,6 +63,12 @@ const coreFeatures = [
     gradient: "from-blue-500 to-cyan-600",
   },
   {
+    name: "Issues Management",
+    description: "Create, edit, and track issues with CSV export and vote statistics",
+    icon: FileText,
+    gradient: "from-sky-500 to-blue-600",
+  },
+  {
     name: "Auto-Complete Voting",
     description: "3-second countdown auto-reveal when all participants vote",
     icon: PlayCircle,
@@ -76,16 +81,10 @@ const coreFeatures = [
     gradient: "from-indigo-500 to-violet-600",
   },
   {
-    name: "Session Management",
-    description: "Room creation, rename, and persistent game state",
-    icon: Folder,
+    name: "Synchronized Timer",
+    description: "Server-synced countdown with start, pause, and reset controls",
+    icon: Timer,
     gradient: "from-fuchsia-500 to-purple-600",
-  },
-  {
-    name: "Story Cards",
-    description: "Story title, description, and voting progress indicator",
-    icon: FileText,
-    gradient: "from-sky-500 to-blue-600",
   },
 ];
 
@@ -94,22 +93,19 @@ const quickFeatures = [
   { name: "Dark/Light Theme", icon: Moon },
   { name: "Mobile Responsive", icon: Smartphone },
   { name: "Shareable Links", icon: Link2 },
+  { name: "CSV Export", icon: FileDown },
+  { name: "Spectator Mode", icon: Eye },
 ];
 
 const comingSoonFeatures = [
-  {
-    name: "Export Capabilities",
-    description: "Export session results to CSV or PDF",
-    icon: FileDown,
-  },
   {
     name: "Session History",
     description: "View and analyze past planning sessions",
     icon: History,
   },
   {
-    name: "Custom Voting Scales",
-    description: "Create your own estimation scales",
+    name: "Jira Integration",
+    description: "Import and sync issues directly from Jira",
     icon: Settings,
   },
 ];
