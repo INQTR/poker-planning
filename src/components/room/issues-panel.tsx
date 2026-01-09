@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useRef, useState } from "react";
-import { X, Download, Plus, ListTodo, Loader2 } from "lucide-react";
+import { X, Download, Plus, ListTodo, Loader2, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,9 +39,11 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
   const {
     issues,
     currentIssue,
+    isQuickVoteMode,
     isLoading,
     createIssue,
     startVoting,
+    switchToQuickVote,
     updateTitle,
     updateEstimate,
     deleteIssue,
@@ -88,6 +90,23 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
       console.error("Failed to start voting:", error);
       toast({
         title: "Failed to start voting",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSwitchToQuickVote = async () => {
+    if (isQuickVoteMode) return; // Already in Quick Vote mode
+    try {
+      await switchToQuickVote();
+      toast({
+        title: "Quick Vote",
+        description: "Switched to ad-hoc voting mode.",
+      });
+    } catch (error) {
+      console.error("Failed to switch to Quick Vote:", error);
+      toast({
+        title: "Failed to switch mode",
         variant: "destructive",
       });
     }
@@ -248,18 +267,44 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
 
       {/* Issues List */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-2">
+        {/* Quick Vote option - always first */}
+        <button
+          onClick={handleSwitchToQuickVote}
+          className={cn(
+            "w-full p-3 rounded-lg border text-left transition-colors",
+            isQuickVoteMode
+              ? "bg-primary/10 border-primary dark:bg-primary/20"
+              : "bg-gray-50 dark:bg-surface-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <Zap className={cn(
+              "h-4 w-4",
+              isQuickVoteMode ? "text-primary" : "text-gray-500"
+            )} />
+            <span className={cn(
+              "font-medium text-sm",
+              isQuickVoteMode ? "text-primary" : "text-gray-700 dark:text-gray-300"
+            )}>
+              Quick Vote
+            </span>
+            {isQuickVoteMode && (
+              <span className="text-xs text-primary ml-auto">Active</span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">
+            Ad-hoc voting without tracking
+          </p>
+        </button>
+
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           </div>
         ) : issues.length === 0 ? (
-          <div className="text-center py-8">
-            <ListTodo className="h-10 w-10 mx-auto text-gray-300 dark:text-gray-600 mb-3" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No issues yet
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-              Add issues to vote on during your planning session
+          <div className="text-center py-6">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Add issues to track estimates
             </p>
           </div>
         ) : (

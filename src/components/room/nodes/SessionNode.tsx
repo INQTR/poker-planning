@@ -151,19 +151,24 @@ export const SessionNode = memo(
             />
           </div>
 
-          {/* Current Issue */}
-          {currentIssue && (
-            <button
-              onClick={onOpenIssuesPanel}
-              className="w-full mb-3 px-3 py-2 bg-gray-100/50 dark:bg-surface-2/50 rounded-md hover:bg-gray-200/50 dark:hover:bg-surface-3/50 transition-colors flex items-center justify-between gap-2 group"
-              aria-label={`Current issue: ${currentIssue.title}. Click to open issues panel.`}
-            >
+          {/* Current Issue / Quick Vote */}
+          <button
+            onClick={onOpenIssuesPanel}
+            className="w-full mb-3 px-3 py-2 bg-gray-100/50 dark:bg-surface-2/50 rounded-md hover:bg-gray-200/50 dark:hover:bg-surface-3/50 transition-colors flex items-center justify-between gap-2 group"
+            aria-label={currentIssue ? `Current issue: ${currentIssue.title}. Click to open issues panel.` : "Quick Vote mode. Click to open issues panel."}
+          >
+            {currentIssue ? (
               <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
                 {currentIssue.title}
               </span>
-              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 flex-shrink-0 transition-colors" />
-            </button>
-          )}
+            ) : (
+              <span className="flex items-center gap-2 text-sm font-medium text-primary">
+                <Zap className="h-4 w-4" />
+                Quick Vote
+              </span>
+            )}
+            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 flex-shrink-0 transition-colors" />
+          </button>
 
           {/* Stats */}
           <div className="grid grid-cols-2 gap-3 mb-3">

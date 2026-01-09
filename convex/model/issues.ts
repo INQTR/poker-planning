@@ -348,3 +348,38 @@ export async function reorderIssues(
   // Update room activity
   await ctx.db.patch(args.roomId, { lastActivityAt: Date.now() });
 }
+
+/**
+ * Clears the current issue (switches to Quick Vote mode)
+ */
+export async function clearCurrentIssue(
+  ctx: MutationCtx,
+  roomId: Id<"rooms">
+): Promise<void> {
+  const room = await ctx.db.get(roomId);
+  if (!room) throw new Error("Room not found");
+
+  // Reset current issue status if it was voting
+  if (room.currentIssueId) {
+    const currentIssue = await ctx.db.get(room.currentIssueId);
+    if (currentIssue && currentIssue.status === "voting") {
+      await ctx.db.patch(room.currentIssueId, { status: "pending" });
+    }
+  }
+
+  // Clear current issue and reset game state
+  await ctx.db.patch(roomId, {
+    currentIssueId: undefined,
+    isGameOver: false,
+    autoRevealCountdownStartedAt: undefined,
+    lastActivityAt: Date.now(),
+  });
+
+  // Clear all votes
+  const votes = await ctx.db
+    .query("votes")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .collect();
+
+  await Promise.all(votes.map((vote) => ctx.db.delete(vote._id)));
+}

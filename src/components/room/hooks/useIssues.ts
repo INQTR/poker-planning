@@ -13,9 +13,11 @@ interface UseIssuesProps {
 interface UseIssuesReturn {
   issues: Doc<"issues">[];
   currentIssue: Doc<"issues"> | null;
+  isQuickVoteMode: boolean;
   isLoading: boolean;
   createIssue: (title: string) => Promise<Id<"issues">>;
   startVoting: (issueId: Id<"issues">) => Promise<void>;
+  switchToQuickVote: () => Promise<void>;
   updateTitle: (issueId: Id<"issues">, title: string) => Promise<void>;
   updateEstimate: (issueId: Id<"issues">, estimate: string) => Promise<void>;
   deleteIssue: (issueId: Id<"issues">) => Promise<void>;
@@ -32,6 +34,7 @@ export function useIssues({ roomId }: UseIssuesProps): UseIssuesReturn {
   // Mutations
   const createMutation = useMutation(api.issues.create);
   const startVotingMutation = useMutation(api.issues.startVoting);
+  const clearCurrentIssueMutation = useMutation(api.issues.clearCurrentIssue);
   const updateTitleMutation = useMutation(api.issues.updateTitle);
   const updateEstimateMutation = useMutation(api.issues.updateEstimate);
   const deleteMutation = useMutation(api.issues.remove);
@@ -50,6 +53,10 @@ export function useIssues({ roomId }: UseIssuesProps): UseIssuesReturn {
     },
     [startVotingMutation, roomId]
   );
+
+  const switchToQuickVote = useCallback(async () => {
+    await clearCurrentIssueMutation({ roomId });
+  }, [clearCurrentIssueMutation, roomId]);
 
   const updateTitle = useCallback(
     async (issueId: Id<"issues">, title: string) => {
@@ -82,9 +89,11 @@ export function useIssues({ roomId }: UseIssuesProps): UseIssuesReturn {
   return {
     issues: issues ?? [],
     currentIssue: currentIssue ?? null,
+    isQuickVoteMode: !currentIssue,
     isLoading: issues === undefined,
     createIssue,
     startVoting,
+    switchToQuickVote,
     updateTitle,
     updateEstimate,
     deleteIssue,

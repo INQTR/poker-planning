@@ -106,3 +106,13 @@ export const reorder = mutation({
     await Issues.reorderIssues(ctx, args);
   },
 });
+
+/**
+ * Clear current issue (switch to Quick Vote mode)
+ */
+export const clearCurrentIssue = mutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    await Issues.clearCurrentIssue(ctx, args.roomId);
+  },
+});
