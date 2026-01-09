@@ -18,25 +18,35 @@ const features = [
     available: true,
   },
   {
-    name: "Mobile responsive",
+    name: "Multiple voting scales",
     available: true,
   },
   {
-    name: "No ads or tracking",
+    name: "Issues management",
     available: true,
   },
   {
-    name: "Custom voting scales",
-    available: false,
-    comingSoon: true,
+    name: "CSV export with statistics",
+    available: true,
   },
   {
-    name: "Export capabilities",
-    available: false,
-    comingSoon: true,
+    name: "Auto-complete voting",
+    available: true,
   },
   {
     name: "Session timer",
+    available: true,
+  },
+  {
+    name: "Spectator mode",
+    available: true,
+  },
+  {
+    name: "Dark/Light theme",
+    available: true,
+  },
+  {
+    name: "Mobile responsive",
     available: true,
   },
 ];
@@ -116,11 +126,6 @@ export function FeaturesSection() {
                           <span className="ml-2 inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                             <Zap className="mr-1 h-3 w-3" />
                             Core
-                          </span>
-                        )}
-                        {feature.comingSoon && (
-                          <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400 italic">
-                            Coming soon
                           </span>
                         )}
                       </p>
