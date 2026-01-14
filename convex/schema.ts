@@ -81,14 +81,15 @@ export default defineSchema({
   // Canvas persistence tables
   canvasNodes: defineTable({
     roomId: v.id("rooms"),
-    nodeId: v.string(), // e.g., "player-userId", "session-current"
+    nodeId: v.string(), // e.g., "player-userId", "session-current", "note-issueId"
     type: v.union(
       v.literal("player"),
       v.literal("session"),
       v.literal("timer"),
       v.literal("votingCard"),
       v.literal("results"),
-      v.literal("story")
+      v.literal("story"),
+      v.literal("note")
     ),
     position: v.object({ x: v.number(), y: v.number() }),
     data: v.any(), // Node-specific data

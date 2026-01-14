@@ -3,15 +3,18 @@
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { ReactElement, memo } from "react";
 
+import { cn } from "@/lib/utils";
 import type { PlayerNodeType } from "../types";
 
 export const PlayerNode = memo(
-  ({ data }: NodeProps<PlayerNodeType>): ReactElement => {
+  ({ data, selected }: NodeProps<PlayerNodeType>): ReactElement => {
     const { user, isCurrentUser, isCardPicked, card, isGameOver } = data;
 
     // Match VotingCardNode card style
-    const cardClasses =
-      "h-24 w-16 rounded-xl border-2 flex items-center justify-center text-2xl font-bold bg-white dark:bg-surface-1 border-gray-300 dark:border-border shadow-md";
+    const cardClasses = cn(
+      "h-24 w-16 rounded-xl border-2 flex items-center justify-center text-2xl font-bold bg-white dark:bg-surface-1 border-gray-300 dark:border-border shadow-md",
+      selected && "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-surface-1"
+    );
 
     // Vote status emoji logic:
     // - 🤔 thinking (voting in progress, hasn't voted)

@@ -1,3 +1,4 @@
+export { NoteNode } from "./NoteNode";
 export { PlayerNode } from "./PlayerNode";
 export { ResultsNode } from "./ResultsNode";
 export { StoryNode } from "./StoryNode";
