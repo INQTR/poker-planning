@@ -9,6 +9,8 @@ const TIMER_Y = -250;
 const SESSION_Y = -300;
 const VOTING_CARD_Y = 450;
 const VOTING_CARD_SPACING = 70;
+const NOTE_X = 400;
+const NOTE_Y = -200;
 
 // Layout configuration for session + player node positioning
 const LAYOUT_CONFIG = {
@@ -30,7 +32,7 @@ export interface Position {
 export interface CanvasNode {
   roomId: Id<"rooms">;
   nodeId: string;
-  type: "player" | "timer" | "session" | "votingCard" | "results" | "story";
+  type: "player" | "timer" | "session" | "votingCard" | "results" | "story" | "note";
   position: Position;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Create proper type union for node data
   data: any;
@@ -533,4 +535,146 @@ export async function cleanupInactivePresence(
       ctx.db.patch(presence._id, { isActive: false })
     )
   );
+}
+
+/**
+ * Creates a note node for an issue
+ */
+export async function createNoteNode(
+  ctx: MutationCtx,
+  args: {
+    roomId: Id<"rooms">;
+    issueId: Id<"issues">;
+    userId: Id<"users">;
+  }
+): Promise<Id<"canvasNodes">> {
+  const nodeId = `note-${args.issueId}`;
+
+  // Check if note already exists for this issue
+  const existingNode = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room_node", (q) =>
+      q.eq("roomId", args.roomId).eq("nodeId", nodeId)
+    )
+    .unique();
+
+  if (existingNode) {
+    return existingNode._id;
+  }
+
+  // Get issue title for display
+  const issue = await ctx.db.get(args.issueId);
+  if (!issue) {
+    throw new Error("Issue not found");
+  }
+
+  // Get user name for lastUpdatedBy display
+  const user = await ctx.db.get(args.userId);
+
+  return await ctx.db.insert("canvasNodes", {
+    roomId: args.roomId,
+    nodeId,
+    type: "note",
+    position: { x: NOTE_X, y: NOTE_Y },
+    data: {
+      issueId: args.issueId,
+      issueTitle: issue.title,
+      content: "",
+      lastUpdatedBy: user?.name ?? "Unknown",
+      lastUpdatedAt: Date.now(),
+    },
+    lastUpdatedAt: Date.now(),
+  });
+}
+
+/**
+ * Updates the content of a note node
+ */
+export async function updateNoteContent(
+  ctx: MutationCtx,
+  args: {
+    roomId: Id<"rooms">;
+    nodeId: string;
+    content: string;
+    userId: Id<"users">;
+  }
+): Promise<void> {
+  const node = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room_node", (q) =>
+      q.eq("roomId", args.roomId).eq("nodeId", args.nodeId)
+    )
+    .unique();
+
+  if (!node) {
+    throw new Error("Note node not found");
+  }
+
+  if (node.type !== "note") {
+    throw new Error("Node is not a note");
+  }
+
+  // Get user name for display
+  const user = await ctx.db.get(args.userId);
+
+  await ctx.db.patch(node._id, {
+    data: {
+      ...node.data,
+      content: args.content,
+      lastUpdatedBy: user?.name ?? "Unknown",
+      lastUpdatedAt: Date.now(),
+    },
+    lastUpdatedAt: Date.now(),
+  });
+
+  // Update room activity
+  await ctx.db.patch(args.roomId, { lastActivityAt: Date.now() });
+}
+
+/**
+ * Gets the note content for an issue (for CSV export)
+ */
+export async function getNoteContentForIssue(
+  ctx: QueryCtx,
+  args: { roomId: Id<"rooms">; issueId: Id<"issues"> }
+): Promise<string | null> {
+  const nodeId = `note-${args.issueId}`;
+
+  const node = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room_node", (q) =>
+      q.eq("roomId", args.roomId).eq("nodeId", nodeId)
+    )
+    .unique();
+
+  if (!node || node.type !== "note") {
+    return null;
+  }
+
+  return node.data?.content ?? null;
+}
+
+/**
+ * Deletes a note node
+ */
+export async function deleteNoteNode(
+  ctx: MutationCtx,
+  args: { roomId: Id<"rooms">; nodeId: string }
+): Promise<void> {
+  const node = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room_node", (q) =>
+      q.eq("roomId", args.roomId).eq("nodeId", args.nodeId)
+    )
+    .unique();
+
+  if (!node) {
+    throw new Error("Note node not found");
+  }
+
+  if (node.type !== "note") {
+    throw new Error("Node is not a note");
+  }
+
+  await ctx.db.delete(node._id);
 }

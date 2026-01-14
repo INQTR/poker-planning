@@ -159,3 +159,50 @@ export const markUserInactive = mutation({
     await Canvas.markUserInactive(ctx, args);
   },
 });
+
+// Create a note node for an issue
+export const createNote = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    issueId: v.id("issues"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await Canvas.createNoteNode(ctx, args);
+  },
+});
+
+// Update note content
+export const updateNoteContent = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    nodeId: v.string(),
+    content: v.string(),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    await Canvas.updateNoteContent(ctx, args);
+  },
+});
+
+// Get note content for an issue (for export)
+export const getNoteContentForIssue = query({
+  args: {
+    roomId: v.id("rooms"),
+    issueId: v.id("issues"),
+  },
+  handler: async (ctx, args) => {
+    return await Canvas.getNoteContentForIssue(ctx, args);
+  },
+});
+
+// Delete a note node
+export const deleteNote = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    nodeId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Canvas.deleteNoteNode(ctx, args);
+  },
+});

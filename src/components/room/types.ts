@@ -30,6 +30,7 @@ export type SessionNodeData = {
   autoCompleteVoting: boolean;
   autoRevealCountdownStartedAt: number | null;
   currentIssue?: {
+    id: Id<"issues">;
     title: string;
   } | null;
   onRevealCards?: () => void;
@@ -72,6 +73,16 @@ export type ResultsNodeData = {
   isNumericScale: boolean;
 };
 
+export type NoteNodeData = {
+  issueId: Id<"issues">;
+  issueTitle: string;
+  content: string;
+  lastUpdatedBy?: string; // User name who last edited
+  lastUpdatedAt?: number;
+  onUpdateContent: (content: string) => void;
+  onDelete?: () => void;
+};
+
 // Node types
 export type PlayerNodeType = Node<PlayerNodeData, "player">;
 export type StoryNodeType = Node<StoryNodeData, "story">;
@@ -79,6 +90,7 @@ export type SessionNodeType = Node<SessionNodeData, "session">;
 export type TimerNodeType = Node<TimerNodeData, "timer">;
 export type VotingCardNodeType = Node<VotingCardNodeData, "votingCard">;
 export type ResultsNodeType = Node<ResultsNodeData, "results">;
+export type NoteNodeType = Node<NoteNodeData, "note">;
 
 // Union type for all custom nodes
 export type CustomNodeType =
@@ -87,4 +99,5 @@ export type CustomNodeType =
   | SessionNodeType
   | TimerNodeType
   | VotingCardNodeType
-  | ResultsNodeType;
+  | ResultsNodeType
+  | NoteNodeType;

@@ -20,6 +20,8 @@ export interface ExportableIssue {
   median: number | null;
   agreement: number | null;
   voteCount: number | null;
+  // Discussion notes
+  notes: string | null;
 }
 
 /**
@@ -319,6 +321,18 @@ export async function getIssuesForExport(
 ): Promise<ExportableIssue[]> {
   const issues = await listIssues(ctx, roomId);
 
+  // Fetch all notes for room in a single query (avoid N+1)
+  const noteNodes = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .filter((q) => q.eq(q.field("type"), "note"))
+    .collect();
+
+  // Build lookup map: issueId -> note content
+  const notesByIssueId = new Map<string, string | null>(
+    noteNodes.map((n) => [n.data?.issueId as string, n.data?.content ?? null])
+  );
+
   return issues.map((issue) => ({
     title: issue.title,
     finalEstimate: issue.finalEstimate ?? null,
@@ -328,6 +342,7 @@ export async function getIssuesForExport(
     median: issue.voteStats?.median ?? null,
     agreement: issue.voteStats?.agreement ?? null,
     voteCount: issue.voteStats?.voteCount ?? null,
+    notes: notesByIssueId.get(issue._id) ?? null,
   }));
 }
 

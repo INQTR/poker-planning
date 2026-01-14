@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { ResultsNodeType } from "../types";
 
 export const ResultsNode = memo(
-  ({ data }: NodeProps<ResultsNodeType>): ReactElement => {
+  ({ data, selected }: NodeProps<ResultsNodeType>): ReactElement => {
     const { votes, isNumericScale } = data;
 
     // Calculate average, median, agreement, and vote groups inline
@@ -78,7 +78,10 @@ export const ResultsNode = memo(
             className="bg-gray-400! dark:bg-surface-3!"
             aria-hidden="true"
           />
-          <div className="p-3 bg-white dark:bg-surface-1 rounded-lg shadow-md border border-gray-200 dark:border-border">
+          <div className={cn(
+            "p-3 bg-white dark:bg-surface-1 rounded-lg shadow-md border border-gray-200 dark:border-border",
+            selected && "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-surface-1"
+          )}>
             <div className="flex items-center gap-3">
               <div
                 className="w-2 h-2 rounded-full bg-gray-400"
@@ -102,7 +105,10 @@ export const ResultsNode = memo(
           className="bg-gray-400! dark:bg-surface-3!"
           aria-hidden="true"
         />
-        <div className="p-3 bg-white dark:bg-surface-1 rounded-lg shadow-md border border-gray-200 dark:border-border">
+        <div className={cn(
+          "p-3 bg-white dark:bg-surface-1 rounded-lg shadow-md border border-gray-200 dark:border-border",
+          selected && "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-surface-1"
+        )}>
           <div className="flex items-center gap-4">
             {/* Status indicator */}
             <div

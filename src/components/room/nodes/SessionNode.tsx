@@ -17,7 +17,7 @@ import { COUNTDOWN_DURATION_MS } from "@/convex/constants";
 import type { SessionNodeType } from "../types";
 
 export const SessionNode = memo(
-  ({ data }: NodeProps<SessionNodeType>): ReactElement => {
+  ({ data, selected }: NodeProps<SessionNodeType>): ReactElement => {
     const {
       sessionName,
       participantCount,
@@ -98,8 +98,9 @@ export const SessionNode = memo(
           isActive
             ? "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-400 dark:border-blue-600"
             : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-400 dark:border-green-600",
+          selected && "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-surface-1",
         ),
-      [isActive],
+      [isActive, selected],
     );
 
     return (

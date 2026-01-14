@@ -21,11 +21,15 @@ interface UseCanvasNodesProps {
   onCancelAutoReveal?: () => void;
   onExecuteAutoReveal?: () => void;
   onOpenIssuesPanel?: () => void;
+  onUpdateNoteContent?: (nodeId: string, content: string) => void;
+  onDeleteNote?: (nodeId: string, hasContent: boolean) => void;
 }
 
 interface UseCanvasNodesReturn {
   nodes: CustomNodeType[];
   edges: Edge[];
+  currentIssue: { _id: Id<"issues">; title: string } | null;
+  hasNoteForCurrentIssue: boolean;
 }
 
 export function useCanvasNodes({
@@ -40,12 +44,26 @@ export function useCanvasNodes({
   onCancelAutoReveal,
   onExecuteAutoReveal,
   onOpenIssuesPanel,
+  onUpdateNoteContent,
+  onDeleteNote,
 }: UseCanvasNodesProps): UseCanvasNodesReturn {
   // Query canvas nodes from Convex
   const canvasNodes = useQuery(api.canvas.getCanvasNodes, { roomId });
 
   // Query current issue for the session node
-  const currentIssue = useQuery(api.issues.getCurrent, { roomId });
+  const currentIssueQuery = useQuery(api.issues.getCurrent, { roomId });
+
+  // Stabilize currentIssue reference to prevent excessive re-renders
+  const currentIssueId = currentIssueQuery?._id;
+  const currentIssueTitle = currentIssueQuery?.title;
+
+  // Check if a note exists for the current issue
+  const hasNoteForCurrentIssue = useMemo(() => {
+    if (!currentIssueId || !canvasNodes) return false;
+    return canvasNodes.some(
+      (n) => n.type === "note" && n.data.issueId === currentIssueId
+    );
+  }, [currentIssueId, canvasNodes]);
 
   const nodes = useMemo(() => {
     if (!canvasNodes || !roomData) return [];
@@ -103,8 +121,8 @@ export function useCanvasNodes({
             hasVotes: votes.some((v: SanitizedVote) => v.hasVoted),
             autoCompleteVoting: room.autoCompleteVoting,
             autoRevealCountdownStartedAt: room.autoRevealCountdownStartedAt ?? null,
-            currentIssue: currentIssue
-              ? { title: currentIssue.title }
+            currentIssue: currentIssueId
+              ? { id: currentIssueId, title: currentIssueTitle ?? "" }
               : null,
             onRevealCards,
             onResetGame,
@@ -148,11 +166,37 @@ export function useCanvasNodes({
           draggable: !node.isLocked,
         };
         allNodes.push(resultsNode);
+      } else if (node.type === "note") {
+        // Only show note if it belongs to the current issue
+        const noteIssueId = node.data.issueId;
+        if (currentIssueId && noteIssueId === currentIssueId) {
+          const noteContent = node.data.content || "";
+          const noteNode: CustomNodeType = {
+            id: node.nodeId,
+            type: "note",
+            position: node.position,
+            data: {
+              issueId: noteIssueId,
+              issueTitle: node.data.issueTitle || currentIssueTitle || "",
+              content: noteContent,
+              lastUpdatedBy: node.data.lastUpdatedBy,
+              lastUpdatedAt: node.data.lastUpdatedAt,
+              onUpdateContent: (content: string) => {
+                onUpdateNoteContent?.(node.nodeId, content);
+              },
+              onDelete: () => {
+                onDeleteNote?.(node.nodeId, !!noteContent);
+              },
+            },
+            draggable: !node.isLocked,
+          };
+          allNodes.push(noteNode);
+        }
       }
     });
 
     return allNodes;
-  }, [canvasNodes, roomData, currentUserId, selectedCardValue, onRevealCards, onResetGame, onCardSelect, onToggleAutoComplete, onCancelAutoReveal, onExecuteAutoReveal, onOpenIssuesPanel, roomId, currentIssue]);
+  }, [canvasNodes, roomData, currentUserId, selectedCardValue, onRevealCards, onResetGame, onCardSelect, onToggleAutoComplete, onCancelAutoReveal, onExecuteAutoReveal, onOpenIssuesPanel, onUpdateNoteContent, onDeleteNote, roomId, currentIssueId, currentIssueTitle]);
 
   const edges = useMemo(() => {
     if (!canvasNodes || !roomData) return [];
@@ -214,8 +258,37 @@ export function useCanvasNodes({
       },
     });
 
-    return allEdges;
-  }, [canvasNodes, roomData]);
+    // Session to Note edge (when current issue has a note)
+    if (currentIssueId) {
+      const noteNode = canvasNodes.find(
+        (n) => n.type === "note" && n.data.issueId === currentIssueId
+      );
+      if (noteNode) {
+        allEdges.push({
+          id: "session-to-note",
+          source: "session-current",
+          sourceHandle: "right",
+          target: noteNode.nodeId,
+          targetHandle: "left",
+          type: "straight",
+          animated: false,
+          style: {
+            stroke: "#f59e0b", // Amber color matching note node
+            strokeWidth: 2,
+            strokeDasharray: "5,5",
+            strokeOpacity: 0.6,
+          },
+        });
+      }
+    }
 
-  return { nodes, edges };
+    return allEdges;
+  }, [canvasNodes, roomData, currentIssueId]);
+
+  return {
+    nodes,
+    edges,
+    currentIssue: currentIssueId ? { _id: currentIssueId, title: currentIssueTitle ?? "" } : null,
+    hasNoteForCurrentIssue,
+  };
 }

@@ -15,15 +15,17 @@ import {
 import { ReactElement, useCallback, useEffect, useState, useMemo } from "react";
 import "@xyflow/react/dist/style.css";
 import { debounce } from "lodash";
-import type { NodeChange } from "@xyflow/react";
+import type { NodeChange, EdgeChange } from "@xyflow/react";
 
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CanvasNavigation } from "./canvas-navigation";
 import { useCanvasNodes } from "./hooks/useCanvasNodes";
+import { NodePickerToolbar } from "./node-picker-toolbar";
 import { Id } from "@/convex/_generated/dataModel";
 import {
+  NoteNode,
   PlayerNode,
   ResultsNode,
   StoryNode,
@@ -33,6 +35,16 @@ import {
 } from "./nodes";
 import type { CustomNodeType } from "./types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface RoomCanvasProps {
   roomData: RoomWithRelatedData;
@@ -41,6 +53,7 @@ interface RoomCanvasProps {
 
 // Define node types outside component to prevent re-renders
 const nodeTypes: NodeTypes = {
+  note: NoteNode,
   player: PlayerNode,
   story: StoryNode,
   session: SessionNode,
@@ -63,6 +76,9 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const toggleAutoComplete = useMutation(api.rooms.toggleAutoComplete);
   const cancelAutoRevealCountdown = useMutation(api.rooms.cancelAutoRevealCountdown);
   const executeAutoReveal = useMutation(api.rooms.executeAutoReveal);
+  const updateNoteContentMutation = useMutation(api.canvas.updateNoteContent);
+  const createNoteMutation = useMutation(api.canvas.createNote);
+  const deleteNoteMutation = useMutation(api.canvas.deleteNote);
 
   const handleRevealCards = useCallback(async () => {
     if (isDemoMode || !roomData) return;
@@ -117,9 +133,79 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   // Issues panel state - lifted up so it can be passed to SessionNode
   const [isIssuesPanelOpen, setIsIssuesPanelOpen] = useState(false);
 
+  // Delete note confirmation state
+  const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
+
   const handleOpenIssuesPanel = useCallback(() => {
     setIsIssuesPanelOpen(true);
   }, []);
+
+  // Handle note content updates
+  const handleUpdateNoteContent = useCallback(
+    async (nodeId: string, content: string) => {
+      if (isDemoMode || !user || !roomData) return;
+      try {
+        await updateNoteContentMutation({
+          roomId: roomData.room._id,
+          nodeId,
+          content,
+          userId: user.id,
+        });
+      } catch (error) {
+        console.error("Failed to update note content:", error);
+      }
+    },
+    [isDemoMode, updateNoteContentMutation, user, roomData]
+  );
+
+  // Handle creating a new note for an issue
+  const handleCreateNote = useCallback(
+    async (issueId: Id<"issues">) => {
+      if (isDemoMode || !user || !roomData) return;
+      try {
+        await createNoteMutation({
+          roomId: roomData.room._id,
+          issueId,
+          userId: user.id,
+        });
+      } catch (error) {
+        console.error("Failed to create note:", error);
+      }
+    },
+    [isDemoMode, createNoteMutation, user, roomData]
+  );
+
+  // Handle note deletion request
+  const handleDeleteNote = useCallback(
+    (nodeId: string, hasContent: boolean) => {
+      if (isDemoMode || !roomData) return;
+      if (hasContent) {
+        // Show confirmation dialog for notes with content
+        setPendingDeleteNodeId(nodeId);
+      } else {
+        // Delete immediately for empty notes
+        deleteNoteMutation({
+          roomId: roomData.room._id,
+          nodeId,
+        }).catch((error) => {
+          console.error("Failed to delete note:", error);
+        });
+      }
+    },
+    [isDemoMode, deleteNoteMutation, roomData]
+  );
+
+  // Handle confirmed deletion
+  const handleConfirmDelete = useCallback(() => {
+    if (!pendingDeleteNodeId || !roomData) return;
+    deleteNoteMutation({
+      roomId: roomData.room._id,
+      nodeId: pendingDeleteNodeId,
+    }).catch((error) => {
+      console.error("Failed to delete note:", error);
+    });
+    setPendingDeleteNodeId(null);
+  }, [pendingDeleteNodeId, deleteNoteMutation, roomData]);
 
   // Reset selected card when game is reset
   useEffect(() => {
@@ -164,7 +250,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const roomId = roomData?.room._id as Id<"rooms">;
 
   // Use the canvas nodes hook to get persisted nodes
-  const { nodes: layoutNodes, edges: layoutEdges } = useCanvasNodes({
+  const { nodes: layoutNodes, edges: layoutEdges, currentIssue, hasNoteForCurrentIssue } = useCanvasNodes({
     roomId,
     roomData,
     currentUserId: user?.id,
@@ -176,6 +262,8 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     onCancelAutoReveal: handleCancelAutoReveal,
     onExecuteAutoReveal: handleExecuteAutoReveal,
     onOpenIssuesPanel: handleOpenIssuesPanel,
+    onUpdateNoteContent: handleUpdateNoteContent,
+    onDeleteNote: handleDeleteNote,
   });
 
   // Update nodes and edges when layout changes
@@ -215,17 +303,40 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   // Handle node position changes
   const handleNodesChange = useCallback(
     (changes: NodeChange<CustomNodeType>[]) => {
+      // Filter out all node removals - only note nodes can be deleted
+      const filteredChanges = changes.filter((change) => {
+        if (change.type === "remove") {
+          const node = nodes.find((n) => n.id === change.id);
+          if (node?.type === "note") {
+            handleDeleteNote(change.id, !!node.data.content);
+          }
+          // Block all removals - only note nodes trigger delete via handleDeleteNote
+          return false;
+        }
+        return true;
+      });
+
       // Call the original handler to update local state
-      onNodesChange(changes);
+      onNodesChange(filteredChanges);
 
       // Send position updates to database
-      changes.forEach((change) => {
+      filteredChanges.forEach((change) => {
         if (change.type === "position" && change.position && !change.dragging) {
           debouncedPositionUpdate(change.id, change.position);
         }
       });
     },
-    [onNodesChange, debouncedPositionUpdate]
+    [onNodesChange, debouncedPositionUpdate, nodes, handleDeleteNote]
+  );
+
+  // Handle edge changes - block all edge deletions
+  const handleEdgesChange = useCallback(
+    (changes: EdgeChange<Edge>[]) => {
+      // Filter out all edge removals - edges are managed by the system
+      const filteredChanges = changes.filter((change) => change.type !== "remove");
+      onEdgesChange(filteredChanges);
+    },
+    [onEdgesChange]
   );
 
   // Handle connection between nodes - prevent manual connections
@@ -271,7 +382,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
         nodes={nodes}
         edges={edges}
         onNodesChange={isDemoMode ? undefined : handleNodesChange}
-        onEdgesChange={isDemoMode ? undefined : onEdgesChange}
+        onEdgesChange={isDemoMode ? undefined : handleEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
         connectionMode={ConnectionMode.Loose}
@@ -302,6 +413,35 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
           className="*:stroke-gray-300 dark:*:stroke-surface-3"
         />
       </ReactFlow>
+      {!isDemoMode && (
+        <NodePickerToolbar
+          currentIssueId={currentIssue?._id ?? null}
+          hasNoteForCurrentIssue={hasNoteForCurrentIssue}
+          onCreateNote={() => currentIssue && handleCreateNote(currentIssue._id)}
+          isDemoMode={isDemoMode}
+        />
+      )}
+
+      {/* Delete note confirmation dialog */}
+      <AlertDialog
+        open={!!pendingDeleteNodeId}
+        onOpenChange={(open) => !open && setPendingDeleteNodeId(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete note?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This note has content. Are you sure you want to delete it?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleConfirmDelete}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

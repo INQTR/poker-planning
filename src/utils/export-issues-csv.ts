@@ -38,6 +38,7 @@ export function issuesToCSV(issues: ExportableIssue[]): string {
     "Average",
     "Median",
     "Agreement %",
+    "Notes",
   ];
   const headerRow = headers.join(",");
 
@@ -51,6 +52,7 @@ export function issuesToCSV(issues: ExportableIssue[]): string {
       escapeCSVField(formatNumber(issue.average)),
       escapeCSVField(formatNumber(issue.median)),
       escapeCSVField(issue.agreement !== null ? `${issue.agreement}%` : null),
+      escapeCSVField(issue.notes),
     ].join(",")
   );
 
