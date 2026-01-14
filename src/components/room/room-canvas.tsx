@@ -178,7 +178,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   // Handle note deletion request
   const handleDeleteNote = useCallback(
     (nodeId: string, hasContent: boolean) => {
-      if (isDemoMode || !roomData) return;
+      if (isDemoMode || !roomData || !user) return;
       if (hasContent) {
         // Show confirmation dialog for notes with content
         setPendingDeleteNodeId(nodeId);
@@ -187,25 +187,27 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
         deleteNoteMutation({
           roomId: roomData.room._id,
           nodeId,
+          userId: user.id,
         }).catch((error) => {
           console.error("Failed to delete note:", error);
         });
       }
     },
-    [isDemoMode, deleteNoteMutation, roomData]
+    [isDemoMode, deleteNoteMutation, roomData, user]
   );
 
   // Handle confirmed deletion
   const handleConfirmDelete = useCallback(() => {
-    if (!pendingDeleteNodeId || !roomData) return;
+    if (!pendingDeleteNodeId || !roomData || !user) return;
     deleteNoteMutation({
       roomId: roomData.room._id,
       nodeId: pendingDeleteNodeId,
+      userId: user.id,
     }).catch((error) => {
       console.error("Failed to delete note:", error);
     });
     setPendingDeleteNodeId(null);
-  }, [pendingDeleteNodeId, deleteNoteMutation, roomData]);
+  }, [pendingDeleteNodeId, deleteNoteMutation, roomData, user]);
 
   // Reset selected card when game is reset
   useEffect(() => {

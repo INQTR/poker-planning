@@ -46,6 +46,28 @@ interface NodePosition {
   position: Position;
 }
 
+// Maximum length for note content (10KB)
+const MAX_NOTE_CONTENT_LENGTH = 10000;
+
+/**
+ * Verifies that a user belongs to a room
+ */
+async function verifyUserInRoom(
+  ctx: MutationCtx,
+  roomId: Id<"rooms">,
+  userId: Id<"users">
+): Promise<void> {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .filter((q) => q.eq(q.field("_id"), userId))
+    .first();
+
+  if (!user) {
+    throw new Error("User not found in room");
+  }
+}
+
 /**
  * Computes horizontal layout for session and player nodes.
  * Places session node centered at (0, SESSION_Y) and player nodes
@@ -548,6 +570,9 @@ export async function createNoteNode(
     userId: Id<"users">;
   }
 ): Promise<Id<"canvasNodes">> {
+  // Verify user belongs to the room
+  await verifyUserInRoom(ctx, args.roomId, args.userId);
+
   const nodeId = `note-${args.issueId}`;
 
   // Check if note already exists for this issue
@@ -599,6 +624,14 @@ export async function updateNoteContent(
     userId: Id<"users">;
   }
 ): Promise<void> {
+  // Verify user belongs to the room
+  await verifyUserInRoom(ctx, args.roomId, args.userId);
+
+  // Validate content length
+  if (args.content.length > MAX_NOTE_CONTENT_LENGTH) {
+    throw new Error(`Note content too long (max ${MAX_NOTE_CONTENT_LENGTH} characters)`);
+  }
+
   const node = await ctx.db
     .query("canvasNodes")
     .withIndex("by_room_node", (q) =>
@@ -659,8 +692,11 @@ export async function getNoteContentForIssue(
  */
 export async function deleteNoteNode(
   ctx: MutationCtx,
-  args: { roomId: Id<"rooms">; nodeId: string }
+  args: { roomId: Id<"rooms">; nodeId: string; userId: Id<"users"> }
 ): Promise<void> {
+  // Verify user belongs to the room
+  await verifyUserInRoom(ctx, args.roomId, args.userId);
+
   const node = await ctx.db
     .query("canvasNodes")
     .withIndex("by_room_node", (q) =>

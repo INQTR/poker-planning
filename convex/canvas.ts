@@ -201,6 +201,7 @@ export const deleteNote = mutation({
   args: {
     roomId: v.id("rooms"),
     nodeId: v.string(),
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     await Canvas.deleteNoteNode(ctx, args);

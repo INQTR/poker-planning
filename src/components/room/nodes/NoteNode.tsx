@@ -76,6 +76,10 @@ export const NoteNode = memo(
     );
 
     // Cleanup timer on unmount - flush pending saves
+    // NOTE: This calls an async mutation but doesn't await it. If the component
+    // unmounts during rapid navigation, the save may not complete. This is an
+    // acceptable trade-off since the 500ms debounce means users typically pause
+    // longer than that before switching issues, making data loss unlikely.
     useEffect(() => {
       return () => {
         if (debounceTimerRef.current) {
