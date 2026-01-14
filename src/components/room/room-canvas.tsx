@@ -33,7 +33,7 @@ import {
   TimerNode,
   VotingCardNode,
 } from "./nodes";
-import type { CustomNodeType } from "./types";
+import type { CustomNodeType, PlayerNodeData } from "./types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import {
   AlertDialog,
@@ -79,6 +79,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const updateNoteContentMutation = useMutation(api.canvas.updateNoteContent);
   const createNoteMutation = useMutation(api.canvas.createNote);
   const deleteNoteMutation = useMutation(api.canvas.deleteNote);
+  const removeUser = useMutation(api.users.remove);
 
   const handleRevealCards = useCallback(async () => {
     if (isDemoMode || !roomData) return;
@@ -135,6 +136,9 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
 
   // Delete note confirmation state
   const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
+
+  // Delete player confirmation state
+  const [pendingDeleteUserId, setPendingDeleteUserId] = useState<{id: Id<"users">, name: string} | null>(null);
 
   const handleOpenIssuesPanel = useCallback(() => {
     setIsIssuesPanelOpen(true);
@@ -208,6 +212,26 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     });
     setPendingDeleteNodeId(null);
   }, [pendingDeleteNodeId, deleteNoteMutation, roomData, user]);
+
+  // Handle player deletion request (shows confirmation)
+  const handleDeletePlayer = useCallback(
+    (userId: Id<"users">, userName: string, isCurrentUser: boolean) => {
+      if (isDemoMode || !roomData || isCurrentUser) return;
+      setPendingDeleteUserId({ id: userId, name: userName });
+    },
+    [isDemoMode, roomData]
+  );
+
+  // Handle confirmed player deletion
+  const handleConfirmDeletePlayer = useCallback(async () => {
+    if (!pendingDeleteUserId) return;
+    try {
+      await removeUser({ userId: pendingDeleteUserId.id });
+    } catch (error) {
+      console.error("Failed to remove user:", error);
+    }
+    setPendingDeleteUserId(null);
+  }, [pendingDeleteUserId, removeUser]);
 
   // Reset selected card when game is reset
   useEffect(() => {
@@ -305,14 +329,17 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   // Handle node position changes
   const handleNodesChange = useCallback(
     (changes: NodeChange<CustomNodeType>[]) => {
-      // Filter out all node removals - only note nodes can be deleted
+      // Filter out all node removals - only note and player nodes trigger delete flows
       const filteredChanges = changes.filter((change) => {
         if (change.type === "remove") {
           const node = nodes.find((n) => n.id === change.id);
           if (node?.type === "note") {
             handleDeleteNote(change.id, !!node.data.content);
+          } else if (node?.type === "player") {
+            const playerData = node.data as PlayerNodeData;
+            handleDeletePlayer(playerData.user._id, playerData.user.name, playerData.isCurrentUser);
           }
-          // Block all removals - only note nodes trigger delete via handleDeleteNote
+          // Block all removals - deletions go through confirmation handlers
           return false;
         }
         return true;
@@ -328,7 +355,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
         }
       });
     },
-    [onNodesChange, debouncedPositionUpdate, nodes, handleDeleteNote]
+    [onNodesChange, debouncedPositionUpdate, nodes, handleDeleteNote, handleDeletePlayer]
   );
 
   // Handle edge changes - block all edge deletions
@@ -440,6 +467,27 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction variant="destructive" onClick={handleConfirmDelete}>
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Remove user confirmation dialog */}
+      <AlertDialog
+        open={!!pendingDeleteUserId}
+        onOpenChange={(open) => !open && setPendingDeleteUserId(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {pendingDeleteUserId?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the user from the room. They can rejoin using the room link.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleConfirmDeletePlayer}>
+              Remove
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
