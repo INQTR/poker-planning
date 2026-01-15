@@ -154,15 +154,24 @@ export async function showRoomCards(
   ctx: MutationCtx,
   roomId: Id<"rooms">
 ): Promise<void> {
+  const room = await ctx.db.get(roomId);
+  // Cancel scheduled reveal if exists (prevents duplicate reveals)
+  if (room?.autoRevealScheduledId) {
+    try {
+      await ctx.scheduler.cancel(room.autoRevealScheduledId);
+    } catch {
+      // Job may have already executed - this is fine
+    }
+  }
   await ctx.db.patch(roomId, {
     isGameOver: true,
     lastActivityAt: Date.now(),
     autoRevealCountdownStartedAt: undefined, // Clear countdown when revealing
+    autoRevealScheduledId: undefined,
   });
 
   // Create results node for canvas rooms
-  const room = await ctx.db.get(roomId);
-  if (room && room.roomType === "canvas") {
+  if (room?.roomType === "canvas") {
     await Canvas.upsertResultsNode(ctx, { roomId });
   }
 
@@ -198,11 +207,21 @@ export async function resetRoomGame(
     }
   }
 
+  // Cancel scheduled reveal if exists
+  if (room?.autoRevealScheduledId) {
+    try {
+      await ctx.scheduler.cancel(room.autoRevealScheduledId);
+    } catch {
+      // Job may have already executed - this is fine
+    }
+  }
+
   // Update room state
   await ctx.db.patch(roomId, {
     isGameOver: false,
     lastActivityAt: Date.now(),
     autoRevealCountdownStartedAt: undefined, // Clear countdown when resetting
+    autoRevealScheduledId: undefined,
   });
 
   // Delete all votes for this room in a more efficient way

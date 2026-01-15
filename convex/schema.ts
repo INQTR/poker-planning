@@ -7,6 +7,7 @@ export default defineSchema({
     votingCategorized: v.boolean(),
     autoCompleteVoting: v.boolean(),
     autoRevealCountdownStartedAt: v.optional(v.number()), // Timestamp when countdown began
+    autoRevealScheduledId: v.optional(v.id("_scheduled_functions")), // Scheduled function ID for auto-reveal
     roomType: v.optional(v.literal("canvas")), // Optional for backward compatibility
     isGameOver: v.boolean(),
     isDemoRoom: v.optional(v.boolean()), // Mark the global demo room

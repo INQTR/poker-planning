@@ -19,7 +19,6 @@ interface UseCanvasNodesProps {
   onCardSelect?: (cardValue: string) => void;
   onToggleAutoComplete?: () => void;
   onCancelAutoReveal?: () => void;
-  onExecuteAutoReveal?: () => void;
   onOpenIssuesPanel?: () => void;
   onUpdateNoteContent?: (nodeId: string, content: string) => void;
   onDeleteNote?: (nodeId: string, hasContent: boolean) => void;
@@ -42,7 +41,6 @@ export function useCanvasNodes({
   onCardSelect,
   onToggleAutoComplete,
   onCancelAutoReveal,
-  onExecuteAutoReveal,
   onOpenIssuesPanel,
   onUpdateNoteContent,
   onDeleteNote,
@@ -65,7 +63,6 @@ export function useCanvasNodes({
     onCardSelect,
     onToggleAutoComplete,
     onCancelAutoReveal,
-    onExecuteAutoReveal,
     onOpenIssuesPanel,
     onUpdateNoteContent,
     onDeleteNote,
@@ -79,7 +76,6 @@ export function useCanvasNodes({
       onCardSelect,
       onToggleAutoComplete,
       onCancelAutoReveal,
-      onExecuteAutoReveal,
       onOpenIssuesPanel,
       onUpdateNoteContent,
       onDeleteNote,
@@ -90,7 +86,6 @@ export function useCanvasNodes({
     onCardSelect,
     onToggleAutoComplete,
     onCancelAutoReveal,
-    onExecuteAutoReveal,
     onOpenIssuesPanel,
     onUpdateNoteContent,
     onDeleteNote,
@@ -168,7 +163,6 @@ export function useCanvasNodes({
             onResetGame: callbackRefs.current.onResetGame,
             onToggleAutoComplete: callbackRefs.current.onToggleAutoComplete,
             onCancelAutoReveal: callbackRefs.current.onCancelAutoReveal,
-            onExecuteAutoReveal: callbackRefs.current.onExecuteAutoReveal,
             onOpenIssuesPanel: callbackRefs.current.onOpenIssuesPanel,
           },
           draggable: !node.isLocked,

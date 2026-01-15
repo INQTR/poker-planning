@@ -37,7 +37,6 @@ export type SessionNodeData = {
   onResetGame?: () => void;
   onToggleAutoComplete?: () => void;
   onCancelAutoReveal?: () => void;
-  onExecuteAutoReveal?: () => void;
   onOpenIssuesPanel?: () => void;
 };
 
