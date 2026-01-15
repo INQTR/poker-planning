@@ -4,7 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Edge } from "@xyflow/react";
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import type { CustomNodeType } from "../types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import type { Doc } from "@/convex/_generated/dataModel";
@@ -57,6 +57,45 @@ export function useCanvasNodes({
   const currentIssueId = currentIssueQuery?._id;
   const currentIssueTitle = currentIssueQuery?.title;
 
+  // Store callbacks in refs to avoid adding them to useMemo dependency arrays
+  // Based on Vercel React Best Practices: advanced-use-latest
+  const callbackRefs = useRef({
+    onRevealCards,
+    onResetGame,
+    onCardSelect,
+    onToggleAutoComplete,
+    onCancelAutoReveal,
+    onExecuteAutoReveal,
+    onOpenIssuesPanel,
+    onUpdateNoteContent,
+    onDeleteNote,
+  });
+
+  // Keep refs updated with latest callbacks
+  useEffect(() => {
+    callbackRefs.current = {
+      onRevealCards,
+      onResetGame,
+      onCardSelect,
+      onToggleAutoComplete,
+      onCancelAutoReveal,
+      onExecuteAutoReveal,
+      onOpenIssuesPanel,
+      onUpdateNoteContent,
+      onDeleteNote,
+    };
+  }, [
+    onRevealCards,
+    onResetGame,
+    onCardSelect,
+    onToggleAutoComplete,
+    onCancelAutoReveal,
+    onExecuteAutoReveal,
+    onOpenIssuesPanel,
+    onUpdateNoteContent,
+    onDeleteNote,
+  ]);
+
   // Check if a note exists for the current issue
   const hasNoteForCurrentIssue = useMemo(() => {
     if (!currentIssueId || !canvasNodes) return false;
@@ -65,6 +104,7 @@ export function useCanvasNodes({
     );
   }, [currentIssueId, canvasNodes]);
 
+  /* eslint-disable react-hooks/refs -- callbacks via refs are only called during user interactions, not render */
   const nodes = useMemo(() => {
     if (!canvasNodes || !roomData) return [];
 
@@ -124,12 +164,12 @@ export function useCanvasNodes({
             currentIssue: currentIssueId
               ? { id: currentIssueId, title: currentIssueTitle ?? "" }
               : null,
-            onRevealCards,
-            onResetGame,
-            onToggleAutoComplete,
-            onCancelAutoReveal,
-            onExecuteAutoReveal,
-            onOpenIssuesPanel,
+            onRevealCards: callbackRefs.current.onRevealCards,
+            onResetGame: callbackRefs.current.onResetGame,
+            onToggleAutoComplete: callbackRefs.current.onToggleAutoComplete,
+            onCancelAutoReveal: callbackRefs.current.onCancelAutoReveal,
+            onExecuteAutoReveal: callbackRefs.current.onExecuteAutoReveal,
+            onOpenIssuesPanel: callbackRefs.current.onOpenIssuesPanel,
           },
           draggable: !node.isLocked,
         };
@@ -146,7 +186,7 @@ export function useCanvasNodes({
               roomId,
               isSelectable: !room.isGameOver,
               isSelected: node.data.card.value === selectedCardValue,
-              onCardSelect,
+              onCardSelect: callbackRefs.current.onCardSelect,
             },
             selected: node.data.card.value === selectedCardValue,
             draggable: false,
@@ -171,8 +211,10 @@ export function useCanvasNodes({
         const noteIssueId = node.data.issueId;
         if (currentIssueId && noteIssueId === currentIssueId) {
           const noteContent = node.data.content || "";
+          // Capture nodeId for closure - refs ensure we always call latest callback
+          const nodeId = node.nodeId;
           const noteNode: CustomNodeType = {
-            id: node.nodeId,
+            id: nodeId,
             type: "note",
             position: node.position,
             data: {
@@ -182,10 +224,10 @@ export function useCanvasNodes({
               lastUpdatedBy: node.data.lastUpdatedBy,
               lastUpdatedAt: node.data.lastUpdatedAt,
               onUpdateContent: (content: string) => {
-                onUpdateNoteContent?.(node.nodeId, content);
+                callbackRefs.current.onUpdateNoteContent?.(nodeId, content);
               },
               onDelete: () => {
-                onDeleteNote?.(node.nodeId, !!noteContent);
+                callbackRefs.current.onDeleteNote?.(nodeId, !!noteContent);
               },
             },
             draggable: !node.isLocked,
@@ -196,7 +238,10 @@ export function useCanvasNodes({
     });
 
     return allNodes;
-  }, [canvasNodes, roomData, currentUserId, selectedCardValue, onRevealCards, onResetGame, onCardSelect, onToggleAutoComplete, onCancelAutoReveal, onExecuteAutoReveal, onOpenIssuesPanel, onUpdateNoteContent, onDeleteNote, roomId, currentIssueId, currentIssueTitle]);
+    // Callbacks are accessed via callbackRefs to avoid adding them as dependencies
+    // This reduces re-computations from 15 deps to 7 deps
+  }, [canvasNodes, roomData, currentUserId, selectedCardValue, roomId, currentIssueId, currentIssueTitle]);
+  /* eslint-enable react-hooks/refs */
 
   const edges = useMemo(() => {
     if (!canvasNodes || !roomData) return [];
