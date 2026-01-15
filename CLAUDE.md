@@ -30,6 +30,8 @@ npx playwright test tests/room/room-creation.spec.ts
 npx playwright test -g "should create a new room"
 ```
 
+> Requires Node.js 20+
+
 ## Architecture
 
 ### Tech Stack
@@ -68,7 +70,7 @@ const createRoom = useMutation(api.rooms.create);
 
 The room canvas (`src/components/room/`) uses React Flow with custom node types:
 
-- **Node types** defined in `src/components/room/nodes/` (PlayerNode, SessionNode, TimerNode, VotingCardNode, ResultsNode)
+- **Node types** defined in `src/components/room/nodes/` (PlayerNode, SessionNode, TimerNode, VotingCardNode, ResultsNode, StoryNode, NoteNode)
 - **Type definitions** in `src/components/room/types.ts` - defines `CustomNodeType` union
 - **Node state** synced via Convex (`canvasNodes` table)
 - **Layout logic** in `useCanvasLayout.ts`, state management in `useCanvasNodes.ts`
@@ -80,6 +82,7 @@ Schema defined in `convex/schema.ts`. Key tables:
 - `rooms` - Room configuration and state
 - `users` - Participants in rooms
 - `votes` - User votes (sanitized based on reveal state)
+- `issues` - Issue tracking with vote statistics
 - `canvasNodes` - Persisted node positions and data
 
 ### E2E Testing Pattern
@@ -129,6 +132,13 @@ className = "text-green-700 dark:text-status-success-fg";
 - Use status tokens for semantic feedback colors
 - Keep hardcoded values for gradients (tokens don't support gradient pairs)
 - Keep hardcoded values for hover states that need distinct visual feedback
+
+## Claude Code Skills
+
+Project-specific skills in `.claude/skills/`:
+
+- **vercel-react-best-practices**: React/Next.js performance optimization guidelines from Vercel Engineering
+- **web-design-guidelines**: UI design review checklist
 
 ## Important Notes
 
