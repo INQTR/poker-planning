@@ -1,7 +1,21 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import * as Rooms from "./model/rooms";
-import { COUNTDOWN_DURATION_MS } from "./constants";
+
+// Internal mutation called by scheduler for auto-reveal
+export const scheduledAutoReveal = internalMutation({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+    // Idempotency: skip if already revealed, cancelled, or room doesn't exist
+    if (!room || room.isGameOver || !room.autoRevealCountdownStartedAt) {
+      return;
+    }
+    // Clear the scheduled ID and reveal cards
+    await ctx.db.patch(args.roomId, { autoRevealScheduledId: undefined });
+    await Rooms.showRoomCards(ctx, args.roomId);
+  },
+});
 
 // Create a new room
 export const create = mutation({
@@ -73,10 +87,19 @@ export const toggleAutoComplete = mutation({
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.roomId);
     if (room) {
+      // Cancel any scheduled reveal when toggling
+      if (room.autoRevealScheduledId) {
+        try {
+          await ctx.scheduler.cancel(room.autoRevealScheduledId);
+        } catch {
+          // Job may have already executed - this is fine
+        }
+      }
       await ctx.db.patch(args.roomId, {
         autoCompleteVoting: !room.autoCompleteVoting,
         // Clear any active countdown when toggling
         autoRevealCountdownStartedAt: undefined,
+        autoRevealScheduledId: undefined,
       });
     }
   },
@@ -88,34 +111,19 @@ export const cancelAutoRevealCountdown = mutation({
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.roomId);
     if (room && room.autoRevealCountdownStartedAt) {
+      // Cancel the scheduled job if it exists
+      if (room.autoRevealScheduledId) {
+        try {
+          await ctx.scheduler.cancel(room.autoRevealScheduledId);
+        } catch {
+          // Job may have already executed - this is fine
+        }
+      }
       await ctx.db.patch(args.roomId, {
         autoRevealCountdownStartedAt: undefined,
+        autoRevealScheduledId: undefined,
       });
     }
-  },
-});
-
-// Execute reveal if countdown has expired (called by client when timer reaches 0)
-export const executeAutoReveal = mutation({
-  args: { roomId: v.id("rooms") },
-  handler: async (ctx, args) => {
-    const room = await ctx.db.get(args.roomId);
-    if (!room || !room.autoRevealCountdownStartedAt || room.isGameOver) {
-      return { revealed: false };
-    }
-
-    const elapsed = Date.now() - room.autoRevealCountdownStartedAt;
-
-    if (elapsed >= COUNTDOWN_DURATION_MS) {
-      // Clear countdown and reveal cards
-      await ctx.db.patch(args.roomId, {
-        autoRevealCountdownStartedAt: undefined,
-      });
-      await Rooms.showRoomCards(ctx, args.roomId);
-      return { revealed: true };
-    }
-
-    return { revealed: false };
   },
 });
 

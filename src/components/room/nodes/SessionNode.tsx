@@ -31,7 +31,6 @@ export const SessionNode = memo(
       onResetGame,
       onToggleAutoComplete,
       onCancelAutoReveal,
-      onExecuteAutoReveal,
       onOpenIssuesPanel,
     } = data;
 
@@ -65,13 +64,8 @@ export const SessionNode = memo(
         const elapsed = (Date.now() - autoRevealCountdownStartedAt) / 1000;
         const remaining = Math.max(0, countdownDurationSeconds - elapsed);
 
-        if (remaining <= 0) {
-          setCountdownSeconds(0);
-          // Trigger the reveal
-          onExecuteAutoReveal?.();
-        } else {
-          setCountdownSeconds(Math.ceil(remaining));
-        }
+        // Just update the display - reveal is handled server-side via scheduler
+        setCountdownSeconds(remaining <= 0 ? 0 : Math.ceil(remaining));
       };
 
       // Update immediately
@@ -80,7 +74,7 @@ export const SessionNode = memo(
       // Then update every 100ms for smooth countdown
       const interval = setInterval(updateCountdown, 100);
       return () => clearInterval(interval);
-    }, [autoRevealCountdownStartedAt, countdownDurationSeconds, onExecuteAutoReveal]);
+    }, [autoRevealCountdownStartedAt, countdownDurationSeconds]);
 
     const isCountdownActive = countdownSeconds !== null && countdownSeconds > 0;
 

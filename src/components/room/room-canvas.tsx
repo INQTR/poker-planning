@@ -76,7 +76,6 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const updateNodePosition = useMutation(api.canvas.updateNodePosition);
   const toggleAutoComplete = useMutation(api.rooms.toggleAutoComplete);
   const cancelAutoRevealCountdown = useMutation(api.rooms.cancelAutoRevealCountdown);
-  const executeAutoReveal = useMutation(api.rooms.executeAutoReveal);
   const updateNoteContentMutation = useMutation(api.canvas.updateNoteContent);
   const createNoteMutation = useMutation(api.canvas.createNote);
   const deleteNoteMutation = useMutation(api.canvas.deleteNote);
@@ -121,15 +120,6 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
       console.error("Failed to cancel auto-reveal:", error);
     }
   }, [isDemoMode, cancelAutoRevealCountdown, roomIdRef]);
-
-  const handleExecuteAutoReveal = useCallback(async () => {
-    if (isDemoMode) return;
-    try {
-      await executeAutoReveal({ roomId: roomIdRef.current });
-    } catch (error) {
-      console.error("Failed to execute auto-reveal:", error);
-    }
-  }, [isDemoMode, executeAutoReveal, roomIdRef]);
 
   // Track selected cards locally (server doesn't send card value until reveal)
   const [selectedCardValue, setSelectedCardValue] = useState<string | null>(
@@ -290,7 +280,6 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     onCardSelect: handleCardSelect,
     onToggleAutoComplete: handleToggleAutoComplete,
     onCancelAutoReveal: handleCancelAutoReveal,
-    onExecuteAutoReveal: handleExecuteAutoReveal,
     onOpenIssuesPanel: handleOpenIssuesPanel,
     onUpdateNoteContent: handleUpdateNoteContent,
     onDeleteNote: handleDeleteNote,

@@ -1,6 +1,8 @@
 import { MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
+import { internal } from "../_generated/api";
 import * as Rooms from "./rooms";
+import { COUNTDOWN_DURATION_MS } from "../constants";
 
 export interface PickCardArgs {
   roomId: Id<"rooms">;
@@ -51,14 +53,20 @@ export async function pickCard(
     });
   }
 
-  // Check for auto-complete voting - start countdown instead of immediate reveal
+  // Check for auto-complete voting - start countdown with server-side scheduled reveal
   const room = await ctx.db.get(args.roomId);
   if (room && room.autoCompleteVoting && !room.isGameOver && !room.autoRevealCountdownStartedAt) {
     const allVotesIn = await areAllVotesIn(ctx, args.roomId);
     if (allVotesIn) {
-      // Start the countdown instead of revealing immediately
+      // Schedule server-side reveal - eliminates client race condition
+      const scheduledId = await ctx.scheduler.runAfter(
+        COUNTDOWN_DURATION_MS,
+        internal.rooms.scheduledAutoReveal,
+        { roomId: args.roomId }
+      );
       await ctx.db.patch(args.roomId, {
         autoRevealCountdownStartedAt: Date.now(),
+        autoRevealScheduledId: scheduledId,
       });
     }
   }
@@ -84,6 +92,23 @@ export async function removeCard(
 
   if (vote) {
     await ctx.db.delete(vote._id);
+
+    // Cancel countdown only if votes are no longer complete
+    const room = await ctx.db.get(args.roomId);
+    if (room?.autoRevealScheduledId) {
+      const allVotesIn = await areAllVotesIn(ctx, args.roomId);
+      if (!allVotesIn) {
+        try {
+          await ctx.scheduler.cancel(room.autoRevealScheduledId);
+        } catch {
+          // Job may have already executed or been cancelled - this is fine
+        }
+        await ctx.db.patch(args.roomId, {
+          autoRevealCountdownStartedAt: undefined,
+          autoRevealScheduledId: undefined,
+        });
+      }
+    }
   }
 }
 
