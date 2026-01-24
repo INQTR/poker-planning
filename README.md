@@ -129,6 +129,14 @@ The hosted version at [agilekit.app](https://agilekit.app) uses Google Analytics
 
 See our [Privacy Policy](https://agilekit.app/privacy) for details.
 
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/) and uses [Conventional Commits](https://www.conventionalcommits.org/) for automated releases.
+
+- View all releases on the [Releases page](https://github.com/INQTR/poker-planning/releases)
+- See [CHANGELOG.md](CHANGELOG.md) for version history
+- See [docs/releasing.md](docs/releasing.md) for release process details
+
 ## License
 
 This project is open source under the [MIT License](LICENSE).

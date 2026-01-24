@@ -146,6 +146,21 @@ Project-specific skills in `.claude/skills/`:
 - **Convex dev server** must be running alongside Next.js for full functionality
 - Both servers start automatically when running Playwright tests
 
+## Releases
+
+This project uses [release-please](https://github.com/googleapis/release-please) for automated releases.
+
+- **Conventional Commits required**: All commits must use `feat:`, `fix:`, `chore:`, etc. prefixes
+- **Automatic changelog**: Generated from commit messages when Release PR is merged
+- **Semantic versioning**: `feat:` = minor bump, `fix:` = patch bump, `feat!:` or `BREAKING CHANGE:` = major bump
+
+Key files:
+- `.github/workflows/release-please.yml` - GitHub Actions workflow
+- `release-please-config.json` - Configuration (changelog sections, release type)
+- `.release-please-manifest.json` - Current version tracker
+
+See [docs/releasing.md](docs/releasing.md) for full documentation.
+
 ## Plan Mode
 
 - Make the plan extremely concise. Sacrifice grammar for the sake of concision.
