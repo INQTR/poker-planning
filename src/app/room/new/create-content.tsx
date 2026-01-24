@@ -6,7 +6,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { ArrowRight } from "lucide-react";
 
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -139,7 +139,7 @@ export function CreateContent() {
 
   return (
     <div className="bg-white dark:bg-black min-h-screen flex flex-col">
-      <Header />
+      <Navbar />
 
       <main className="flex-1 relative isolate">
         {/* Background pattern */}
@@ -169,7 +169,7 @@ export function CreateContent() {
           </svg>
         </div>
 
-        <div className="py-16 sm:py-24">
+        <div className="pt-28 pb-16 sm:pt-32 sm:pb-24">
           <div className="mx-auto max-w-lg px-6">
             {/* Form card */}
             <Card>

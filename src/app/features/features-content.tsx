@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 
 import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { GithubIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
@@ -143,7 +143,7 @@ const analyticsFeatures = [
 export function FeaturesContent() {
   return (
     <div className="bg-white dark:bg-black min-h-screen">
-      <Header />
+      <Navbar />
 
       <main className="relative isolate overflow-hidden">
         {/* Background effects */}
@@ -186,7 +186,7 @@ export function FeaturesContent() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative pt-20 pb-16 sm:pt-32 sm:pb-24">
+        <section className="relative pt-28 pb-16 sm:pt-32 sm:pb-24">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <div className="mb-8 flex justify-center">

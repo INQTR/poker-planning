@@ -17,7 +17,7 @@ import {
 import { mdxComponents } from "../components/mdx-components";
 import { TableOfContents } from "../components/table-of-contents";
 import { RelatedPosts } from "../components/related-posts";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { siteConfig } from "@/lib/site-config";
 import {
@@ -100,9 +100,9 @@ export default async function BlogPostPage({ params }: PageProps) {
         wordCount={post.wordCount}
       />
       <BreadcrumbSchema items={breadcrumbItems} />
-      <Header />
+      <Navbar />
       <main className="flex-1">
-        <article className="max-w-6xl mx-auto px-6 py-16">
+        <article className="max-w-6xl mx-auto px-6 pt-28 pb-16">
           {/* Back link */}
           <Link
             href="/blog"

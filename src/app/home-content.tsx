@@ -10,7 +10,7 @@ import {
   AppPreview,
   FeaturesSection,
 } from "@/components/homepage";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { GithubIcon } from "@/components/icons";
 
@@ -24,7 +24,7 @@ export function HomeContent() {
         Skip to main content
       </a>
 
-      <Header />
+      <Navbar />
 
       <main
         id="main-content"
@@ -81,7 +81,7 @@ export function HomeContent() {
           </div>
         </div>
 
-        <div className="py-16 sm:py-20 lg:py-24">
+        <div className="pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center">
             {/* Left side: Content - 50% */}
             <div className="text-center lg:text-left px-6 lg:pl-16 xl:pl-36 lg:pr-8">
