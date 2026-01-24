@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "0318140838885b0cb831e78ddd23ac01cb819e58",
+  "release-as": "1.0.0",
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "agilekit",
+      "changelog-path": "CHANGELOG.md",
+      "include-v-in-tag": true
+    }
+  },
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance Improvements" },
+    { "type": "docs", "section": "Documentation" },
+    { "type": "chore", "section": "Miscellaneous" },
+    { "type": "refactor", "section": "Code Refactoring" },
+    { "type": "test", "section": "Tests" },
+    { "type": "ci", "section": "CI/CD" },
+    { "type": "blog", "section": "Blog" }
+  ]
+}
