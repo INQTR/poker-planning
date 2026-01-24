@@ -12,8 +12,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/logo";
-import { navigation } from "@/components/nav-menu";
 import { ModeToggle } from "@/components/mode-toggle";
+import { NAVIGATION_ITEMS } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 export const NavigationSheet = () => {
@@ -37,7 +37,7 @@ export const NavigationSheet = () => {
         <Logo />
 
         <nav className="mt-8 flex flex-col gap-1">
-          {navigation.map((item) => (
+          {NAVIGATION_ITEMS.map((item) => (
             <Link
               key={item.name}
               href={item.href}

@@ -10,13 +10,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
-
-export const navigation = [
-  { name: "Home", href: "/" },
-  { name: "Features", href: "/features" },
-  { name: "Blog", href: "/blog" },
-  { name: "About", href: "/about" },
-];
+import { NAVIGATION_ITEMS } from "@/lib/navigation";
 
 export const NavMenu = (props: ComponentProps<typeof NavigationMenu>) => {
   const pathname = usePathname();
@@ -31,7 +25,7 @@ export const NavMenu = (props: ComponentProps<typeof NavigationMenu>) => {
   return (
     <NavigationMenu {...props}>
       <NavigationMenuList className="space-x-0 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-start data-[orientation=vertical]:justify-start">
-        {navigation.map((item) => (
+        {NAVIGATION_ITEMS.map((item) => (
           <NavigationMenuItem key={item.name}>
             <NavigationMenuLink
               className={cn(
