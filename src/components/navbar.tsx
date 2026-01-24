@@ -19,6 +19,7 @@ export function Navbar() {
           <Button
             className="hidden rounded-full sm:inline-flex"
             render={<Link href="/room/new" />}
+            nativeButton={false}
           >
             Get Started
           </Button>
