@@ -168,9 +168,9 @@ export const ResultsNode = memo(
                     <span className="w-5 text-xs text-right text-gray-600 dark:text-gray-400 font-medium">
                       {label}
                     </span>
-                    <div className="flex-1 h-2 bg-gray-100 dark:bg-surface-2 rounded">
+                    <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded">
                       <div
-                        className="h-full bg-gray-400 dark:bg-surface-3 rounded"
+                        className="h-full bg-gray-400 dark:bg-gray-500 rounded"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
