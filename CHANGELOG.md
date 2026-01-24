@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/INQTR/poker-planning/compare/agilekit-v1.0.0...agilekit-v1.1.0) (2026-01-24)
+
+
+### Features
+
+* add changelog page and version badge to hero ([#120](https://github.com/INQTR/poker-planning/issues/120)) ([abaf31d](https://github.com/INQTR/poker-planning/commit/abaf31d60ce56f131ee79c79fd35d81fcf76189e))
+* replace sticky header with floating navbar design ([#119](https://github.com/INQTR/poker-planning/issues/119)) ([783331e](https://github.com/INQTR/poker-planning/commit/783331e9e77ab382d4477645d49175b1be46907d))
+
+
+### Miscellaneous
+
+* remove bootstrap config after first release ([6371ac2](https://github.com/INQTR/poker-planning/commit/6371ac205aafa675c059e25b46bc7ccdc5c774a9))
+
 ## [1.0.0](https://github.com/INQTR/poker-planning/compare/agilekit-v1.0.0...agilekit-v1.0.0) (2026-01-24)
 
 
