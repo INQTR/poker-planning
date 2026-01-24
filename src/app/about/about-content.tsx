@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Heart, Shield, Zap, ArrowRight, Star } from "lucide-react";
 
 import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { useGitHubStats } from "@/hooks/use-github-stats";
 import { GithubIcon } from "@/components/icons";
 
@@ -49,7 +49,7 @@ export function AboutContent() {
 
   return (
     <div className="bg-white dark:bg-black">
-      <Header />
+      <Navbar />
 
       <main className="relative isolate">
         {/* Background pattern */}

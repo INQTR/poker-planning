@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 
 const sections = [
   {
@@ -85,7 +85,7 @@ const sections = [
 export function PrivacyContent() {
   return (
     <div className="bg-white dark:bg-gray-900">
-      <Header />
+      <Navbar />
 
       <main className="isolate">
         {/* Hero section */}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getPosts } from "./posts";
 import { PostCard } from "./components/post-card";
-import { Header } from "@/components/header";
+import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { siteConfig } from "@/lib/site-config";
 import { BreadcrumbSchema } from "@/components/seo/structured-data";
@@ -38,9 +38,9 @@ export default async function BlogPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-black">
       <BreadcrumbSchema items={breadcrumbItems} />
-      <Header />
+      <Navbar />
       <main className="flex-1">
-        <div className="max-w-3xl mx-auto px-6 py-16">
+        <div className="max-w-3xl mx-auto px-6 pt-28 pb-16">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
