@@ -14,7 +14,16 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { GithubIcon } from "@/components/icons";
 
-export function HomeContent() {
+interface VersionInfo {
+  version: string;
+  relativeTime: string;
+}
+
+interface HomeContentProps {
+  versionInfo: VersionInfo | null;
+}
+
+export function HomeContent({ versionInfo }: HomeContentProps) {
   return (
     <div className="bg-white dark:bg-black">
       <a
@@ -85,6 +94,19 @@ export function HomeContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center">
             {/* Left side: Content - 50% */}
             <div className="text-center lg:text-left px-6 lg:pl-16 xl:pl-36 lg:pr-8">
+              {versionInfo && (
+                <Link
+                  href="/changelog"
+                  className="inline-flex items-center gap-2 mb-4 text-sm transition-opacity hover:opacity-80"
+                >
+                  <span className="rounded-full bg-primary/10 dark:bg-primary/20 px-2.5 py-0.5 text-primary font-medium">
+                    v{versionInfo.version}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {versionInfo.relativeTime}
+                  </span>
+                </Link>
+              )}
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
                 Free Planning Poker Online
               </h1>

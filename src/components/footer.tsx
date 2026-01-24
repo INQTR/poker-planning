@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { SVGProps } from "react";
@@ -14,6 +12,7 @@ const navigation = {
   company: [
     { name: "About", href: "/about" },
     { name: "Blog", href: "/blog" },
+    { name: "Changelog", href: "/changelog" },
     { name: "Open Source", href: "https://github.com/INQTR/poker-planning" },
     {
       name: "Contribute",
