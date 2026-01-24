@@ -1,7 +1,7 @@
 "use client";
 
 import { Handle, Position, NodeProps } from "@xyflow/react";
-import { Play, RotateCcw, Users, Hash, Zap, X, ChevronRight } from "lucide-react";
+import { Play, RotateCcw, Zap, ChevronRight } from "lucide-react";
 import {
   ReactElement,
   memo,
@@ -50,7 +50,9 @@ export const SessionNode = memo(
 
     // Auto-reveal countdown state
     const countdownDurationSeconds = COUNTDOWN_DURATION_MS / 1000;
-    const [countdownSeconds, setCountdownSeconds] = useState<number | null>(null);
+    const [countdownSeconds, setCountdownSeconds] = useState<number | null>(
+      null,
+    );
 
     useEffect(() => {
       if (!autoRevealCountdownStartedAt) {
@@ -92,7 +94,8 @@ export const SessionNode = memo(
           isActive
             ? "bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-400 dark:border-blue-600"
             : "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-400 dark:border-green-600",
-          selected && "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-surface-1",
+          selected &&
+            "ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-surface-1",
         ),
       [isActive, selected],
     );
@@ -150,7 +153,11 @@ export const SessionNode = memo(
           <button
             onClick={onOpenIssuesPanel}
             className="w-full mb-3 px-3 py-2 bg-gray-100/50 dark:bg-surface-2/50 rounded-md hover:bg-gray-200/50 dark:hover:bg-surface-3/50 transition-colors flex items-center justify-between gap-2 group"
-            aria-label={currentIssue ? `Current issue: ${currentIssue.title}. Click to open issues panel.` : "Quick Vote mode. Click to open issues panel."}
+            aria-label={
+              currentIssue
+                ? `Current issue: ${currentIssue.title}. Click to open issues panel.`
+                : "Quick Vote mode. Click to open issues panel."
+            }
           >
             {currentIssue ? (
               <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
@@ -162,25 +169,8 @@ export const SessionNode = memo(
                 Quick Vote
               </span>
             )}
-            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 flex-shrink-0 transition-colors" />
+            <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 shrink-0 transition-colors" />
           </button>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div className="flex items-center gap-2 text-sm">
-              <Users className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300">
-                {participantCount}{" "}
-                {participantCount === 1 ? "participant" : "participants"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Hash className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-700 dark:text-gray-300">
-                {voteCount} {voteCount === 1 ? "vote" : "votes"}
-              </span>
-            </div>
-          </div>
 
           {/* Auto-reveal toggle */}
           <button
@@ -201,113 +191,119 @@ export const SessionNode = memo(
             <Zap
               className={cn(
                 "h-3.5 w-3.5",
-                autoCompleteVoting && "text-amber-500 dark:text-status-warning-fg",
+                autoCompleteVoting &&
+                  "text-amber-500 dark:text-status-warning-fg",
               )}
             />
             <span>Auto-reveal: {autoCompleteVoting ? "On" : "Off"}</span>
           </button>
 
-          {/* Status */}
+          {/* Progress Bar - always visible */}
           <div className="border-t border-gray-200 dark:border-border pt-3">
-            {isActive ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div
-                    className="flex-1 bg-blue-200 dark:bg-status-info-bg rounded-full h-2 overflow-hidden"
-                    role="progressbar"
-                    aria-label="Voting progress"
-                    aria-valuemin={0}
-                    aria-valuemax={participantCount}
-                    aria-valuenow={voteCount}
-                  >
-                    <div
-                      className="bg-blue-500 dark:bg-status-info-fg h-2 transition-all duration-300"
-                      style={{
-                        width: `${
-                          participantCount > 0
-                            ? (voteCount / participantCount) * 100
-                            : 0
-                        }%`,
-                      }}
-                    />
-                  </div>
-                  <span className="text-xs text-blue-700 dark:text-status-info-fg font-medium whitespace-nowrap">
-                    {voteCount}/{participantCount}
-                  </span>
-                </div>
-
-                {isCountdownActive ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-2 py-2 bg-amber-100 dark:bg-status-warning-bg rounded-md">
-                      <div className="text-2xl font-bold text-amber-600 dark:text-status-warning-fg tabular-nums">
-                        {countdownSeconds}
-                      </div>
-                      <span className="text-sm text-amber-700 dark:text-status-warning-fg">
-                        Revealing...
-                      </span>
-                    </div>
-                    <button
-                      onClick={onCancelAutoReveal}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-surface-3 dark:hover:bg-surface-3/80 text-gray-700 dark:text-gray-200 transition-colors"
-                      aria-label="Cancel auto-reveal"
-                    >
-                      <X className="h-4 w-4" />
-                      Cancel
-                    </button>
-                  </div>
-                ) : hasVotes ? (
-                  <button
-                    onClick={onRevealCards}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-blue-500 hover:bg-blue-600 text-white transition-colors"
-                    aria-label="Reveal all cards"
-                  >
-                    <Play className="h-4 w-4" />
-                    Reveal Cards
-                  </button>
-                ) : null}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center justify-center gap-2 text-green-700 dark:text-status-success-fg">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span className="text-sm font-medium">Voting Complete</span>
-                </div>
-
-                <button
-                  onClick={handleResetClick}
-                  disabled={resetCooldown > 0}
+            <div className="flex items-center gap-2 mb-3">
+              <div
+                className={cn(
+                  "flex-1 rounded-full h-2 overflow-hidden",
+                  isVotingComplete
+                    ? "bg-green-200 dark:bg-status-success-bg"
+                    : "bg-blue-200 dark:bg-status-info-bg",
+                )}
+                role="progressbar"
+                aria-label="Voting progress"
+                aria-valuemin={0}
+                aria-valuemax={participantCount}
+                aria-valuenow={voteCount}
+              >
+                <div
                   className={cn(
-                    "w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                    resetCooldown > 0
-                      ? "bg-gray-200 dark:bg-surface-3 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                      : "bg-gray-200 hover:bg-gray-300 dark:bg-surface-3 dark:hover:bg-surface-3/80 text-gray-700 dark:text-gray-200",
+                    "h-2 transition-all duration-300",
+                    isVotingComplete
+                      ? "bg-green-500 dark:bg-status-success-fg"
+                      : "bg-blue-500 dark:bg-status-info-fg",
                   )}
-                  aria-label={
-                    resetCooldown > 0
-                      ? `Wait ${resetCooldown} seconds`
-                      : "Start new round"
-                  }
-                >
-                  <RotateCcw
-                    className={cn(
-                      "h-4 w-4",
-                      resetCooldown > 0 && "animate-spin",
-                    )}
-                  />
-                  {resetCooldown > 0 ? `Wait ${resetCooldown}s` : "New Round"}
-                </button>
+                  style={{
+                    width: `${
+                      participantCount > 0
+                        ? (voteCount / participantCount) * 100
+                        : 0
+                    }%`,
+                  }}
+                />
               </div>
+              <span
+                className={cn(
+                  "text-xs font-medium whitespace-nowrap",
+                  isVotingComplete
+                    ? "text-green-700 dark:text-status-success-fg"
+                    : "text-blue-700 dark:text-status-info-fg",
+                )}
+              >
+                {voteCount}/{participantCount}
+              </span>
+            </div>
+
+            {/* Single Unified Action Button - Mobile-friendly 48px touch target */}
+            {isVotingComplete ? (
+              /* STATE: Voting Complete → New Round */
+              <button
+                onClick={handleResetClick}
+                disabled={resetCooldown > 0}
+                className={cn(
+                  "w-full h-12 flex items-center justify-center gap-2 rounded-lg font-medium transition-all",
+                  resetCooldown > 0
+                    ? "bg-gray-100 dark:bg-surface-2 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    : "bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white shadow-sm hover:shadow-md",
+                )}
+                aria-label={
+                  resetCooldown > 0
+                    ? `Please wait ${resetCooldown} seconds`
+                    : "Start a new voting round"
+                }
+              >
+                <RotateCcw
+                  className={cn("h-5 w-5", resetCooldown > 0 && "animate-spin")}
+                />
+                <span>
+                  {resetCooldown > 0
+                    ? `Wait ${resetCooldown}s...`
+                    : "New Round"}
+                </span>
+              </button>
+            ) : isCountdownActive ? (
+              /* STATE: Countdown Active → Cancel */
+              <button
+                onClick={onCancelAutoReveal}
+                className="w-full h-12 flex items-center justify-center gap-3 rounded-lg font-medium bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white shadow-sm hover:shadow-md transition-all animate-pulse"
+                aria-label={`Auto-revealing in ${countdownSeconds} seconds. Tap to cancel.`}
+              >
+                <span className="flex items-center gap-2">
+                  <span className="font-mono text-lg font-bold tabular-nums">
+                    {countdownSeconds}s
+                  </span>
+                  <span className="text-amber-100">·</span>
+                  <span>Tap to Cancel</span>
+                </span>
+              </button>
+            ) : (
+              /* STATE: Voting In Progress → Reveal */
+              <button
+                onClick={onRevealCards}
+                disabled={!hasVotes}
+                className={cn(
+                  "w-full h-12 flex items-center justify-center gap-2 rounded-lg font-medium transition-all",
+                  hasVotes
+                    ? "bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white shadow-sm hover:shadow-md"
+                    : "bg-gray-100 dark:bg-surface-2 text-gray-400 dark:text-gray-500 cursor-not-allowed",
+                )}
+                aria-label={
+                  hasVotes ? "Reveal all votes" : "Waiting for votes to reveal"
+                }
+              >
+                <Play className="h-5 w-5" />
+                <span>
+                  {hasVotes ? "Reveal Votes" : "Waiting for Votes..."}
+                </span>
+              </button>
             )}
           </div>
         </div>
