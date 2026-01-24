@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/INQTR/poker-planning/compare/agilekit-v1.1.0...agilekit-v1.1.1) (2026-01-24)
+
+
+### Bug Fixes
+
+* improve ResultsNode distribution bar visibility in dark mode ([e144fee](https://github.com/INQTR/poker-planning/commit/e144fee770197fce3dc5c75e61e5fb0af8c8e053))
+
 ## [1.1.0](https://github.com/INQTR/poker-planning/compare/agilekit-v1.0.0...agilekit-v1.1.0) (2026-01-24)
 
 
