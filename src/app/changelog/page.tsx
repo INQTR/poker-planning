@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { Starfield } from "@/components/starfield";
 import {
   parseChangelog,
   formatRelativeTime,
@@ -69,35 +70,48 @@ export default async function ChangelogPage() {
   const releases = parseChangelog();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
-      <Navbar />
+    <div className="relative min-h-screen bg-white dark:bg-black overflow-hidden">
+      <div className="fixed inset-0 z-0">
+        <Starfield
+          starColorLight="rgba(0, 0, 0, 0.6)"
+          starColorDark="rgba(255, 255, 255, 0.8)"
+          bgColorLight="rgba(255, 255, 255, 1)"
+          bgColorDark="rgba(0, 0, 0, 1)"
+          speed={0.5}
+          quantity={256}
+          mouseAdjust
+        />
+      </div>
+      <div className="relative z-10">
+        <Navbar />
 
-      <main className="pt-24 pb-16 sm:pt-28 sm:pb-20">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <header className="mb-16">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-              Changelog
-            </h1>
-            <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-              New updates and improvements to AgileKit.
-            </p>
-          </header>
+        <main className="pt-24 pb-16 sm:pt-28 sm:pb-20">
+          <div className="mx-auto max-w-3xl px-6 lg:px-8">
+            <header className="mb-16">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                Changelog
+              </h1>
+              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+                New updates and improvements to AgileKit.
+              </p>
+            </header>
 
-          <div className="relative border-l-2 border-gray-100 dark:border-zinc-800">
-            {releases.map((release) => (
-              <ReleaseSection key={release.version} release={release} />
-            ))}
+            <div className="relative border-l-2 border-gray-100 dark:border-zinc-800">
+              {releases.map((release) => (
+                <ReleaseSection key={release.version} release={release} />
+              ))}
+            </div>
+
+            {releases.length === 0 && (
+              <p className="text-gray-500 dark:text-gray-400">
+                No releases found.
+              </p>
+            )}
           </div>
+        </main>
 
-          {releases.length === 0 && (
-            <p className="text-gray-500 dark:text-gray-400">
-              No releases found.
-            </p>
-          )}
-        </div>
-      </main>
-
-      <Footer />
+        <Footer />
+      </div>
     </div>
   );
 }
