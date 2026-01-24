@@ -17,11 +17,34 @@ export interface ChangelogRelease {
 }
 
 /**
- * Parse the CHANGELOG.md file and extract releases
+ * Parse the CHANGELOG.md file and extract releases.
+ *
+ * Expected format (release-please output):
+ * ```
+ * ## [1.0.0](https://github.com/...) (2026-01-24)
+ *
+ * ### Features
+ *
+ * * feature description ([commit](url))
+ * ```
+ *
+ * @returns Array of parsed releases, empty array if file is missing or malformed
  */
 export function parseChangelog(): ChangelogRelease[] {
   const changelogPath = path.join(process.cwd(), "CHANGELOG.md");
-  const content = fs.readFileSync(changelogPath, "utf-8");
+
+  let content: string;
+  try {
+    content = fs.readFileSync(changelogPath, "utf-8");
+  } catch (error) {
+    console.error("[changelog] Failed to read CHANGELOG.md:", error);
+    return [];
+  }
+
+  if (!content.trim()) {
+    console.warn("[changelog] CHANGELOG.md is empty");
+    return [];
+  }
 
   const releases: ChangelogRelease[] = [];
   const lines = content.split("\n");
@@ -90,6 +113,14 @@ export function parseChangelog(): ChangelogRelease[] {
       currentRelease.categories.push(currentCategory);
     }
     releases.push(currentRelease);
+  }
+
+  // Validation: warn if changelog has content but no releases were parsed
+  if (releases.length === 0 && content.includes("## ")) {
+    console.warn(
+      "[changelog] CHANGELOG.md contains headers but no releases were parsed. " +
+        "Expected format: ## [version](url) (YYYY-MM-DD)"
+    );
   }
 
   return releases;
