@@ -1,10 +1,12 @@
 "use client";
 
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { ConvexReactClient } from "convex/react";
+import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { AuthProvider } from "./auth/auth-provider";
 import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { authClient } from "@/lib/auth-client";
 
 // This will be undefined until you run `npx convex dev` and set up your project
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -26,10 +28,10 @@ export function Providers({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ConvexProvider client={convex}>
-      <ThemeProvider 
-        defaultTheme="system" 
-        storageKey="agilekit-theme" 
+    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+      <ThemeProvider
+        defaultTheme="system"
+        storageKey="agilekit-theme"
         attribute="class"
         enableSystem
         disableTransitionOnChange
@@ -40,6 +42,6 @@ export function Providers({ children }: { children: ReactNode }) {
           </TooltipProvider>
         </AuthProvider>
       </ThemeProvider>
-    </ConvexProvider>
+    </ConvexBetterAuthProvider>
   );
 }

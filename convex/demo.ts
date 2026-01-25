@@ -86,9 +86,9 @@ export const runDemoCycle = internalMutation({
     }
 
     // State 3: Voting phase
-    const [bots, votes] = await Promise.all([
+    const [botMemberships, votes] = await Promise.all([
       ctx.db
-        .query("users")
+        .query("roomMemberships")
         .withIndex("by_room", (q) => q.eq("roomId", demoRoomId))
         .filter((q) => q.eq(q.field("isBot"), true))
         .collect(),
@@ -98,9 +98,17 @@ export const runDemoCycle = internalMutation({
         .collect(),
     ]);
 
+    // Get bot user data
+    const bots = await Promise.all(
+      botMemberships.map(async (m) => {
+        const user = await ctx.db.get(m.userId);
+        return { ...user!, membershipId: m._id, userId: m.userId };
+      })
+    );
+
     const votedUserIds = new Set(votes.map((v) => v.userId.toString()));
     const botsWhoHaventVoted = bots.filter(
-      (bot) => !votedUserIds.has(bot._id.toString())
+      (bot) => !votedUserIds.has(bot.userId.toString())
     );
 
     if (botsWhoHaventVoted.length > 0) {
@@ -122,7 +130,7 @@ export const runDemoCycle = internalMutation({
 
           await ctx.db.insert("votes", {
             roomId: demoRoomId,
-            userId: bot._id,
+            userId: bot.userId,
             cardLabel,
             cardValue,
           });

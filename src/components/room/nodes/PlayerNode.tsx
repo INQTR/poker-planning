@@ -17,11 +17,15 @@ export const PlayerNode = memo(
     );
 
     // Vote status emoji logic:
+    // - 👀 spectator (spectator mode, not voting)
     // - 🤔 thinking (voting in progress, hasn't voted)
     // - ✅ voted (voting in progress, vote hidden)
     // - 😴 didn't vote (game over, no vote)
     // - card value (game over, voted)
     const getVoteDisplay = () => {
+      if (user.isSpectator) {
+        return "👀";
+      }
       if (isGameOver) {
         return isCardPicked ? card : "😴";
       }
@@ -41,7 +45,7 @@ export const PlayerNode = memo(
           className="flex flex-col items-center gap-2"
           role="article"
           aria-label={`Player ${user.name}${isCurrentUser ? " (you)" : ""}${
-            isCardPicked ? ", has voted" : ", has not voted yet"
+            user.isSpectator ? ", spectator" : isCardPicked ? ", has voted" : ", has not voted yet"
           }${card ? `, voted ${card}` : ""}`}
         >
           {/* Card */}

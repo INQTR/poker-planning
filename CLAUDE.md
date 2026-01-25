@@ -38,7 +38,9 @@ npx playwright test -g "should create a new room"
 
 - **Frontend**: Next.js 15 (App Router), React 19, TypeScript
 - **Backend**: Convex (serverless TypeScript functions with real-time reactivity)
+- **Auth**: BetterAuth with anonymous sessions (see [docs/authentication.md](docs/authentication.md))
 - **Styling**: shadcn/ui, Tailwind CSS 4
+- **UI Primitives**: Base UI (`@base-ui/react`) - NOT Radix UI. Components like Dialog, DropdownMenu, etc. use Base UI primitives.
 - **Canvas**: @xyflow/react for the whiteboard interface
 
 ### Convex Backend Pattern
@@ -80,10 +82,13 @@ The room canvas (`src/components/room/`) uses React Flow with custom node types:
 Schema defined in `convex/schema.ts`. Key tables:
 
 - `rooms` - Room configuration and state
-- `users` - Participants in rooms
+- `users` - Global user identity (linked to BetterAuth via `authUserId`)
+- `roomMemberships` - User participation in rooms (spectator status, join time)
 - `votes` - User votes (sanitized based on reveal state)
 - `issues` - Issue tracking with vote statistics
 - `canvasNodes` - Persisted node positions and data
+
+See [docs/authentication.md](docs/authentication.md) for details on the user/membership data model.
 
 ### E2E Testing Pattern
 

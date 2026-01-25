@@ -58,15 +58,25 @@ export default defineSchema({
     .index("by_room", ["roomId"])
     .index("by_room_order", ["roomId", "order"]),
 
+  // Global user identity (one per person)
   users: defineTable({
-    roomId: v.id("rooms"),
+    authUserId: v.string(), // BetterAuth ID (required, unique)
     name: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_auth_user", ["authUserId"]),
+
+  // Room memberships (user <-> room relationship)
+  roomMemberships: defineTable({
+    roomId: v.id("rooms"),
+    userId: v.id("users"), // FK to global users
     isSpectator: v.boolean(),
-    isBot: v.optional(v.boolean()), // Mark bot users for demo room
+    isBot: v.optional(v.boolean()),
     joinedAt: v.number(),
   })
     .index("by_room", ["roomId"])
-    .index("by_room_join", ["roomId", "joinedAt"]),
+    .index("by_user", ["userId"])
+    .index("by_room_user", ["roomId", "userId"]),
 
   votes: defineTable({
     roomId: v.id("rooms"),

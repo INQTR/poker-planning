@@ -25,8 +25,8 @@ export class RoomPage {
 
     // Voting elements - React Flow nodes have specific structure
     this.votingCards = page.locator('[role="button"][aria-label*="Vote"]');
-    this.revealButton = page.getByRole("button", { name: /Reveal (all )?[Cc]ards/i });
-    this.resetButton = page.getByRole("button", { name: /New Round|Start new round/i });
+    this.revealButton = page.getByRole("button", { name: /Reveal (all )?([Cc]ards|[Vv]otes)/i });
+    this.resetButton = page.getByRole("button", { name: /New Round|Start (a )?new (voting )?round/i });
     this.voteCountIndicator = page.locator('[aria-label="Voting progress"]').locator('..').locator('span.text-xs');
 
     // Room information
@@ -49,9 +49,9 @@ export class RoomPage {
     // Player elements - these are React Flow nodes
     this.playerList = page.locator(".react-flow__node-player");
 
-    // Timer and results (results shown in session node when voting complete)
+    // Timer and results (results shown in results node when voting revealed)
     this.timerButton = page.locator(".react-flow__node-timer");
-    this.resultsSection = page.locator(".react-flow__node-session").locator("text=Voting Complete");
+    this.resultsSection = page.locator(".react-flow__node-results");
     this.resultsNode = page.locator(".react-flow__node-results");
 
     // Canvas
@@ -263,5 +263,52 @@ export class RoomPage {
       return "amber";
     }
     return "gray";
+  }
+
+  // User menu methods
+  async openUserMenu(): Promise<void> {
+    const userMenuTrigger = this.page.getByTestId("user-menu-trigger");
+    await safeClick(userMenuTrigger);
+    // Wait for dropdown to appear
+    await expect(this.page.locator('[data-slot="dropdown-menu-content"]')).toBeVisible({ timeout: 5000 });
+  }
+
+  async toggleSpectatorMode(): Promise<void> {
+    await this.openUserMenu();
+    // Click the spectator row (the entire div is clickable)
+    const spectatorRow = this.page.getByTestId("spectator-toggle-row");
+    await expect(spectatorRow).toBeVisible({ timeout: 5000 });
+    // Use force click as the menu may close during the click
+    await spectatorRow.click({ force: true });
+    // Wait for state to update
+    await this.page.waitForTimeout(300);
+    // Press Escape to ensure menu closes
+    await this.page.keyboard.press("Escape");
+    // Wait for menu to close
+    await this.page.waitForTimeout(300);
+  }
+
+  async isSpectatorModeEnabled(): Promise<boolean> {
+    await this.openUserMenu();
+    // The Switch uses data-checked attribute when enabled
+    const spectatorRow = this.page.getByTestId("spectator-toggle-row");
+    const spectatorSwitch = spectatorRow.locator('[data-slot="switch"]');
+    const isChecked = await spectatorSwitch.getAttribute("data-checked");
+    // Close menu by pressing Escape
+    await this.page.keyboard.press("Escape");
+    // data-checked attribute exists (empty string) when checked, null when not
+    return isChecked !== null;
+  }
+
+  async expectVotingCardsVisible(): Promise<void> {
+    await expect(this.votingCards.first()).toBeVisible({ timeout: 10000 });
+  }
+
+  async expectVotingCardsNotVisible(): Promise<void> {
+    await expect(this.votingCards.first()).not.toBeVisible({ timeout: 10000 });
+  }
+
+  async getVotingCardsCount(): Promise<number> {
+    return await this.votingCards.count();
   }
 }

@@ -34,6 +34,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { RoomSettingsPanel } from "./room-settings-panel";
 import { IssuesPanel } from "./issues-panel";
+import { UserMenu } from "@/components/user-menu";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -260,6 +261,14 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                   <Settings className="h-4 w-4" />
                   Room Settings
                 </Button>
+
+                {/* User Menu */}
+                <div className="pt-2 border-t border-gray-200 dark:border-border">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 block">
+                    Account
+                  </span>
+                  <UserMenu />
+                </div>
               </div>
             </SheetContent>
           </Sheet>
@@ -498,6 +507,11 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
               </TooltipContent>
             </Tooltip>
           </div>
+
+          <Separator orientation="vertical" className="h-6 mx-1" />
+
+          {/* User Menu */}
+          <UserMenu />
         </div>
       </div>
 

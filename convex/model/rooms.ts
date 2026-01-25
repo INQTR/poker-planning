@@ -2,6 +2,7 @@ import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
 import * as Issues from "./issues";
+import * as Users from "./users";
 import { VOTING_SCALES, VotingScaleType } from "../scales";
 
 export interface CreateRoomArgs {
@@ -21,7 +22,7 @@ export interface SanitizedVote extends Doc<"votes"> {
 
 export interface RoomWithRelatedData {
   room: Doc<"rooms">;
-  users: Doc<"users">[];
+  users: Users.RoomUserData[];
   votes: SanitizedVote[];
 }
 
@@ -96,12 +97,9 @@ export async function getRoomWithRelatedData(
   const room = await ctx.db.get(roomId);
   if (!room) return null;
 
-  // Get all users and votes in parallel for better performance
+  // Get users (via memberships) and votes in parallel
   const [users, votes] = await Promise.all([
-    ctx.db
-      .query("users")
-      .withIndex("by_room", (q) => q.eq("roomId", roomId))
-      .collect(),
+    Users.getRoomUsers(ctx, roomId),
     ctx.db
       .query("votes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))

@@ -50,20 +50,19 @@ interface NodePosition {
 const MAX_NOTE_CONTENT_LENGTH = 10000;
 
 /**
- * Verifies that a user belongs to a room
+ * Verifies that a user belongs to a room (via membership)
  */
 async function verifyUserInRoom(
   ctx: MutationCtx,
   roomId: Id<"rooms">,
   userId: Id<"users">
 ): Promise<void> {
-  const user = await ctx.db
-    .query("users")
-    .withIndex("by_room", (q) => q.eq("roomId", roomId))
-    .filter((q) => q.eq(q.field("_id"), userId))
+  const membership = await ctx.db
+    .query("roomMemberships")
+    .withIndex("by_room_user", (q) => q.eq("roomId", roomId).eq("userId", userId))
     .first();
 
-  if (!user) {
+  if (!membership) {
     throw new Error("User not found in room");
   }
 }
@@ -384,6 +383,27 @@ export async function upsertResultsNode(
     data: {},
     lastUpdatedAt: Date.now(),
   });
+}
+
+/**
+ * Removes all voting card nodes for a user (when becoming spectator)
+ */
+export async function removeVotingCardNodes(
+  ctx: MutationCtx,
+  args: { roomId: Id<"rooms">; userId: Id<"users"> }
+): Promise<void> {
+  const cards = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+    .filter((q) =>
+      q.and(
+        q.eq(q.field("type"), "votingCard"),
+        q.eq(q.field("data.userId"), args.userId)
+      )
+    )
+    .collect();
+
+  await Promise.all(cards.map((card) => ctx.db.delete(card._id)));
 }
 
 /**

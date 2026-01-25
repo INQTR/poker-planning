@@ -1,10 +1,11 @@
 import { Node } from "@xyflow/react";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
+import type { Id } from "@/convex/_generated/dataModel";
 import type { SanitizedVote } from "@/convex/model/rooms";
+import type { RoomUserData } from "@/convex/model/users";
 
 // Node data types
 export type PlayerNodeData = {
-  user: Doc<"users">;
+  user: RoomUserData;
   isCurrentUser: boolean;
   isCardPicked: boolean;
   card: string | null;
@@ -68,7 +69,7 @@ export type VotingCardNodeData = {
 
 export type ResultsNodeData = {
   votes: SanitizedVote[];
-  users: Doc<"users">[];
+  users: RoomUserData[];
   isNumericScale: boolean;
 };
 
