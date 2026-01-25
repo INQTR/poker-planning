@@ -1,9 +1,7 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { NavMenu } from "@/components/nav-menu";
 import { NavigationSheet } from "@/components/navigation-sheet";
-import { ModeToggle } from "@/components/mode-toggle";
+import { NavbarActions } from "@/components/navbar-actions";
 
 export function Navbar() {
   return (
@@ -15,14 +13,7 @@ export function Navbar() {
         <NavMenu className="hidden md:block" />
 
         <div className="flex items-center gap-3">
-          <ModeToggle />
-          <Button
-            className="hidden rounded-full sm:inline-flex"
-            render={<Link href="/room/new" />}
-            nativeButton={false}
-          >
-            Get Started
-          </Button>
+          <NavbarActions />
 
           {/* Mobile Menu */}
           <div className="md:hidden">
