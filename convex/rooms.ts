@@ -22,7 +22,6 @@ export const create = mutation({
   args: {
     name: v.string(),
     roomType: v.optional(v.literal("canvas")), // Optional, defaults to canvas
-    votingCategorized: v.optional(v.boolean()),
     autoCompleteVoting: v.optional(v.boolean()),
     votingScale: v.optional(
       v.object({
