@@ -13,34 +13,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { getColorFromName, getInitial } from "@/lib/avatar-utils";
 import type { UserWithPresence } from "@/hooks/useRoomPresence";
-
-// 8 predefined colors for avatar backgrounds (matching user-avatar.tsx)
-const AVATAR_COLORS = [
-  "bg-red-500",
-  "bg-orange-500",
-  "bg-amber-500",
-  "bg-emerald-500",
-  "bg-cyan-500",
-  "bg-blue-500",
-  "bg-violet-500",
-  "bg-pink-500",
-];
-
-// Deterministic hash from name to pick a color
-export function getColorFromName(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[index];
-}
-
-// Get the first letter of the name, uppercase
-function getInitial(name: string): string {
-  return name.charAt(0).toUpperCase();
-}
 
 // Format relative time for "last seen" display
 export function formatLastSeen(timestamp: number | null): string {

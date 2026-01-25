@@ -34,7 +34,8 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
 import type { UserWithPresence } from "@/hooks/useRoomPresence";
-import { getColorFromName, formatLastSeen } from "./user-presence-avatars";
+import { getColorFromName } from "@/lib/avatar-utils";
+import { formatLastSeen } from "./user-presence-avatars";
 
 interface RoomSettingsPanelProps {
   roomData: RoomWithRelatedData;
