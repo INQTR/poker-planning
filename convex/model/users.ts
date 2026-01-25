@@ -174,10 +174,43 @@ export async function editUser(
     await ctx.db.patch(args.userId, { name: args.name });
   }
 
-  // Update isSpectator on membership if changed
-  if (args.isSpectator !== undefined) {
+  // Handle spectator status transitions
+  if (args.isSpectator !== undefined && args.isSpectator !== membership.isSpectator) {
+    // Check if this is a canvas room
+    const room = await ctx.db.get(args.roomId);
+    const isCanvasRoom = room?.roomType === "canvas";
+
+    if (args.isSpectator) {
+      // Becoming spectator: remove voting cards and votes
+      if (isCanvasRoom) {
+        await Canvas.removeVotingCardNodes(ctx, { roomId: args.roomId, userId: args.userId });
+      }
+      await deleteUserVotesInRoom(ctx, args.roomId, args.userId);
+    } else {
+      // Becoming participant: create voting cards
+      if (isCanvasRoom) {
+        await Canvas.createVotingCardNodes(ctx, { roomId: args.roomId, userId: args.userId });
+      }
+    }
+
     await ctx.db.patch(membership._id, { isSpectator: args.isSpectator });
   }
+}
+
+/**
+ * Deletes all votes for a user in a room
+ */
+async function deleteUserVotesInRoom(
+  ctx: MutationCtx,
+  roomId: Id<"rooms">,
+  userId: Id<"users">
+): Promise<void> {
+  const votes = await ctx.db
+    .query("votes")
+    .withIndex("by_room_user", (q) => q.eq("roomId", roomId).eq("userId", userId))
+    .collect();
+
+  await Promise.all(votes.map((vote) => ctx.db.delete(vote._id)));
 }
 
 /**

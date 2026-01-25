@@ -386,6 +386,27 @@ export async function upsertResultsNode(
 }
 
 /**
+ * Removes all voting card nodes for a user (when becoming spectator)
+ */
+export async function removeVotingCardNodes(
+  ctx: MutationCtx,
+  args: { roomId: Id<"rooms">; userId: Id<"users"> }
+): Promise<void> {
+  const cards = await ctx.db
+    .query("canvasNodes")
+    .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+    .filter((q) =>
+      q.and(
+        q.eq(q.field("type"), "votingCard"),
+        q.eq(q.field("data.userId"), args.userId)
+      )
+    )
+    .collect();
+
+  await Promise.all(cards.map((card) => ctx.db.delete(card._id)));
+}
+
+/**
  * Removes player node and all associated voting cards
  */
 export async function removePlayerNodeAndCards(

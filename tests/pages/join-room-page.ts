@@ -21,8 +21,8 @@ export class JoinRoomPage {
 
     // Form elements
     this.nameInput = page.getByPlaceholder("Enter your name");
-    // Switch is used for spectator mode (find by id or by label association)
-    this.spectatorRadio = page.locator("#spectator");
+    // Switch is used for spectator mode - find by the label text
+    this.spectatorRadio = page.getByLabel("Join as spectator");
     this.participantRadio = page.locator(".dummy-participant-radio"); // Not used in current UI
 
     // Buttons
@@ -45,13 +45,14 @@ export class JoinRoomPage {
     // In current UI, participant is default when spectator switch is off
     // Check if switch exists and is checked - if so, turn it off
     try {
-      const isVisible = await this.spectatorRadio.isVisible({ timeout: 2000 });
+      const switchButton = this.page.locator('[data-slot="switch"]');
+      const isVisible = await switchButton.isVisible({ timeout: 2000 });
       if (isVisible) {
         // Base UI uses data-checked attribute when switch is on
-        const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+        const hasDataChecked = await switchButton.getAttribute("data-checked");
         const isSpectatorOn = hasDataChecked !== null;
         if (isSpectatorOn) {
-          await this.spectatorRadio.click(); // Turn off spectator mode
+          await switchButton.click(); // Turn off spectator mode
         }
       }
       // If switch doesn't exist or isn't visible, participant is already default
@@ -61,16 +62,21 @@ export class JoinRoomPage {
   }
 
   async selectSpectatorRole(): Promise<void> {
-    // Wait for switch to be visible first
-    await expect(this.spectatorRadio).toBeVisible({ timeout: 5000 });
-    // Base UI uses data-checked attribute when switch is on
-    const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+    // Find the switch button (not the hidden input) by data-slot attribute
+    const switchButton = this.page.locator('[data-slot="switch"]');
+    await expect(switchButton).toBeVisible({ timeout: 5000 });
+    // Scroll into view if needed
+    await switchButton.scrollIntoViewIfNeeded();
+    // Base UI uses data-checked attribute when switch is on (attribute value is empty string)
+    const hasDataChecked = await switchButton.getAttribute("data-checked");
     const isSpectatorOn = hasDataChecked !== null;
     if (!isSpectatorOn) {
-      await this.spectatorRadio.click(); // Turn on spectator mode
+      await switchButton.click(); // Turn on spectator mode
+      // Wait for state change
+      await this.page.waitForTimeout(100);
     }
-    // Verify it's now checked (has data-checked attribute)
-    await expect(this.spectatorRadio).toHaveAttribute("data-checked", "", { timeout: 2000 });
+    // Verify it's now checked (has data-checked attribute with empty string value)
+    await expect(switchButton).toHaveAttribute("data-checked");
   }
 
   async clickJoin(): Promise<void> {
@@ -134,12 +140,14 @@ export class JoinRoomPage {
 
   async isParticipantSelected(): Promise<boolean> {
     // Participant is selected when spectator switch is off
-    const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+    const switchButton = this.page.locator('[data-slot="switch"]');
+    const hasDataChecked = await switchButton.getAttribute("data-checked");
     return hasDataChecked === null;
   }
 
   async isSpectatorSelected(): Promise<boolean> {
-    const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");
+    const switchButton = this.page.locator('[data-slot="switch"]');
+    const hasDataChecked = await switchButton.getAttribute("data-checked");
     return hasDataChecked !== null;
   }
 }

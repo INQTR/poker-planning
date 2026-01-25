@@ -264,4 +264,51 @@ export class RoomPage {
     }
     return "gray";
   }
+
+  // User menu methods
+  async openUserMenu(): Promise<void> {
+    const userMenuTrigger = this.page.getByTestId("user-menu-trigger");
+    await safeClick(userMenuTrigger);
+    // Wait for dropdown to appear
+    await expect(this.page.locator('[data-slot="dropdown-menu-content"]')).toBeVisible({ timeout: 5000 });
+  }
+
+  async toggleSpectatorMode(): Promise<void> {
+    await this.openUserMenu();
+    // Click the spectator row (the entire div is clickable)
+    const spectatorRow = this.page.getByTestId("spectator-toggle-row");
+    await expect(spectatorRow).toBeVisible({ timeout: 5000 });
+    // Use force click as the menu may close during the click
+    await spectatorRow.click({ force: true });
+    // Wait for state to update
+    await this.page.waitForTimeout(300);
+    // Press Escape to ensure menu closes
+    await this.page.keyboard.press("Escape");
+    // Wait for menu to close
+    await this.page.waitForTimeout(300);
+  }
+
+  async isSpectatorModeEnabled(): Promise<boolean> {
+    await this.openUserMenu();
+    // The Switch uses data-checked attribute when enabled
+    const spectatorRow = this.page.getByTestId("spectator-toggle-row");
+    const spectatorSwitch = spectatorRow.locator('[data-slot="switch"]');
+    const isChecked = await spectatorSwitch.getAttribute("data-checked");
+    // Close menu by pressing Escape
+    await this.page.keyboard.press("Escape");
+    // data-checked attribute exists (empty string) when checked, null when not
+    return isChecked !== null;
+  }
+
+  async expectVotingCardsVisible(): Promise<void> {
+    await expect(this.votingCards.first()).toBeVisible({ timeout: 10000 });
+  }
+
+  async expectVotingCardsNotVisible(): Promise<void> {
+    await expect(this.votingCards.first()).not.toBeVisible({ timeout: 10000 });
+  }
+
+  async getVotingCardsCount(): Promise<number> {
+    return await this.votingCards.count();
+  }
 }

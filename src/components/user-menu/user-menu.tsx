@@ -21,12 +21,13 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { Moon, Sun, LogOut, UserPen, Monitor } from "lucide-react";
+import { Moon, Sun, LogOut, UserPen, Monitor, Eye } from "lucide-react";
 
 export function UserMenu() {
-  const { authUser, setRoomUser } = useAuth();
+  const { authUser, roomUser, setRoomUser } = useAuth();
   const { theme, setTheme } = useTheme();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -36,7 +37,16 @@ export function UserMenu() {
     authUser?.authUserId ? { authUserId: authUser.authUserId } : "skip"
   );
 
+  // Get room membership data (for spectator status)
+  const roomMembership = useQuery(
+    api.users.getByAuthUserId,
+    authUser?.authUserId && roomUser?.roomId
+      ? { authUserId: authUser.authUserId, roomId: roomUser.roomId }
+      : "skip"
+  );
+
   const editGlobalUser = useMutation(api.users.editGlobalUser);
+  const editUser = useMutation(api.users.edit);
   const deleteUser = useMutation(api.users.deleteUser);
 
   if (!authUser || !globalUser) {
@@ -44,11 +54,22 @@ export function UserMenu() {
   }
 
   const userName = globalUser.name || authUser.preferredName || "Guest";
+  const isInRoom = !!roomUser;
+  const isSpectator = roomMembership?.isSpectator ?? false;
 
   const handleEditName = async (name: string) => {
     await editGlobalUser({
       authUserId: authUser.authUserId,
       name,
+    });
+  };
+
+  const handleSpectatorToggle = async (checked: boolean) => {
+    if (!roomUser) return;
+    await editUser({
+      userId: roomUser.id,
+      roomId: roomUser.roomId,
+      isSpectator: checked,
     });
   };
 
@@ -67,7 +88,7 @@ export function UserMenu() {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 rounded-full border bg-background px-2 py-1.5 hover:bg-muted transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <DropdownMenuTrigger data-testid="user-menu-trigger" className="flex items-center gap-2 rounded-full border bg-background px-2 py-1.5 hover:bg-muted transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <UserAvatar name={userName} size="sm" />
           <span className="text-sm font-medium max-w-24 truncate hidden sm:block">
             {userName}
@@ -95,6 +116,26 @@ export function UserMenu() {
             <UserPen className="mr-2 size-4" />
             Edit name
           </DropdownMenuItem>
+
+          {/* Spectator toggle - only show when in a room */}
+          {isInRoom && (
+            <div
+              data-testid="spectator-toggle-row"
+              className="flex items-center justify-between px-1.5 py-1 cursor-pointer rounded-md hover:bg-gray-100 dark:hover:bg-white/10"
+              onClick={() => handleSpectatorToggle(!isSpectator)}
+            >
+              <div className="flex items-center gap-2">
+                <Eye className="size-4" />
+                <span className="text-sm">Spectator</span>
+              </div>
+              <Switch
+                checked={isSpectator}
+                onCheckedChange={handleSpectatorToggle}
+                size="sm"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
 
           {/* Appearance submenu */}
           <DropdownMenuSub>

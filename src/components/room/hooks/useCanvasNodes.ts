@@ -150,7 +150,7 @@ export function useCanvasNodes({
           position: node.position,
           data: {
             sessionName: room.name || "Planning Session",
-            participantCount: users.length,
+            participantCount: users.filter((u) => !u.isSpectator).length,
             voteCount: votes.filter((v: SanitizedVote) => v.hasVoted).length,
             isVotingComplete: room.isGameOver,
             hasVotes: votes.some((v: SanitizedVote) => v.hasVoted),
