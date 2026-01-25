@@ -406,9 +406,10 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      {!isDemoMode && (
+      {!isDemoMode && roomUser && (
         <CanvasNavigation
           roomData={roomData}
+          currentUserId={roomUser.id}
           isIssuesPanelOpen={isIssuesPanelOpen}
           onIssuesPanelChange={setIsIssuesPanelOpen}
         />

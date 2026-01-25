@@ -4,12 +4,10 @@ import Link from "next/link";
 import { useReactFlow } from "@xyflow/react";
 import {
   Copy,
-  Users,
   ZoomIn,
   ZoomOut,
   Maximize2,
   Grid3X3,
-  Download,
   Share2,
   Settings,
   Home,
@@ -32,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
+import { useRoomPresence } from "@/hooks/useRoomPresence";
 import { RoomSettingsPanel } from "./room-settings-panel";
 import { IssuesPanel } from "./issues-panel";
 import { UserMenu } from "@/components/user-menu";
@@ -45,9 +44,11 @@ import {
 } from "@/components/ui/sheet";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
 import { copyTextToClipboard } from "@/utils/copy-text-to-clipboard";
+import { UserPresenceAvatars } from "./user-presence-avatars";
 
 interface CanvasNavigationProps {
   roomData: RoomWithRelatedData;
+  currentUserId: string;
   onToggleFullscreen?: () => void;
   isFullscreen?: boolean;
   isIssuesPanelOpen: boolean;
@@ -56,12 +57,20 @@ interface CanvasNavigationProps {
 
 export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   roomData,
+  currentUserId,
   onToggleFullscreen,
   isFullscreen = false,
   isIssuesPanelOpen,
   onIssuesPanelChange,
 }) => {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
+
+  // Track user presence inside navigation to avoid canvas re-renders
+  const usersWithPresence = useRoomPresence(
+    roomData.room._id,
+    currentUserId,
+    roomData.users
+  );
   const { toast } = useToast();
   const [isFullscreenSupported] = useState(() =>
     typeof document !== 'undefined' && document.fullscreenEnabled
@@ -118,7 +127,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
 
   if (!roomData) return null;
 
-  const { room, users } = roomData;
+  const { room } = roomData;
 
   return (
     <>
@@ -148,15 +157,9 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             {room.name || `Room ${room._id.slice(0, 6)}`}
           </span>
 
-          {/* User Count Badge */}
-          <div
-            className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-surface-2 rounded-full"
-            data-testid="mobile-user-count"
-          >
-            <Users className="h-3 w-3 text-gray-600 dark:text-gray-400" />
-            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-              {users.length}
-            </span>
+          {/* User Presence Avatars */}
+          <div data-testid="mobile-user-avatars">
+            <UserPresenceAvatars users={usersWithPresence} maxVisible={3} size="sm" />
           </div>
 
           {/* Hamburger Menu */}
@@ -282,7 +285,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         aria-label="Canvas Room Controls"
         data-testid="canvas-navigation"
       >
-        <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
+        <div className="flex items-center gap-2 px-3 h-12 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
           {/* Logo/Home */}
           <Link href="/" className="flex items-center">
             <Tooltip>
@@ -304,7 +307,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </Link>
 
-          <Separator orientation="vertical" className="h-6 mx-1" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* Room Info Section */}
           <div className="flex items-center gap-2 px-2">
@@ -331,14 +334,11 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* Users Section */}
-          <div className="flex items-center gap-2 px-2">
-            <Users className="h-4 w-4 text-gray-600 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {users.length} {users.length === 1 ? "user" : "users"}
-            </span>
+          <div className="flex items-center gap-2 px-2" data-testid="desktop-user-avatars">
+            <UserPresenceAvatars users={usersWithPresence} maxVisible={4} size="sm" />
           </div>
         </div>
       </div>
@@ -348,7 +348,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         className="hidden md:block absolute top-4 right-4 z-50"
         data-testid="canvas-zoom-controls"
       >
-        <div className="flex items-center gap-2 px-3 py-2 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
+        <div className="flex items-center gap-2 px-3 h-12 bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm rounded-xl shadow-2xl border border-gray-200/50 dark:border-border">
           {/* Zoom Controls */}
           <div className="flex items-center gap-1 px-2">
             <Tooltip>
@@ -409,7 +409,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* Additional Actions */}
           <div className="flex items-center gap-1 px-2">
@@ -457,36 +457,40 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
               </TooltipContent>
             </Tooltip>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={buttonClass}
-                    aria-label="Share and export options"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                }
-              />
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={handleCopyRoomUrl}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy room link
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled>
-                  <Download className="h-4 w-4 mr-2" />
-                  Export results
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Tooltip>
+              <DropdownMenu>
+                <TooltipTrigger
+                  render={
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className={buttonClass}
+                          aria-label="Share and export options"
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                      }
+                    />
+                  }
+                />
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={handleCopyRoomUrl}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy room link
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <TooltipContent>
+                <p>Share</p>
+              </TooltipContent>
+            </Tooltip>
 
             <Tooltip>
               <TooltipTrigger
-                render={(props) => (
+                render={
                   <Button
-                    {...props}
                     ref={settingsButtonRef}
                     variant="ghost"
                     size="sm"
@@ -500,15 +504,15 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                   >
                     <Settings className="h-4 w-4" />
                   </Button>
-                )}
+                }
               />
               <TooltipContent>
-                <p>Room settings</p>
+                <p>Settings</p>
               </TooltipContent>
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* User Menu */}
           <UserMenu />
@@ -518,6 +522,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
       {/* Settings Panel */}
       <RoomSettingsPanel
         roomData={roomData}
+        usersWithPresence={usersWithPresence}
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         triggerRef={settingsButtonRef}
