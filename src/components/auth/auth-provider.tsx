@@ -8,6 +8,7 @@ import { authClient } from "@/lib/auth-client";
 interface AuthUser {
   authUserId: string;
   preferredName?: string;
+  isAnonymous?: boolean;
 }
 
 // Room membership record
@@ -44,9 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ? {
             authUserId: session.user.id,
             preferredName: session.user.name ?? undefined,
+            isAnonymous: session.user.isAnonymous ?? false,
           }
         : null,
-    [session]
+    [session],
   );
 
   const isLoading = sessionLoading;
@@ -54,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Memoize context value to prevent cascading re-renders in consumers
   const value = useMemo(
     () => ({ authUser, roomUser, setRoomUser, isLoading }),
-    [authUser, roomUser, setRoomUser, isLoading]
+    [authUser, roomUser, setRoomUser, isLoading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -99,3 +99,24 @@ export const remove = mutation({
     await Users.leaveRoom(ctx, args.userId, args.roomId);
   },
 });
+
+// Edit global user (name only, no room context required)
+export const editGlobalUser = mutation({
+  args: {
+    authUserId: v.string(),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Users.updateGlobalUserName(ctx, args.authUserId, validateName(args.name));
+  },
+});
+
+// Delete user completely (called on sign out)
+export const deleteUser = mutation({
+  args: {
+    authUserId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Users.deleteUserByAuthUserId(ctx, args.authUserId);
+  },
+});

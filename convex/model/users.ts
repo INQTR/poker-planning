@@ -272,3 +272,54 @@ export async function isUserNameTaken(
   const users = await getRoomUsers(ctx, roomId);
   return users.some((user) => user.name.toLowerCase() === name.toLowerCase());
 }
+
+/**
+ * Updates a global user's name by authUserId
+ */
+export async function updateGlobalUserName(
+  ctx: MutationCtx,
+  authUserId: string,
+  name: string
+): Promise<void> {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", authUserId))
+    .first();
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  await ctx.db.patch(user._id, { name });
+}
+
+/**
+ * Completely deletes a user from the system (on sign out)
+ * Removes from all rooms, deletes memberships, votes, canvas nodes, presence, and the user record
+ */
+export async function deleteUserByAuthUserId(
+  ctx: MutationCtx,
+  authUserId: string
+): Promise<void> {
+  // Find global user
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", authUserId))
+    .first();
+
+  if (!user) return;
+
+  // Find all memberships for this user
+  const memberships = await ctx.db
+    .query("roomMemberships")
+    .withIndex("by_user", (q) => q.eq("userId", user._id))
+    .collect();
+
+  // Leave each room (cleans up votes, canvas nodes, presence)
+  await Promise.all(
+    memberships.map((membership) => leaveRoom(ctx, user._id, membership.roomId))
+  );
+
+  // Delete the global user record
+  await ctx.db.delete(user._id);
+}
