@@ -1,14 +1,11 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import { DEFAULT_SCALE } from "../scales";
 
 // Layout constants for default positions
 const CANVAS_CENTER = { x: 0, y: 0 };
 const TIMER_X = -500;
 const TIMER_Y = -250;
 const SESSION_Y = -300;
-const VOTING_CARD_Y = 450;
-const VOTING_CARD_SPACING = 70;
 const NOTE_X = 400;
 const NOTE_Y = -200;
 
@@ -32,7 +29,7 @@ export interface Position {
 export interface CanvasNode {
   roomId: Id<"rooms">;
   nodeId: string;
-  type: "player" | "timer" | "session" | "votingCard" | "results" | "story" | "note";
+  type: "player" | "timer" | "session" | "results" | "story" | "note";
   position: Position;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Create proper type union for node data
   data: any;
@@ -300,60 +297,6 @@ export async function upsertPlayerNode(
   return id;
 }
 
-/**
- * Creates voting card nodes for a user
- */
-export async function createVotingCardNodes(
-  ctx: MutationCtx,
-  args: { roomId: Id<"rooms">; userId: Id<"users"> }
-): Promise<void> {
-  // Get room to access its voting scale
-  const room = await ctx.db.get(args.roomId);
-  if (!room) {
-    throw new Error("Room not found");
-  }
-
-  // Use room's voting scale or default to Fibonacci for backward compatibility
-  const cards = room.votingScale?.cards ?? DEFAULT_SCALE.cards;
-
-  const now = Date.now();
-  const cardCount = cards.length;
-  const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
-  const startX = CANVAS_CENTER.x - totalWidth / 2;
-
-  // Check if voting cards already exist for this user
-  const existingCards = await ctx.db
-    .query("canvasNodes")
-    .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-    .filter((q) => q.eq(q.field("type"), "votingCard"))
-    .filter((q) => q.eq(q.field("nodeId"), `card-${args.userId}-0`))
-    .first();
-
-  if (existingCards) {
-    return; // Cards already exist
-  }
-
-  // Create voting card nodes in parallel
-  await Promise.all(
-    cards.map((card, index) => {
-      const x = startX + index * VOTING_CARD_SPACING;
-      const y = VOTING_CARD_Y;
-
-      return ctx.db.insert("canvasNodes", {
-        roomId: args.roomId,
-        nodeId: `card-${args.userId}-${index}`,
-        type: "votingCard",
-        position: { x, y },
-        data: {
-          card: { value: card },
-          userId: args.userId,
-          index,
-        },
-        lastUpdatedAt: now,
-      });
-    })
-  );
-}
 
 /**
  * Creates or updates results node
@@ -385,53 +328,26 @@ export async function upsertResultsNode(
   });
 }
 
-/**
- * Removes all voting card nodes for a user (when becoming spectator)
- */
-export async function removeVotingCardNodes(
-  ctx: MutationCtx,
-  args: { roomId: Id<"rooms">; userId: Id<"users"> }
-): Promise<void> {
-  const cards = await ctx.db
-    .query("canvasNodes")
-    .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-    .filter((q) =>
-      q.and(
-        q.eq(q.field("type"), "votingCard"),
-        q.eq(q.field("data.userId"), args.userId)
-      )
-    )
-    .collect();
-
-  await Promise.all(cards.map((card) => ctx.db.delete(card._id)));
-}
 
 /**
- * Removes player node and all associated voting cards
+ * Removes player node when user leaves
  */
-export async function removePlayerNodeAndCards(
+export async function removePlayerNode(
   ctx: MutationCtx,
   args: { roomId: Id<"rooms">; userId: Id<"users"> }
 ): Promise<void> {
   const nodeId = `player-${args.userId}`;
 
-  // Get all nodes to delete in one query
-  const nodesToDelete = await ctx.db
+  const node = await ctx.db
     .query("canvasNodes")
-    .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-    .filter((q) =>
-      q.or(
-        q.eq(q.field("nodeId"), nodeId),
-        q.and(
-          q.eq(q.field("type"), "votingCard"),
-          q.eq(q.field("data.userId"), args.userId)
-        )
-      )
+    .withIndex("by_room_node", (q) =>
+      q.eq("roomId", args.roomId).eq("nodeId", nodeId)
     )
-    .collect();
+    .unique();
 
-  // Delete all nodes in parallel
-  await Promise.all(nodesToDelete.map((node) => ctx.db.delete(node._id)));
+  if (node) {
+    await ctx.db.delete(node._id);
+  }
 
   // Trigger relayout to rebalance remaining nodes
   await relayoutNodes(ctx, args.roomId);

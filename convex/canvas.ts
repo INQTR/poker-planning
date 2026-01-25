@@ -43,17 +43,6 @@ export const upsertPlayerNode = mutation({
   },
 });
 
-// Create voting card nodes for a user
-export const createVotingCardNodes = mutation({
-  args: {
-    roomId: v.id("rooms"),
-    userId: v.id("users"),
-  },
-  handler: async (ctx, args) => {
-    await Canvas.createVotingCardNodes(ctx, args);
-  },
-});
-
 // Create or update results node
 export const upsertResultsNode = mutation({
   args: { roomId: v.id("rooms") },
@@ -69,7 +58,7 @@ export const removePlayerNode = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    await Canvas.removePlayerNodeAndCards(ctx, args);
+    await Canvas.removePlayerNode(ctx, args);
   },
 });
 

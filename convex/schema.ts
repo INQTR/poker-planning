@@ -97,7 +97,6 @@ export default defineSchema({
       v.literal("player"),
       v.literal("session"),
       v.literal("timer"),
-      v.literal("votingCard"),
       v.literal("results"),
       v.literal("story"),
       v.literal("note")

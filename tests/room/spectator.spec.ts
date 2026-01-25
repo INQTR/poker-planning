@@ -256,8 +256,8 @@ test.describe("Spectator Feature", () => {
       // User 2's voting cards should be gone
       await roomPage2.expectVotingCardsNotVisible();
 
-      // User 2's vote indicator should now show not voted (vote was cleared)
-      await roomPage1.expectVoteIndicator("User 2", false);
+      // User 2 should now show spectator indicator (vote was cleared, now spectating)
+      await roomPage1.expectSpectatorIndicator("User 2");
 
       // Cleanup
       await context1.close();
