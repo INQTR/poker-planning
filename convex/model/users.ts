@@ -244,11 +244,6 @@ export async function leaveRoom(
     cleanupPromises.push(
       Canvas.removePlayerNodeAndCards(ctx, { roomId, userId })
     );
-
-    // Mark user as inactive in presence
-    cleanupPromises.push(
-      Canvas.markUserInactive(ctx, { roomId, userId })
-    );
   }
 
   // Wait for all cleanup operations to complete

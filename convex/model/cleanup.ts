@@ -6,8 +6,6 @@ export interface CleanupResult {
   votesDeleted: number;
   membershipsDeleted: number;
   canvasNodesDeleted?: number;
-  canvasStatesDeleted?: number;
-  presenceDeleted?: number;
 }
 
 /**
@@ -34,8 +32,6 @@ export async function removeInactiveRooms(
     votesDeleted: 0,
     membershipsDeleted: 0,
     canvasNodesDeleted: 0,
-    canvasStatesDeleted: 0,
-    presenceDeleted: 0,
   };
 
   // Process each room
@@ -46,8 +42,6 @@ export async function removeInactiveRooms(
     result.votesDeleted += cleanupStats.votesDeleted;
     result.membershipsDeleted += cleanupStats.membershipsDeleted;
     result.canvasNodesDeleted! += cleanupStats.canvasNodesDeleted || 0;
-    result.canvasStatesDeleted! += cleanupStats.canvasStatesDeleted || 0;
-    result.presenceDeleted! += cleanupStats.presenceDeleted || 0;
     result.roomsDeleted++;
 
     console.log(`Cleaned up room ${room.name} (${room._id})`);
@@ -64,7 +58,7 @@ export async function cleanupRoom(
   roomId: Id<"rooms">
 ): Promise<Omit<CleanupResult, "roomsDeleted">> {
   // Get all related data in parallel
-  const [votes, memberships, canvasNodes, canvasStates, presence] = await Promise.all([
+  const [votes, memberships, canvasNodes] = await Promise.all([
     ctx.db
       .query("votes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
@@ -75,14 +69,6 @@ export async function cleanupRoom(
       .collect(),
     ctx.db
       .query("canvasNodes")
-      .withIndex("by_room", (q) => q.eq("roomId", roomId))
-      .collect(),
-    ctx.db
-      .query("canvasState")
-      .withIndex("by_room", (q) => q.eq("roomId", roomId))
-      .collect(),
-    ctx.db
-      .query("presence")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
   ]);
@@ -99,12 +85,6 @@ export async function cleanupRoom(
   // Delete canvas nodes
   deletePromises.push(...canvasNodes.map((node) => ctx.db.delete(node._id)));
 
-  // Delete canvas states
-  deletePromises.push(...canvasStates.map((state) => ctx.db.delete(state._id)));
-
-  // Delete presence
-  deletePromises.push(...presence.map((p) => ctx.db.delete(p._id)));
-
   // Wait for all deletions to complete
   await Promise.all(deletePromises);
 
@@ -115,8 +95,6 @@ export async function cleanupRoom(
     votesDeleted: votes.length,
     membershipsDeleted: memberships.length,
     canvasNodesDeleted: canvasNodes.length,
-    canvasStatesDeleted: canvasStates.length,
-    presenceDeleted: presence.length,
   };
 }
 
@@ -128,8 +106,6 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
   orphanedVotes: number;
   orphanedMemberships: number;
   orphanedCanvasNodes: number;
-  orphanedCanvasStates: number;
-  orphanedPresence: number;
 }> {
   // Get all existing room IDs once
   const allRooms = await ctx.db.query("rooms").collect();
@@ -140,8 +116,6 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
     orphanedVotes,
     orphanedMemberships,
     orphanedCanvasNodes,
-    orphanedCanvasStates,
-    orphanedPresence
   ] = await Promise.all([
     // Clean orphaned votes
     cleanupOrphanedRecords(ctx, "votes", existingRoomIds),
@@ -149,18 +123,12 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
     cleanupOrphanedRecords(ctx, "roomMemberships", existingRoomIds),
     // Clean orphaned canvas nodes
     cleanupOrphanedRecords(ctx, "canvasNodes", existingRoomIds),
-    // Clean orphaned canvas states
-    cleanupOrphanedRecords(ctx, "canvasState", existingRoomIds),
-    // Clean orphaned presence
-    cleanupOrphanedRecords(ctx, "presence", existingRoomIds),
   ]);
 
   return {
     orphanedVotes,
     orphanedMemberships,
     orphanedCanvasNodes,
-    orphanedCanvasStates,
-    orphanedPresence,
   };
 }
 
@@ -170,7 +138,7 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
  */
 async function cleanupOrphanedRecords(
   ctx: MutationCtx,
-  tableName: "votes" | "roomMemberships" | "canvasNodes" | "canvasState" | "presence",
+  tableName: "votes" | "roomMemberships" | "canvasNodes",
   existingRoomIds: Set<Id<"rooms">>
 ): Promise<number> {
   const BATCH_SIZE = 100;

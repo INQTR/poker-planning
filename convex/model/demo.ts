@@ -61,7 +61,6 @@ export async function ensureDemoRoom(
   const roomId = await ctx.db.insert("rooms", {
     name: "Planning Poker Demo",
     roomType: "canvas",
-    votingCategorized: true,
     autoCompleteVoting: true,
     isDemoRoom: true,
     isGameOver: false,

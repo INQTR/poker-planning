@@ -8,7 +8,6 @@ import { VOTING_SCALES, VotingScaleType } from "../scales";
 export interface CreateRoomArgs {
   name: string;
   roomType?: "canvas"; // Optional, defaults to canvas
-  votingCategorized?: boolean;
   autoCompleteVoting?: boolean;
   votingScale?: {
     type: VotingScaleType | "custom";
@@ -73,7 +72,6 @@ export async function createRoom(
   const roomId = await ctx.db.insert("rooms", {
     name: args.name,
     roomType: "canvas", // Always canvas now
-    votingCategorized: args.votingCategorized ?? true,
     autoCompleteVoting: args.autoCompleteVoting ?? false,
     isGameOver: false,
     votingScale,

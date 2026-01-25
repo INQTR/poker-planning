@@ -4,7 +4,6 @@ import { v } from "convex/values";
 export default defineSchema({
   rooms: defineTable({
     name: v.string(),
-    votingCategorized: v.boolean(),
     autoCompleteVoting: v.boolean(),
     autoRevealCountdownStartedAt: v.optional(v.number()), // Timestamp when countdown began
     autoRevealScheduledId: v.optional(v.id("_scheduled_functions")), // Scheduled function ID for auto-reveal
@@ -112,28 +111,4 @@ export default defineSchema({
     .index("by_room_node", ["roomId", "nodeId"])
     .index("by_room_type", ["roomId", "type"]) // For type-specific queries
     .index("by_last_updated", ["lastUpdatedAt"]), // For activity tracking
-
-  canvasState: defineTable({
-    roomId: v.id("rooms"),
-    userId: v.id("users"),
-    viewport: v.object({
-      x: v.number(),
-      y: v.number(),
-      zoom: v.number(),
-    }),
-    lastUpdatedAt: v.number(),
-  })
-    .index("by_room", ["roomId"])
-    .index("by_room_user", ["roomId", "userId"]),
-
-  presence: defineTable({
-    roomId: v.id("rooms"),
-    userId: v.id("users"),
-    cursor: v.optional(v.object({ x: v.number(), y: v.number() })),
-    isActive: v.boolean(),
-    lastPing: v.number(),
-  })
-    .index("by_room", ["roomId"])
-    .index("by_room_user", ["roomId", "userId"])
-    .index("by_last_ping", ["lastPing"]), // For cleanup
 });

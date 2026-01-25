@@ -11,8 +11,7 @@ const DELETE_CONFIRMATION = "I understand this will delete all data permanently"
 /**
  * Permanently deletes ALL data from the database.
  *
- * Tables affected: rooms, issues, users, roomMemberships, votes,
- * canvasNodes, canvasState, presence
+ * Tables affected: rooms, issues, users, roomMemberships, votes, canvasNodes
  *
  * This action cannot be undone.
  *
@@ -39,8 +38,6 @@ export const dangerouslyDeleteAllData = internalMutation({
     const tables = [
       "votes",
       "canvasNodes",
-      "canvasState",
-      "presence",
       "roomMemberships",
       "issues",
       "rooms",
