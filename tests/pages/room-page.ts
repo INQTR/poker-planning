@@ -36,12 +36,12 @@ export class RoomPage {
     // Room name in navigation header (left nav bar)
     this.roomNameInHeader = page.locator('[data-testid="canvas-navigation"] .font-semibold');
 
-    // User count in navigation header
-    this.userCountInHeader = page.locator('[data-testid="canvas-navigation"]').locator('text=/\\d+ users?/');
+    // User avatars in navigation header
+    this.userCountInHeader = page.locator('[data-testid="desktop-user-avatars"]');
 
     // Mobile navigation elements
     this.roomNameInHeaderMobile = page.locator('[data-testid="mobile-room-name"]');
-    this.userCountInHeaderMobile = page.locator('[data-testid="mobile-user-count"]');
+    this.userCountInHeaderMobile = page.locator('[data-testid="mobile-user-avatars"]');
 
     // Auto-reveal countdown display in session node
     this.autoRevealCountdown = page.locator('.react-flow__node-session').locator('text=/Revealing.../');
@@ -188,10 +188,48 @@ export class RoomPage {
   }
 
   async getParticipantCount(): Promise<number> {
-    const locator = this.userCountInHeader.or(this.userCountInHeaderMobile);
-    const text = await locator.first().textContent();
-    const match = text?.match(/(\d+)/);
-    return match ? parseInt(match[1]) : 0;
+    // Wait for canvas navigation or mobile navigation to be visible
+    const desktopNav = this.page.locator('[data-testid="canvas-navigation"]');
+    const mobileNav = this.page.locator('[data-testid="mobile-navigation"]');
+
+    // Wait for either to be visible
+    await expect(async () => {
+      const desktopVisible = await desktopNav.isVisible();
+      const mobileVisible = await mobileNav.isVisible();
+      expect(desktopVisible || mobileVisible).toBe(true);
+    }).toPass({ timeout: 5000 });
+
+    // Get the count by evaluating the DOM directly - find visible avatar group
+    const count = await this.page.evaluate(() => {
+      // Check desktop first (visible when offsetParent is not null)
+      let group = document.querySelector('[data-testid="desktop-user-avatars"] [data-slot="avatar-group"]');
+      const desktopEl = group as HTMLElement | null;
+      if (!desktopEl || desktopEl.offsetParent === null) {
+        // Fall back to mobile
+        group = document.querySelector('[data-testid="mobile-user-avatars"] [data-slot="avatar-group"]');
+      }
+      if (!group) return 0;
+
+      // Count tooltip-trigger elements (avatars wrapped in TooltipTrigger)
+      const avatars = group.querySelectorAll('[data-slot="tooltip-trigger"]');
+      let total = avatars.length;
+
+      // Check for overflow count (also wrapped in tooltip-trigger, but contains +N text)
+      const overflow = group.querySelector('[data-slot="avatar-group-count"]');
+      if (overflow) {
+        const text = overflow.textContent || '';
+        const match = text.match(/\+(\d+)/);
+        if (match) {
+          total += parseInt(match[1]);
+          // The overflow count itself is also a tooltip-trigger, so subtract 1
+          total -= 1;
+        }
+      }
+
+      return total;
+    });
+
+    return count;
   }
 
   async expectRoomNameInHeader(name: string): Promise<void> {
@@ -200,8 +238,12 @@ export class RoomPage {
   }
 
   async expectParticipantCount(count: number): Promise<void> {
-    const locator = this.userCountInHeader.or(this.userCountInHeaderMobile);
-    await expect(locator.first()).toContainText(`${count}`, { timeout: 5000 });
+    // Wait for the avatar group to reflect the expected count
+    // Use longer timeout for real-time database updates to propagate
+    await expect(async () => {
+      const actualCount = await this.getParticipantCount();
+      expect(actualCount).toBe(count);
+    }).toPass({ timeout: 10000 });
   }
 
   async expectAutoRevealCountdown(): Promise<void> {

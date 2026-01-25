@@ -10,11 +10,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -22,9 +33,30 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
+import type { UserWithPresence } from "@/hooks/useRoomPresence";
+import { getColorFromName } from "./user-presence-avatars";
+
+// Format relative time for "last seen" display
+function formatLastSeen(timestamp: number | null): string {
+  if (!timestamp) return "";
+
+  const now = Date.now();
+  const diff = now - timestamp;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (seconds < 60) return "Last seen just now";
+  if (minutes < 60) return `Last seen ${minutes}m ago`;
+  if (hours < 24) return `Last seen ${hours}h ago`;
+  return `Last seen ${days}d ago`;
+}
 
 interface RoomSettingsPanelProps {
   roomData: RoomWithRelatedData;
+  usersWithPresence: UserWithPresence[];
   isOpen: boolean;
   onClose: () => void;
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
@@ -32,6 +64,7 @@ interface RoomSettingsPanelProps {
 
 export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   roomData,
+  usersWithPresence,
   isOpen,
   onClose,
   triggerRef,
@@ -44,6 +77,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   const [roomName, setRoomName] = useState(roomData.room.name);
   const [isSaving, setIsSaving] = useState(false);
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
+  const [pendingDeleteUser, setPendingDeleteUser] = useState<{id: Id<"users">, name: string} | null>(null);
 
   const renameRoom = useMutation(api.rooms.rename);
   const toggleAutoComplete = useMutation(api.rooms.toggleAutoComplete);
@@ -54,19 +88,34 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
     setRoomName(roomData.room.name);
   }, [roomData.room.name]);
 
-  // Handle click outside
-  useClickOutside(panelRef, onClose, triggerRef ? [triggerRef] : undefined);
+  // Handle click outside - only when dialog is not open
+  useClickOutside(
+    panelRef,
+    () => {
+      if (!pendingDeleteUser) {
+        onClose();
+      }
+    },
+    triggerRef ? [triggerRef] : undefined
+  );
 
-  // Handle escape key
+  // Handle escape key - only when dialog is not open
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" && !pendingDeleteUser) {
         onClose();
       }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [onClose]);
+  }, [onClose, pendingDeleteUser]);
+
+  // Reset pending delete state when panel closes
+  useEffect(() => {
+    if (!isOpen) {
+      setPendingDeleteUser(null);
+    }
+  }, [isOpen]);
 
   const handleSaveRoomName = async () => {
     if (!roomName.trim() || roomName === roomData.room.name) return;
@@ -102,13 +151,18 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
     }
   };
 
-  const handleRemoveUser = async (userId: string) => {
-    setRemovingUserId(userId);
+  const handleRemoveUser = (userId: Id<"users">, userName: string) => {
+    setPendingDeleteUser({ id: userId, name: userName });
+  };
+
+  const handleConfirmRemoveUser = async () => {
+    if (!pendingDeleteUser) return;
+    setRemovingUserId(pendingDeleteUser.id);
     try {
-      await removeUser({ userId: userId as Id<"users">, roomId: roomData.room._id });
+      await removeUser({ userId: pendingDeleteUser.id, roomId: roomData.room._id });
       toast({
         title: "User removed",
-        description: "The user has been removed from the room.",
+        description: `${pendingDeleteUser.name} has been removed from the room.`,
       });
     } catch (error) {
       console.error("Failed to remove user:", error);
@@ -118,18 +172,54 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
       });
     } finally {
       setRemovingUserId(null);
+      setPendingDeleteUser(null);
     }
   };
 
-  if (!isOpen) return null;
+  // Filter out current user and sort: online first, then by join time
+  const otherUsers = usersWithPresence
+    .filter((u) => u._id !== roomUser?.id)
+    .sort((a, b) => {
+      // Online users first
+      if (a.isOnline !== b.isOnline) {
+        return a.isOnline ? -1 : 1;
+      }
+      // Then by join time (earliest first)
+      return a.joinedAt - b.joinedAt;
+    });
 
-  const otherUsers = roomData.users.filter((u) => u._id !== roomUser?.id);
+  if (!isOpen) {
+    return (
+      // Render dialog even when panel is closed so it can animate out properly
+      <AlertDialog
+        open={!!pendingDeleteUser}
+        onOpenChange={(open) => !open && setPendingDeleteUser(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {pendingDeleteUser?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the user from the room. They can rejoin using the room link.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleConfirmRemoveUser}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
 
   return (
     <div
       ref={panelRef}
       className={cn(
-        "absolute top-26 right-4 z-50 w-80",
+        "absolute top-26 right-4 z-50 w-96",
+        "max-h-[calc(100vh-7rem)]",
+        "flex flex-col",
         "bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm",
         "rounded-xl shadow-2xl",
         "border border-gray-200/50 dark:border-border",
@@ -139,7 +229,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
       aria-label="Room settings"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/50 dark:border-border">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/50 dark:border-border shrink-0">
         <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
           Room Settings
         </h2>
@@ -164,9 +254,9 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 flex flex-col gap-4 min-h-0 flex-1 overflow-hidden">
         {/* Room Name Section */}
-        <div className="space-y-2">
+        <div className="space-y-2 shrink-0">
           <Label
             htmlFor="room-name"
             className="text-xs font-medium text-gray-600 dark:text-gray-400"
@@ -197,10 +287,10 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           </div>
         </div>
 
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50" />
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
 
         {/* Auto-Reveal Section */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between shrink-0">
           <div className="space-y-0.5">
             <Label
               htmlFor="auto-reveal"
@@ -219,10 +309,10 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           />
         </div>
 
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50" />
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
 
         {/* Theme Section */}
-        <div className="space-y-2">
+        <div className="space-y-2 shrink-0">
           <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
             Theme
           </Label>
@@ -266,20 +356,20 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           </div>
         </div>
 
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50" />
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
 
         {/* Users Section */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
+        <div className="flex flex-col min-h-0 flex-1">
+          <div className="flex items-center justify-between shrink-0 mb-2">
             <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
               Participants
             </Label>
             <span className="text-xs text-gray-500 dark:text-gray-500">
-              {roomData.users.length}{" "}
-              {roomData.users.length === 1 ? "user" : "users"}
+              {usersWithPresence.length}{" "}
+              {usersWithPresence.length === 1 ? "user" : "users"}
             </span>
           </div>
-          <div className="space-y-1 max-h-32 overflow-y-auto">
+          <div className="space-y-1 min-h-0 flex-1 overflow-y-auto">
             {otherUsers.length === 0 ? (
               <p className="text-xs text-gray-500 dark:text-gray-500 py-2 text-center">
                 No other participants
@@ -291,17 +381,37 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                   className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-surface-3/50"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-surface-3 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-300 shrink-0">
-                      {u.name.charAt(0).toUpperCase()}
+                    <div className="relative shrink-0">
+                      <div className={cn(
+                        "w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-white",
+                        getColorFromName(u.name)
+                      )}>
+                        {u.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div
+                        className={cn(
+                          "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-surface-1",
+                          u.isOnline ? "bg-green-500" : "bg-gray-400"
+                        )}
+                      />
                     </div>
-                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
-                      {u.name}
-                    </span>
-                    {u.isSpectator && (
-                      <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
-                        (spectator)
-                      </span>
-                    )}
+                    <div className="flex flex-col min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                          {u.name}
+                        </span>
+                        {u.isSpectator && (
+                          <Badge variant="secondary" className="h-4 text-[10px] px-1.5">
+                            Spectator
+                          </Badge>
+                        )}
+                      </div>
+                      {!u.isOnline && u.lastSeen && (
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                          {formatLastSeen(u.lastSeen)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <Tooltip>
                     <TooltipTrigger
@@ -309,12 +419,12 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleRemoveUser(u._id)}
+                          onClick={() => handleRemoveUser(u._id, u.name)}
                           disabled={removingUserId === u._id}
-                          className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shrink-0"
+                          className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shrink-0"
                           aria-label={`Remove ${u.name}`}
                         >
-                          <UserMinus className="h-3.5 w-3.5" />
+                          <UserMinus className="h-4 w-4" />
                         </Button>
                       }
                     />
@@ -328,6 +438,27 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Remove user confirmation dialog */}
+      <AlertDialog
+        open={!!pendingDeleteUser}
+        onOpenChange={(open) => !open && setPendingDeleteUser(null)}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {pendingDeleteUser?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the user from the room. They can rejoin using the room link.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleConfirmRemoveUser}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
