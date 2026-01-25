@@ -8,7 +8,6 @@ import {
   ZoomOut,
   Maximize2,
   Grid3X3,
-  Download,
   Share2,
   Settings,
   Home,
@@ -480,10 +479,6 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                   <DropdownMenuItem onClick={handleCopyRoomUrl}>
                     <Copy className="h-4 w-4 mr-2" />
                     Copy room link
-                  </DropdownMenuItem>
-                  <DropdownMenuItem disabled>
-                    <Download className="h-4 w-4 mr-2" />
-                    Export results
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
