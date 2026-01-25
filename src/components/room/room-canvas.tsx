@@ -69,6 +69,10 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { fitView } = useReactFlow();
 
+  // Stable ref for nodes - prevents callback recreation on layout changes
+  // Based on Vercel React Best Practices: advanced-use-latest
+  const nodesRef = useLatest(nodes);
+
   // Convex mutations
   const showCards = useMutation(api.rooms.showCards);
   const resetGame = useMutation(api.rooms.resetGame);
@@ -228,21 +232,26 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     setPendingDeleteUserId(null);
   }, [pendingDeleteUserId, removeUser, roomIdRef]);
 
+  // Extract vote state for narrowed effect dependencies
+  const userVote = roomData?.votes.find(
+    (v: SanitizedVote) => v.userId === roomUser?.id
+  );
+  const hasVoted = userVote?.hasVoted;
+  const voteLabel = userVote?.cardLabel;
+  const isGameOver = roomData?.room.isGameOver;
+
   // Reset selected card when game is reset
+  // Narrowed dependencies to primitives to avoid unnecessary re-runs
   useEffect(() => {
     if (!roomData || !roomUser) return;
 
-    const userVote = roomData.votes.find(
-      (v: SanitizedVote) => v.userId === roomUser.id
-    );
-
     // Sync local selection state with server state - intentional state sync pattern
-    if (!userVote || !userVote.hasVoted) {
+    if (!hasVoted) {
       setSelectedCardValue(null);
-    } else if (roomData.room.isGameOver && userVote.cardLabel) {
-      setSelectedCardValue(userVote.cardLabel);
+    } else if (isGameOver && voteLabel) {
+      setSelectedCardValue(voteLabel);
     }
-  }, [roomUser, roomData]);
+  }, [roomUser, roomData, hasVoted, isGameOver, voteLabel]);
 
   // Handle card selection
   const handleCardSelect = useCallback(
@@ -323,12 +332,13 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   }, [debouncedPositionUpdate]);
 
   // Handle node position changes
+  // Uses nodesRef to avoid callback recreation on every layout change
   const handleNodesChange = useCallback(
     (changes: NodeChange<CustomNodeType>[]) => {
       // Filter out all node removals - only note and player nodes trigger delete flows
       const filteredChanges = changes.filter((change) => {
         if (change.type === "remove") {
-          const node = nodes.find((n) => n.id === change.id);
+          const node = nodesRef.current.find((n) => n.id === change.id);
           if (node?.type === "note") {
             handleDeleteNote(change.id, !!node.data.content);
           } else if (node?.type === "player") {
@@ -351,7 +361,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
         }
       });
     },
-    [onNodesChange, debouncedPositionUpdate, nodes, handleDeleteNote, handleDeletePlayer]
+    [onNodesChange, debouncedPositionUpdate, nodesRef, handleDeleteNote, handleDeletePlayer]
   );
 
   // Handle edge changes - block all edge deletions

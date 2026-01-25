@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useMemo, ReactNode } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { authClient } from "@/lib/auth-client";
 
@@ -37,23 +37,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: session, isPending: sessionLoading } = authClient.useSession();
   const [roomUser, setRoomUser] = useState<RoomUser | null>(null);
 
-  // Convert BetterAuth session to AuthUser (null if no session yet)
-  const authUser: AuthUser | null = session?.user
-    ? {
-        authUserId: session.user.id,
-        preferredName: session.user.name ?? undefined,
-      }
-    : null;
+  // Memoize authUser to prevent object recreation on every render
+  const authUser = useMemo<AuthUser | null>(
+    () =>
+      session?.user
+        ? {
+            authUserId: session.user.id,
+            preferredName: session.user.name ?? undefined,
+          }
+        : null,
+    [session]
+  );
 
   const isLoading = sessionLoading;
 
-  return (
-    <AuthContext.Provider
-      value={{ authUser, roomUser, setRoomUser, isLoading }}
-    >
-      {children}
-    </AuthContext.Provider>
+  // Memoize context value to prevent cascading re-renders in consumers
+  const value = useMemo(
+    () => ({ authUser, roomUser, setRoomUser, isLoading }),
+    [authUser, roomUser, setRoomUser, isLoading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {
