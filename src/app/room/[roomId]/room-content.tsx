@@ -8,6 +8,7 @@ import { RoomCanvas } from "@/components/room/room-canvas";
 import { JoinRoomDialog } from "@/components/room/join-room-dialog";
 import { useAuth } from "@/components/auth/auth-provider";
 import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "@/lib/toast";
 
 export function RoomContent() {
   const params = useParams();
@@ -52,6 +53,8 @@ export function RoomContent() {
       });
     } catch (error) {
       console.error("Auto-join failed:", error);
+      toast.error("Failed to join room automatically");
+      throw error;
     } finally {
       setIsAutoJoining(false);
     }
@@ -79,7 +82,9 @@ export function RoomContent() {
 
     if (shouldAutoJoin) {
       autoJoinAttemptedRef.current = true;
-      performAutoJoin();
+      performAutoJoin().catch(() => {
+        autoJoinAttemptedRef.current = false;
+      });
     }
   }, [roomData, globalUser, existingMembership, authUser, performAutoJoin]);
 

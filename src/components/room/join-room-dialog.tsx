@@ -28,7 +28,7 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
 
   const handleJoin = async () => {
     if (!userName.trim()) {
-      alert("Please enter your name");
+      toast.error("Please enter your name");
       return;
     }
 

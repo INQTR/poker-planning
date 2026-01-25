@@ -2,6 +2,17 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import * as Users from "./model/users";
 
+function validateName(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    throw new Error("Name is required");
+  }
+  if (trimmed.length > 50) {
+    throw new Error("Name must be 50 characters or less");
+  }
+  return trimmed;
+}
+
 // Get global user by authUserId (for auto-join logic)
 export const getGlobalUser = query({
   args: {
@@ -44,7 +55,7 @@ export const join = mutation({
   handler: async (ctx, args) => {
     return await Users.joinRoom(ctx, {
       roomId: args.roomId,
-      name: args.name,
+      name: validateName(args.name),
       isSpectator: args.isSpectator,
       authUserId: args.authUserId,
     });
@@ -62,7 +73,7 @@ export const edit = mutation({
     await Users.editUser(ctx, {
       userId: args.userId,
       roomId: args.roomId,
-      name: args.name,
+      name: args.name !== undefined ? validateName(args.name) : undefined,
       isSpectator: args.isSpectator,
     });
   },
