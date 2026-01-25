@@ -1,5 +1,9 @@
-function getSiteUrl(): string {
-  // Custom URL takes priority (for production)
+export function getSiteUrl(): string {
+  // Convex backend uses SITE_URL (set via `npx convex env set`)
+  if (process.env.SITE_URL) {
+    return process.env.SITE_URL;
+  }
+  // Next.js custom URL (for production)
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL;
   }

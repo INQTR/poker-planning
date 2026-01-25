@@ -6,11 +6,12 @@ import { query } from "./_generated/server";
 import { betterAuth } from "better-auth";
 import { anonymous } from "better-auth/plugins";
 import authConfig from "./auth.config";
+import { getSiteUrl } from "@/lib/site-config";
 
-const siteUrl = process.env.SITE_URL;
+const siteUrl = getSiteUrl();
 if (!siteUrl) {
   throw new Error(
-    "Missing SITE_URL environment variable. " +
+    "Missing site URL. " +
       "Set it with: npx convex env set SITE_URL http://localhost:3000"
   );
 }
@@ -36,6 +37,12 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       expiresIn: 60 * 60 * 24 * 365, // 1 year
       updateAge: 60 * 60 * 24 * 7,   // refresh weekly
     },
+    trustedOrigins: [
+      siteUrl,
+      "https://agilekit.app",
+      "https://*.agilekit.app",
+      "https://*.vercel.app", // Vercel preview deployments
+    ],
     plugins: [
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),
