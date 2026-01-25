@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.0.0](https://github.com/INQTR/poker-planning/compare/agilekit-v1.1.1...agilekit-v2.0.0) (2026-01-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* users table schema changed, requires migration
+
+### Features
+
+* add real-time user presence with avatar indicators ([#124](https://github.com/INQTR/poker-planning/issues/124)) ([dbcb9fe](https://github.com/INQTR/poker-planning/commit/dbcb9fedac5fb38094963f60fe84606c58bf7568))
+* auto-detect Vercel preview URLs for site config ([7de6f11](https://github.com/INQTR/poker-planning/commit/7de6f118e82dd70d34d1e4cf4e70a1b2fad4c50b))
+* implement BetterAuth with anonymous sessions and improve spectator mode ([#122](https://github.com/INQTR/poker-planning/issues/122)) ([10764d4](https://github.com/INQTR/poker-planning/commit/10764d48607fef80573e56bfbacf193dfe68484f))
+
+
+### Bug Fixes
+
+* allow Vercel preview URLs in BetterAuth trusted origins ([70f971d](https://github.com/INQTR/poker-planning/commit/70f971db67bb96a42a6528dd315b2b3ce8a58d56))
+
+
+### Code Refactoring
+
+* generate voting cards client-side instead of storing in DB ([#125](https://github.com/INQTR/poker-planning/issues/125)) ([647eb2f](https://github.com/INQTR/poker-planning/commit/647eb2f38e429f4f3c09a8fc5ff89b9bbaac622c))
+* remove unused schema elements ([#126](https://github.com/INQTR/poker-planning/issues/126)) ([bd01461](https://github.com/INQTR/poker-planning/commit/bd014614adc4560fa9e495c736103b4c2df67b8c))
+
 ## [1.1.1](https://github.com/INQTR/poker-planning/compare/agilekit-v1.1.0...agilekit-v1.1.1) (2026-01-24)
 
 
