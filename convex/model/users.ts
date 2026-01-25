@@ -137,16 +137,10 @@ export async function joinRoom(
     joinedAt: Date.now(),
   });
 
-  // Check if this is a canvas room and create nodes
+  // Check if this is a canvas room and create player node
   const room = await ctx.db.get(args.roomId);
   if (room && room.roomType === "canvas") {
-    // Create player node
     await Canvas.upsertPlayerNode(ctx, { roomId: args.roomId, userId });
-
-    // Create voting card nodes for non-spectators
-    if (!(args.isSpectator ?? false)) {
-      await Canvas.createVotingCardNodes(ctx, { roomId: args.roomId, userId });
-    }
   }
 
   return userId;
@@ -176,21 +170,9 @@ export async function editUser(
 
   // Handle spectator status transitions
   if (args.isSpectator !== undefined && args.isSpectator !== membership.isSpectator) {
-    // Check if this is a canvas room
-    const room = await ctx.db.get(args.roomId);
-    const isCanvasRoom = room?.roomType === "canvas";
-
     if (args.isSpectator) {
-      // Becoming spectator: remove voting cards and votes
-      if (isCanvasRoom) {
-        await Canvas.removeVotingCardNodes(ctx, { roomId: args.roomId, userId: args.userId });
-      }
+      // Becoming spectator: remove votes
       await deleteUserVotesInRoom(ctx, args.roomId, args.userId);
-    } else {
-      // Becoming participant: create voting cards
-      if (isCanvasRoom) {
-        await Canvas.createVotingCardNodes(ctx, { roomId: args.roomId, userId: args.userId });
-      }
     }
 
     await ctx.db.patch(membership._id, { isSpectator: args.isSpectator });
@@ -240,9 +222,9 @@ export async function leaveRoom(
   // Check if this is a canvas room and remove nodes
   const room = await ctx.db.get(roomId);
   if (room && room.roomType === "canvas") {
-    // Remove player node and voting cards
+    // Remove player node
     cleanupPromises.push(
-      Canvas.removePlayerNodeAndCards(ctx, { roomId, userId })
+      Canvas.removePlayerNode(ctx, { roomId, userId })
     );
   }
 

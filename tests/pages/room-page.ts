@@ -113,6 +113,12 @@ export class RoomPage {
     }
   }
 
+  async expectSpectatorIndicator(playerName: string): Promise<void> {
+    // Spectators show 👀 emoji
+    const player = this.page.locator(".react-flow__node-player").filter({ hasText: playerName });
+    await expect(player.locator("text=👀")).toBeVisible();
+  }
+
   async copyRoomUrl(): Promise<void> {
     await safeClick(this.copyUrlButton);
   }

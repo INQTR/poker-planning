@@ -134,9 +134,6 @@ export async function createDemoBots(
 
     // Create player node for bot
     await Canvas.upsertPlayerNode(ctx, { roomId, userId });
-
-    // Create voting card nodes for bot
-    await Canvas.createVotingCardNodes(ctx, { roomId, userId });
   }
 }
 

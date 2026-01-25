@@ -8,6 +8,12 @@ import { useMemo, useRef, useEffect } from "react";
 import type { CustomNodeType } from "../types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import type { RoomUserData } from "@/convex/model/users";
+import { DEFAULT_SCALE } from "@/convex/scales";
+
+// Layout constants for voting cards (matching backend canvas.ts)
+const CANVAS_CENTER_X = 0;
+const VOTING_CARD_Y = 450;
+const VOTING_CARD_SPACING = 70;
 
 interface UseCanvasNodesProps {
   roomId: Id<"rooms">;
@@ -168,25 +174,6 @@ export function useCanvasNodes({
           draggable: !node.isLocked,
         };
         allNodes.push(sessionNode);
-      } else if (node.type === "votingCard") {
-        // Only show voting cards for current user
-        if (node.data.userId === currentUserId) {
-          const votingCardNode: CustomNodeType = {
-            id: node.nodeId,
-            type: "votingCard",
-            position: node.position,
-            data: {
-              ...node.data,
-              roomId,
-              isSelectable: !room.isGameOver,
-              isSelected: node.data.card.value === selectedCardValue,
-              onCardSelect: callbackRefs.current.onCardSelect,
-            },
-            selected: node.data.card.value === selectedCardValue,
-            draggable: false,
-          };
-          allNodes.push(votingCardNode);
-        }
       } else if (node.type === "results" && room.isGameOver) {
         const resultsNode: CustomNodeType = {
           id: node.nodeId,
@@ -230,6 +217,36 @@ export function useCanvasNodes({
         }
       }
     });
+
+    // Generate voting cards client-side for non-spectator users
+    if (currentUserId) {
+      const currentUser = users.find((u: RoomUserData) => u._id === currentUserId);
+      if (currentUser && !currentUser.isSpectator) {
+        const cards = room.votingScale?.cards ?? DEFAULT_SCALE.cards;
+        const cardCount = cards.length;
+        const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
+        const startX = CANVAS_CENTER_X - totalWidth / 2;
+
+        cards.forEach((cardValue, index) => {
+          const votingCardNode: CustomNodeType = {
+            id: `card-${currentUserId}-${index}`,
+            type: "votingCard",
+            position: { x: startX + index * VOTING_CARD_SPACING, y: VOTING_CARD_Y },
+            data: {
+              card: { value: cardValue },
+              userId: currentUserId,
+              roomId,
+              isSelectable: !room.isGameOver,
+              isSelected: cardValue === selectedCardValue,
+              onCardSelect: callbackRefs.current.onCardSelect,
+            },
+            selected: cardValue === selectedCardValue,
+            draggable: false,
+          };
+          allNodes.push(votingCardNode);
+        });
+      }
+    }
 
     return allNodes;
     // Callbacks are accessed via callbackRefs to avoid adding them as dependencies
