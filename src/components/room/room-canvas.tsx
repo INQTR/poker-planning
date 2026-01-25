@@ -64,7 +64,7 @@ const nodeTypes: NodeTypes = {
 } as const;
 
 function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): ReactElement {
-  const { user } = useAuth();
+  const { roomUser } = useAuth();
   const [nodes, setNodes, onNodesChange] = useNodesState<CustomNodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { fitView } = useReactFlow();
@@ -142,42 +142,42 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   // Handle note content updates
   const handleUpdateNoteContent = useCallback(
     async (nodeId: string, content: string) => {
-      if (isDemoMode || !user) return;
+      if (isDemoMode || !roomUser) return;
       try {
         await updateNoteContentMutation({
           roomId: roomIdRef.current,
           nodeId,
           content,
-          userId: user.id,
+          userId: roomUser.id,
         });
       } catch (error) {
         console.error("Failed to update note content:", error);
       }
     },
-    [isDemoMode, updateNoteContentMutation, user, roomIdRef]
+    [isDemoMode, updateNoteContentMutation, roomUser, roomIdRef]
   );
 
   // Handle creating a new note for an issue
   const handleCreateNote = useCallback(
     async (issueId: Id<"issues">) => {
-      if (isDemoMode || !user) return;
+      if (isDemoMode || !roomUser) return;
       try {
         await createNoteMutation({
           roomId: roomIdRef.current,
           issueId,
-          userId: user.id,
+          userId: roomUser.id,
         });
       } catch (error) {
         console.error("Failed to create note:", error);
       }
     },
-    [isDemoMode, createNoteMutation, user, roomIdRef]
+    [isDemoMode, createNoteMutation, roomUser, roomIdRef]
   );
 
   // Handle note deletion request
   const handleDeleteNote = useCallback(
     (nodeId: string, hasContent: boolean) => {
-      if (isDemoMode || !user) return;
+      if (isDemoMode || !roomUser) return;
       if (hasContent) {
         // Show confirmation dialog for notes with content
         setPendingDeleteNodeId(nodeId);
@@ -186,27 +186,27 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
         deleteNoteMutation({
           roomId: roomIdRef.current,
           nodeId,
-          userId: user.id,
+          userId: roomUser.id,
         }).catch((error) => {
           console.error("Failed to delete note:", error);
         });
       }
     },
-    [isDemoMode, deleteNoteMutation, roomIdRef, user]
+    [isDemoMode, deleteNoteMutation, roomIdRef, roomUser]
   );
 
   // Handle confirmed deletion
   const handleConfirmDelete = useCallback(() => {
-    if (!pendingDeleteNodeId || !user) return;
+    if (!pendingDeleteNodeId || !roomUser) return;
     deleteNoteMutation({
       roomId: roomIdRef.current,
       nodeId: pendingDeleteNodeId,
-      userId: user.id,
+      userId: roomUser.id,
     }).catch((error) => {
       console.error("Failed to delete note:", error);
     });
     setPendingDeleteNodeId(null);
-  }, [pendingDeleteNodeId, deleteNoteMutation, roomIdRef, user]);
+  }, [pendingDeleteNodeId, deleteNoteMutation, roomIdRef, roomUser]);
 
   // Handle player deletion request (shows confirmation)
   const handleDeletePlayer = useCallback(
@@ -221,19 +221,19 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const handleConfirmDeletePlayer = useCallback(async () => {
     if (!pendingDeleteUserId) return;
     try {
-      await removeUser({ userId: pendingDeleteUserId.id });
+      await removeUser({ userId: pendingDeleteUserId.id, roomId: roomIdRef.current });
     } catch (error) {
       console.error("Failed to remove user:", error);
     }
     setPendingDeleteUserId(null);
-  }, [pendingDeleteUserId, removeUser]);
+  }, [pendingDeleteUserId, removeUser, roomIdRef]);
 
   // Reset selected card when game is reset
   useEffect(() => {
-    if (!roomData || !user) return;
+    if (!roomData || !roomUser) return;
 
     const userVote = roomData.votes.find(
-      (v: SanitizedVote) => v.userId === user.id
+      (v: SanitizedVote) => v.userId === roomUser.id
     );
 
     // Sync local selection state with server state - intentional state sync pattern
@@ -242,19 +242,19 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     } else if (roomData.room.isGameOver && userVote.cardLabel) {
       setSelectedCardValue(userVote.cardLabel);
     }
-  }, [user, roomData]);
+  }, [roomUser, roomData]);
 
   // Handle card selection
   const handleCardSelect = useCallback(
     async (cardValue: string) => {
-      if (isDemoMode || !user) return;
+      if (isDemoMode || !roomUser) return;
 
       setSelectedCardValue(cardValue);
 
       try {
         await pickCard({
           roomId: roomIdRef.current,
-          userId: user.id,
+          userId: roomUser.id,
           cardLabel: cardValue,
           cardValue: parseInt(cardValue) || 0,
         });
@@ -263,7 +263,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
         setSelectedCardValue(null);
       }
     },
-    [isDemoMode, pickCard, user, roomIdRef]
+    [isDemoMode, pickCard, roomUser, roomIdRef]
   );
 
   // Get room ID
@@ -273,7 +273,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const { nodes: layoutNodes, edges: layoutEdges, currentIssue, hasNoteForCurrentIssue } = useCanvasNodes({
     roomId,
     roomData,
-    currentUserId: user?.id,
+    currentUserId: roomUser?.id,
     selectedCardValue,
     onRevealCards: handleRevealCards,
     onResetGame: handleResetGame,
@@ -300,18 +300,18 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
   const debouncedPositionUpdate = useMemo(
     () =>
       debounce((nodeId: string, position: { x: number; y: number }) => {
-        if (!user) return;
+        if (!roomUser) return;
 
         updateNodePosition({
           roomId: roomIdRef.current,
           nodeId,
           position,
-          userId: user.id,
+          userId: roomUser.id,
         }).catch((error) => {
           console.error("Failed to update node position:", error);
         });
       }, 100),
-    [user, updateNodePosition, roomIdRef]
+    [roomUser, updateNodePosition, roomIdRef]
   );
   /* eslint-enable react-hooks/refs */
 
@@ -386,7 +386,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     return () => clearTimeout(timeoutId);
   }, [roomData?.users, fitView]);
 
-  if (!roomData || (!user && !isDemoMode)) {
+  if (!roomData || (!roomUser && !isDemoMode)) {
     return (
       <div className="flex items-center justify-center h-screen">
         Loading...

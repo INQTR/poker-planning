@@ -7,7 +7,7 @@ import { Edge } from "@xyflow/react";
 import { useMemo, useRef, useEffect } from "react";
 import type { CustomNodeType } from "../types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
-import type { Doc } from "@/convex/_generated/dataModel";
+import type { RoomUserData } from "@/convex/model/users";
 
 interface UseCanvasNodesProps {
   roomId: Id<"rooms">;
@@ -110,7 +110,7 @@ export function useCanvasNodes({
     canvasNodes.forEach((node) => {
       if (node.type === "player") {
         const userId = node.data.userId;
-        const user = users.find((u: Doc<"users">) => u._id === userId);
+        const user = users.find((u: RoomUserData) => u._id === userId);
         if (!user) return;
 
         const userVote = votes.find((v: SanitizedVote) => v.userId === userId);
@@ -244,7 +244,7 @@ export function useCanvasNodes({
     const allEdges: Edge[] = [];
 
     // Session to Players edges (subtle, consistent with timer edge)
-    users.forEach((user: Doc<"users">) => {
+    users.forEach((user: RoomUserData) => {
       allEdges.push({
         id: `session-to-player-${user._id}`,
         source: "session-current",

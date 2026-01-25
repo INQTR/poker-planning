@@ -129,16 +129,16 @@ export async function areAllVotesIn(
   ctx: MutationCtx,
   roomId: Id<"rooms">
 ): Promise<boolean> {
-  const [users, votes] = await Promise.all([
+  const [memberships, votes] = await Promise.all([
     ctx.db
-      .query("users")
+      .query("roomMemberships")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
     getRoomVotes(ctx, roomId),
   ]);
 
-  const nonSpectatorUsers = users.filter((user) => !user.isSpectator);
+  const nonSpectatorMembers = memberships.filter((m) => !m.isSpectator);
   const votedUserIds = new Set(votes.map((vote) => vote.userId));
 
-  return nonSpectatorUsers.every((user) => votedUserIds.has(user._id));
+  return nonSpectatorMembers.every((m) => votedUserIds.has(m.userId));
 }

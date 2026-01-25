@@ -128,6 +128,10 @@ export class JoinRoomPage {
     await expect(this.nameInput).toHaveValue(value);
   }
 
+  async expectNameInputEmpty(): Promise<void> {
+    await expect(this.nameInput).toHaveValue("");
+  }
+
   async isParticipantSelected(): Promise<boolean> {
     // Participant is selected when spectator switch is off
     const hasDataChecked = await this.spectatorRadio.getAttribute("data-checked");

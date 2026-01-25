@@ -42,14 +42,14 @@ export async function ensureDemoRoom(
     .first();
 
   if (existingRoom) {
-    // Verify bots exist
-    const bots = await ctx.db
-      .query("users")
+    // Verify bots exist via memberships
+    const botMemberships = await ctx.db
+      .query("roomMemberships")
       .withIndex("by_room", (q) => q.eq("roomId", existingRoom._id))
       .filter((q) => q.eq(q.field("isBot"), true))
       .collect();
 
-    if (bots.length < BOT_CONFIGS.length) {
+    if (botMemberships.length < BOT_CONFIGS.length) {
       // Recreate missing bots
       await createDemoBots(ctx, existingRoom._id);
     }
@@ -88,19 +88,46 @@ export async function createDemoBots(
   const now = Date.now();
 
   for (const botConfig of BOT_CONFIGS) {
-    // Check if bot already exists
-    const existingBot = await ctx.db
-      .query("users")
+    // Check if bot membership already exists via memberships
+    const existingMemberships = await ctx.db
+      .query("roomMemberships")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
-      .filter((q) => q.eq(q.field("name"), botConfig.name))
-      .first();
+      .filter((q) => q.eq(q.field("isBot"), true))
+      .collect();
+
+    // Check if any existing membership belongs to a user with this bot name
+    const existingBotUserIds = existingMemberships.map((m) => m.userId);
+    const existingBotUsers = await Promise.all(
+      existingBotUserIds.map((id) => ctx.db.get(id))
+    );
+    const existingBot = existingBotUsers.find((u) => u?.name === botConfig.name);
 
     if (existingBot) continue;
 
-    // Create bot user
-    const userId = await ctx.db.insert("users", {
+    // Create global bot user with a unique authUserId
+    const authUserId = `bot-${botConfig.name.toLowerCase().replace(/\s+/g, "-")}`;
+
+    // Check if global user already exists
+    let userId: Id<"users">;
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_auth_user", (q) => q.eq("authUserId", authUserId))
+      .first();
+
+    if (existingUser) {
+      userId = existingUser._id;
+    } else {
+      userId = await ctx.db.insert("users", {
+        authUserId,
+        name: botConfig.name,
+        createdAt: now,
+      });
+    }
+
+    // Create membership for bot in this room
+    await ctx.db.insert("roomMemberships", {
       roomId,
-      name: botConfig.name,
+      userId,
       isSpectator: false,
       isBot: true,
       joinedAt: now,

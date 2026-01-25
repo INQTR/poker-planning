@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/components/auth/auth-provider";
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,9 +18,10 @@ interface JoinRoomDialogProps {
 }
 
 export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
-  const { setUser } = useAuth();
+  const { setRoomUser, authUser } = useAuth();
   const joinRoom = useMutation(api.users.join);
 
+  // Start with empty name for first-time users
   const [userName, setUserName] = useState("");
   const [isSpectator, setIsSpectator] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
@@ -32,13 +34,25 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
 
     setIsJoining(true);
     try {
+      // Create anonymous session if one doesn't exist
+      let currentAuthUserId = authUser?.authUserId;
+      if (!currentAuthUserId) {
+        const { data } = await authClient.signIn.anonymous();
+        if (!data?.user?.id) {
+          toast.error("Failed to create session. Please try again.");
+          return;
+        }
+        currentAuthUserId = data.user.id;
+      }
+
       const userId = await joinRoom({
         roomId,
         name: userName,
         isSpectator,
+        authUserId: currentAuthUserId,
       });
 
-      setUser({
+      setRoomUser({
         id: userId,
         name: userName,
         roomId,

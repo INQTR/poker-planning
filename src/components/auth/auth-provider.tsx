@@ -1,59 +1,56 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { Id } from "@/convex/_generated/dataModel";
+import { authClient } from "@/lib/auth-client";
 
-interface User {
+// BetterAuth user - account-level identity
+interface AuthUser {
+  authUserId: string;
+  preferredName?: string;
+}
+
+// Room membership record
+interface RoomUser {
   id: Id<"users">;
   name: string;
   roomId: Id<"rooms">;
 }
 
 interface AuthContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  // BetterAuth account (persists across rooms)
+  authUser: AuthUser | null;
+  // Room membership (specific to current room, derived from queries)
+  roomUser: RoomUser | null;
+  setRoomUser: (user: RoomUser | null) => void;
   isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  user: null,
-  setUser: () => {},
+  authUser: null,
+  roomUser: null,
+  setRoomUser: () => {},
   isLoading: true,
 });
 
-function getStoredUser(): User | null {
-  if (typeof window === "undefined") return null;
-  const storedUser = localStorage.getItem("poker-user");
-  if (!storedUser) return null;
-  try {
-    return JSON.parse(storedUser);
-  } catch (e) {
-    console.error("Failed to parse stored user", e);
-    return null;
-  }
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(getStoredUser);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: session, isPending: sessionLoading } = authClient.useSession();
+  const [roomUser, setRoomUser] = useState<RoomUser | null>(null);
 
-  useEffect(() => {
-    // Mark loading as complete after initial render - intentional hydration pattern
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsLoading(false);
-  }, []);
+  // Convert BetterAuth session to AuthUser (null if no session yet)
+  const authUser: AuthUser | null = session?.user
+    ? {
+        authUserId: session.user.id,
+        preferredName: session.user.name ?? undefined,
+      }
+    : null;
 
-  useEffect(() => {
-    // Save user to localStorage
-    if (user) {
-      localStorage.setItem("poker-user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("poker-user");
-    }
-  }, [user]);
+  const isLoading = sessionLoading;
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoading }}>
+    <AuthContext.Provider
+      value={{ authUser, roomUser, setRoomUser, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

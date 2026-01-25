@@ -4,7 +4,7 @@ import { Id } from "../_generated/dataModel";
 export interface CleanupResult {
   roomsDeleted: number;
   votesDeleted: number;
-  usersDeleted: number;
+  membershipsDeleted: number;
   canvasNodesDeleted?: number;
   canvasStatesDeleted?: number;
   presenceDeleted?: number;
@@ -32,7 +32,7 @@ export async function removeInactiveRooms(
   const result: CleanupResult = {
     roomsDeleted: 0,
     votesDeleted: 0,
-    usersDeleted: 0,
+    membershipsDeleted: 0,
     canvasNodesDeleted: 0,
     canvasStatesDeleted: 0,
     presenceDeleted: 0,
@@ -41,10 +41,10 @@ export async function removeInactiveRooms(
   // Process each room
   for (const room of inactiveRooms) {
     const cleanupStats = await cleanupRoom(ctx, room._id);
-    
+
     // Aggregate stats
     result.votesDeleted += cleanupStats.votesDeleted;
-    result.usersDeleted += cleanupStats.usersDeleted;
+    result.membershipsDeleted += cleanupStats.membershipsDeleted;
     result.canvasNodesDeleted! += cleanupStats.canvasNodesDeleted || 0;
     result.canvasStatesDeleted! += cleanupStats.canvasStatesDeleted || 0;
     result.presenceDeleted! += cleanupStats.presenceDeleted || 0;
@@ -64,13 +64,13 @@ export async function cleanupRoom(
   roomId: Id<"rooms">
 ): Promise<Omit<CleanupResult, "roomsDeleted">> {
   // Get all related data in parallel
-  const [votes, users, canvasNodes, canvasStates, presence] = await Promise.all([
+  const [votes, memberships, canvasNodes, canvasStates, presence] = await Promise.all([
     ctx.db
       .query("votes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
     ctx.db
-      .query("users")
+      .query("roomMemberships")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
     ctx.db
@@ -93,8 +93,8 @@ export async function cleanupRoom(
   // Delete votes
   deletePromises.push(...votes.map((vote) => ctx.db.delete(vote._id)));
 
-  // Delete users
-  deletePromises.push(...users.map((user) => ctx.db.delete(user._id)));
+  // Delete memberships (not global users - they persist)
+  deletePromises.push(...memberships.map((m) => ctx.db.delete(m._id)));
 
   // Delete canvas nodes
   deletePromises.push(...canvasNodes.map((node) => ctx.db.delete(node._id)));
@@ -113,7 +113,7 @@ export async function cleanupRoom(
 
   return {
     votesDeleted: votes.length,
-    usersDeleted: users.length,
+    membershipsDeleted: memberships.length,
     canvasNodesDeleted: canvasNodes.length,
     canvasStatesDeleted: canvasStates.length,
     presenceDeleted: presence.length,
@@ -126,7 +126,7 @@ export async function cleanupRoom(
  */
 export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
   orphanedVotes: number;
-  orphanedUsers: number;
+  orphanedMemberships: number;
   orphanedCanvasNodes: number;
   orphanedCanvasStates: number;
   orphanedPresence: number;
@@ -138,15 +138,15 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
   // Process each table in parallel
   const [
     orphanedVotes,
-    orphanedUsers,
+    orphanedMemberships,
     orphanedCanvasNodes,
     orphanedCanvasStates,
     orphanedPresence
   ] = await Promise.all([
     // Clean orphaned votes
     cleanupOrphanedRecords(ctx, "votes", existingRoomIds),
-    // Clean orphaned users
-    cleanupOrphanedRecords(ctx, "users", existingRoomIds),
+    // Clean orphaned memberships
+    cleanupOrphanedRecords(ctx, "roomMemberships", existingRoomIds),
     // Clean orphaned canvas nodes
     cleanupOrphanedRecords(ctx, "canvasNodes", existingRoomIds),
     // Clean orphaned canvas states
@@ -157,7 +157,7 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
 
   return {
     orphanedVotes,
-    orphanedUsers,
+    orphanedMemberships,
     orphanedCanvasNodes,
     orphanedCanvasStates,
     orphanedPresence,
@@ -170,7 +170,7 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
  */
 async function cleanupOrphanedRecords(
   ctx: MutationCtx,
-  tableName: "votes" | "users" | "canvasNodes" | "canvasState" | "presence",
+  tableName: "votes" | "roomMemberships" | "canvasNodes" | "canvasState" | "presence",
   existingRoomIds: Set<Id<"rooms">>
 ): Promise<number> {
   const BATCH_SIZE = 100;
@@ -181,7 +181,7 @@ async function cleanupOrphanedRecords(
   while (hasMore) {
     // Query a batch of records
     const query = ctx.db.query(tableName);
-    
+
     // For pagination, we'll use the ID as a cursor
     // This is more efficient than using skip/take
     if (lastId) {
@@ -189,7 +189,7 @@ async function cleanupOrphanedRecords(
       const records = await query.collect();
       const startIndex = records.findIndex(r => r._id > lastId!) + 1;
       const batch = records.slice(startIndex, startIndex + BATCH_SIZE);
-      
+
       if (batch.length === 0) {
         hasMore = false;
         break;
@@ -203,17 +203,17 @@ async function cleanupOrphanedRecords(
           orphanedCount++;
         }
       }
-      
+
       // Execute deletions in parallel
       await Promise.all(deletePromises);
-      
+
       // Update cursor
       lastId = batch[batch.length - 1]._id;
       hasMore = batch.length === BATCH_SIZE;
     } else {
       // First batch
       const batch = await query.take(BATCH_SIZE);
-      
+
       if (batch.length === 0) {
         hasMore = false;
         break;
@@ -227,10 +227,10 @@ async function cleanupOrphanedRecords(
           orphanedCount++;
         }
       }
-      
+
       // Execute deletions in parallel
       await Promise.all(deletePromises);
-      
+
       // Update cursor
       lastId = batch[batch.length - 1]._id;
       hasMore = batch.length === BATCH_SIZE;

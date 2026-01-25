@@ -37,7 +37,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   triggerRef,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const { roomUser } = useAuth();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 
@@ -105,7 +105,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   const handleRemoveUser = async (userId: string) => {
     setRemovingUserId(userId);
     try {
-      await removeUser({ userId: userId as Id<"users"> });
+      await removeUser({ userId: userId as Id<"users">, roomId: roomData.room._id });
       toast({
         title: "User removed",
         description: "The user has been removed from the room.",
@@ -123,7 +123,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
 
   if (!isOpen) return null;
 
-  const otherUsers = roomData.users.filter((u) => u._id !== user?.id);
+  const otherUsers = roomData.users.filter((u) => u._id !== roomUser?.id);
 
   return (
     <div

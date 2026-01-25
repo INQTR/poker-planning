@@ -1,5 +1,5 @@
-import { MutationCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
+import { MutationCtx, QueryCtx } from "../_generated/server";
+import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
 import * as Rooms from "./rooms";
 
@@ -7,16 +7,107 @@ export interface JoinRoomArgs {
   roomId: Id<"rooms">;
   name: string;
   isSpectator?: boolean;
+  authUserId: string;
 }
 
 export interface EditUserArgs {
   userId: Id<"users">;
+  roomId: Id<"rooms">;
   name?: string;
   isSpectator?: boolean;
 }
 
+// Merged user data returned to frontend (user + membership combined)
+export interface RoomUserData {
+  _id: Id<"users">;
+  name: string;
+  isSpectator: boolean;
+  isBot?: boolean;
+  joinedAt: number;
+  membershipId: Id<"roomMemberships">;
+}
+
 /**
- * Adds a user to a room
+ * Finds or creates a global user by authUserId
+ */
+async function findOrCreateGlobalUser(
+  ctx: MutationCtx,
+  args: { authUserId: string; name: string }
+): Promise<Id<"users">> {
+  // Check for existing global user
+  const existingUser = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", args.authUserId))
+    .first();
+
+  if (existingUser) {
+    // Update name if changed
+    if (existingUser.name !== args.name) {
+      await ctx.db.patch(existingUser._id, { name: args.name });
+    }
+    return existingUser._id;
+  }
+
+  // Create new global user
+  return await ctx.db.insert("users", {
+    authUserId: args.authUserId,
+    name: args.name,
+    createdAt: Date.now(),
+  });
+}
+
+/**
+ * Gets a global user by authUserId (without room context)
+ */
+export async function getGlobalUserByAuthUserId(
+  ctx: QueryCtx,
+  authUserId: string
+): Promise<Doc<"users"> | null> {
+  return await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", authUserId))
+    .first();
+}
+
+/**
+ * Gets membership for a user in a room
+ */
+export async function getMembership(
+  ctx: QueryCtx,
+  roomId: Id<"rooms">,
+  userId: Id<"users">
+): Promise<Doc<"roomMemberships"> | null> {
+  return await ctx.db
+    .query("roomMemberships")
+    .withIndex("by_room_user", (q) => q.eq("roomId", roomId).eq("userId", userId))
+    .first();
+}
+
+/**
+ * Gets membership by authUserId for a specific room
+ */
+export async function getMembershipByAuthUserId(
+  ctx: QueryCtx,
+  roomId: Id<"rooms">,
+  authUserId: string
+): Promise<{ user: Doc<"users">; membership: Doc<"roomMemberships"> } | null> {
+  // Find global user
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", authUserId))
+    .first();
+
+  if (!user) return null;
+
+  // Find membership in this room
+  const membership = await getMembership(ctx, roomId, user._id);
+  if (!membership) return null;
+
+  return { user, membership };
+}
+
+/**
+ * Adds a user to a room or returns existing membership if authUserId matches
  */
 export async function joinRoom(
   ctx: MutationCtx,
@@ -25,10 +116,23 @@ export async function joinRoom(
   // Update room activity
   await Rooms.updateRoomActivity(ctx, args.roomId);
 
-  // Create user
-  const userId = await ctx.db.insert("users", {
-    roomId: args.roomId,
+  // Find or create global user
+  const userId = await findOrCreateGlobalUser(ctx, {
+    authUserId: args.authUserId,
     name: args.name,
+  });
+
+  // Check if membership already exists for this room
+  const existingMembership = await getMembership(ctx, args.roomId, userId);
+  if (existingMembership) {
+    // Already in room - just return userId
+    return userId;
+  }
+
+  // Create membership
+  await ctx.db.insert("roomMemberships", {
+    roomId: args.roomId,
+    userId,
     isSpectator: args.isSpectator ?? false,
     joinedAt: Date.now(),
   });
@@ -49,7 +153,7 @@ export async function joinRoom(
 }
 
 /**
- * Updates user information
+ * Updates user information (name on global user, isSpectator on membership)
  */
 export async function editUser(
   ctx: MutationCtx,
@@ -58,86 +162,110 @@ export async function editUser(
   const user = await ctx.db.get(args.userId);
   if (!user) throw new Error("User not found");
 
+  // Get membership for room context
+  const membership = await getMembership(ctx, args.roomId, args.userId);
+  if (!membership) throw new Error("User not in room");
+
   // Update room activity
-  await Rooms.updateRoomActivity(ctx, user.roomId);
+  await Rooms.updateRoomActivity(ctx, args.roomId);
 
-  // Build update object with only provided fields
-  const updates: Partial<{ name: string; isSpectator: boolean }> = {};
-  if (args.name !== undefined) updates.name = args.name;
-  if (args.isSpectator !== undefined) updates.isSpectator = args.isSpectator;
-
-  // Update user if there are changes
-  if (Object.keys(updates).length > 0) {
-    await ctx.db.patch(args.userId, updates);
+  // Update name on global user if changed
+  if (args.name !== undefined) {
+    await ctx.db.patch(args.userId, { name: args.name });
   }
 
-  // TODO: Handle spectator mode change for canvas rooms
-  // If user changes from player to spectator or vice versa,
-  // we might need to add/remove voting card nodes
+  // Update isSpectator on membership if changed
+  if (args.isSpectator !== undefined) {
+    await ctx.db.patch(membership._id, { isSpectator: args.isSpectator });
+  }
 }
 
 /**
- * Removes a user from a room and cleans up related data
+ * Removes a user from a room (deletes membership, keeps global user)
  */
 export async function leaveRoom(
   ctx: MutationCtx,
-  userId: Id<"users">
+  userId: Id<"users">,
+  roomId: Id<"rooms">
 ): Promise<void> {
-  const user = await ctx.db.get(userId);
-  if (!user) return;
+  const membership = await getMembership(ctx, roomId, userId);
+  if (!membership) return;
 
   // Perform all cleanup operations in parallel for better performance
   const cleanupPromises: Promise<void>[] = [];
 
-  // Delete user's votes
+  // Delete user's votes in this room
   const votes = await ctx.db
     .query("votes")
     .withIndex("by_room_user", (q) =>
-      q.eq("roomId", user.roomId).eq("userId", userId)
+      q.eq("roomId", roomId).eq("userId", userId)
     )
     .collect();
 
   cleanupPromises.push(...votes.map((vote) => ctx.db.delete(vote._id)));
 
   // Check if this is a canvas room and remove nodes
-  const room = await ctx.db.get(user.roomId);
+  const room = await ctx.db.get(roomId);
   if (room && room.roomType === "canvas") {
     // Remove player node and voting cards
     cleanupPromises.push(
-      Canvas.removePlayerNodeAndCards(ctx, { roomId: user.roomId, userId })
+      Canvas.removePlayerNodeAndCards(ctx, { roomId, userId })
     );
 
     // Mark user as inactive in presence
     cleanupPromises.push(
-      Canvas.markUserInactive(ctx, { roomId: user.roomId, userId })
+      Canvas.markUserInactive(ctx, { roomId, userId })
     );
   }
 
   // Wait for all cleanup operations to complete
   await Promise.all(cleanupPromises);
 
-  // Delete user
-  await ctx.db.delete(userId);
+  // Delete membership (keep global user)
+  await ctx.db.delete(membership._id);
 
   // Update room activity
-  await Rooms.updateRoomActivity(ctx, user.roomId);
+  await Rooms.updateRoomActivity(ctx, roomId);
 }
 
 /**
- * Gets all users in a room
+ * Gets all users in a room (via memberships)
  */
-export async function getRoomUsers(ctx: MutationCtx, roomId: Id<"rooms">) {
-  return await ctx.db
-    .query("users")
+export async function getRoomUsers(
+  ctx: QueryCtx,
+  roomId: Id<"rooms">
+): Promise<RoomUserData[]> {
+  // Get all memberships for this room
+  const memberships = await ctx.db
+    .query("roomMemberships")
     .withIndex("by_room", (q) => q.eq("roomId", roomId))
     .collect();
+
+  // Get all users for these memberships
+  const users = await Promise.all(
+    memberships.map((m) => ctx.db.get(m.userId))
+  );
+
+  // Merge user and membership data
+  return memberships.map((membership, index) => {
+    const user = users[index];
+    if (!user) throw new Error("User not found for membership");
+    return {
+      _id: user._id,
+      name: user.name,
+      isSpectator: membership.isSpectator,
+      isBot: membership.isBot,
+      joinedAt: membership.joinedAt,
+      membershipId: membership._id,
+    };
+  });
 }
 
 /**
  * Checks if a user name is already taken in a room
  */
 export async function isUserNameTaken(
-  ctx: MutationCtx,
+  ctx: QueryCtx,
   roomId: Id<"rooms">,
   name: string
 ): Promise<boolean> {
