@@ -43,8 +43,8 @@ function getInitial(name: string): string {
 }
 
 // Format relative time for "last seen" display
-function formatLastSeen(timestamp: number | null): string {
-  if (!timestamp) return "Online";
+export function formatLastSeen(timestamp: number | null): string {
+  if (!timestamp) return "";
 
   const now = Date.now();
   const diff = now - timestamp;
@@ -55,9 +55,9 @@ function formatLastSeen(timestamp: number | null): string {
   const days = Math.floor(hours / 24);
 
   if (seconds < 60) return "Last seen just now";
-  if (minutes < 60) return `Last seen ${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
-  if (hours < 24) return `Last seen ${hours} ${hours === 1 ? "hour" : "hours"} ago`;
-  return `Last seen ${days} ${days === 1 ? "day" : "days"} ago`;
+  if (minutes < 60) return `Last seen ${minutes}m ago`;
+  if (hours < 24) return `Last seen ${hours}h ago`;
+  return `Last seen ${days}d ago`;
 }
 
 interface UserPresenceAvatarsProps {

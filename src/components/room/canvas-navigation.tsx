@@ -307,7 +307,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </Link>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* Room Info Section */}
           <div className="flex items-center gap-2 px-2">
@@ -334,7 +334,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* Users Section */}
           <div className="flex items-center gap-2 px-2" data-testid="desktop-user-avatars">
@@ -409,7 +409,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* Additional Actions */}
           <div className="flex items-center gap-1 px-2">
@@ -512,7 +512,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" />
+          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
 
           {/* User Menu */}
           <UserMenu />
