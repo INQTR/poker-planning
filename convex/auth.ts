@@ -7,7 +7,21 @@ import { betterAuth } from "better-auth";
 import { anonymous } from "better-auth/plugins";
 import authConfig from "./auth.config";
 
-const siteUrl = process.env.SITE_URL!;
+const siteUrl = process.env.SITE_URL;
+if (!siteUrl) {
+  throw new Error(
+    "Missing SITE_URL environment variable. " +
+      "Set it with: npx convex env set SITE_URL http://localhost:3000"
+  );
+}
+
+const authSecret = process.env.BETTER_AUTH_SECRET;
+if (!authSecret) {
+  throw new Error(
+    "Missing BETTER_AUTH_SECRET environment variable. " +
+      "Set it with: npx convex env set BETTER_AUTH_SECRET $(openssl rand -base64 32)"
+  );
+}
 
 // The component client has methods needed for integrating Convex with Better Auth,
 // as well as helper methods for general use.
@@ -16,6 +30,7 @@ export const authComponent = createClient<DataModel>(components.betterAuth);
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
   return betterAuth({
     baseURL: siteUrl,
+    secret: authSecret,
     database: authComponent.adapter(ctx),
     session: {
       expiresIn: 60 * 60 * 24 * 365, // 1 year

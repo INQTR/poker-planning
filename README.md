@@ -61,6 +61,35 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - Node.js 20+
 - npm
 
+### Environment Variables
+
+Copy `.env.example` to `.env.local` and configure the variables below.
+
+#### Next.js (`.env.local`)
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_CONVEX_URL` | Yes | Convex deployment URL (from `npx convex dev`) |
+| `NEXT_PUBLIC_CONVEX_SITE_URL` | Yes | Convex site URL for BetterAuth (`.convex.site`) |
+| `NEXT_PUBLIC_SITE_URL` | No | Your site URL (defaults to `https://agilekit.app`) |
+| `CONVEX_DEPLOY_KEY` | Prod | Deploy key for production (from Convex dashboard) |
+| `NEXT_PUBLIC_GA_ID` | No | Google Analytics 4 Measurement ID |
+
+#### Convex Server (via `npx convex env set`)
+
+These variables run on Convex servers and **cannot** be set in `.env.local`.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SITE_URL` | Yes | Base URL for auth callbacks |
+| `BETTER_AUTH_SECRET` | Yes | Secret for signing sessions (min 32 chars) |
+
+```bash
+# Development setup
+npx convex env set SITE_URL http://localhost:3000
+npx convex env set BETTER_AUTH_SECRET $(openssl rand -base64 32)
+```
+
 ## Technology Stack
 
 | Layer        | Technology                                    |

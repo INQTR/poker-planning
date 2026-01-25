@@ -159,11 +159,35 @@ interface RoomUser {
 
 ## Environment Variables
 
+### Next.js Environment Variables (`.env.local`)
+
 ```bash
 # Required for BetterAuth
+NEXT_PUBLIC_CONVEX_URL=https://your-project.convex.cloud
 NEXT_PUBLIC_CONVEX_SITE_URL=https://your-project.convex.site
 NEXT_PUBLIC_SITE_URL=http://localhost:3000  # or production URL
 ```
+
+### Convex Server Environment Variables
+
+BetterAuth requires these variables to be set in the Convex environment (not `.env.local`):
+
+```bash
+# Development
+npx convex env set SITE_URL http://localhost:3000
+npx convex env set BETTER_AUTH_SECRET $(openssl rand -base64 32)
+
+# Production
+npx convex env set SITE_URL https://your-domain.com
+npx convex env set BETTER_AUTH_SECRET <your-production-secret>
+```
+
+| Variable | Purpose |
+|----------|---------|
+| `SITE_URL` | Base URL for auth callbacks |
+| `BETTER_AUTH_SECRET` | Secret key for signing sessions (min 32 chars) |
+
+These are required because Convex functions run on Convex's servers and cannot access `.env.local`.
 
 ## Session Configuration
 
