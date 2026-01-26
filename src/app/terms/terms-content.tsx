@@ -19,13 +19,13 @@ const sections = [
     id: "acceptance",
     title: "1. Acceptance of Terms",
     content:
-      "These Terms and Conditions constitute a legal agreement between you and Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP) in Ukraine, doing business as AgileKit. By accessing and using AgileKit, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service. These terms apply to all users of the site, including without limitation users who are contributors of content.",
+      "These Terms and Conditions constitute a legal agreement between you and Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine, doing business as AgileKit. By accessing and using AgileKit, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service. These terms apply to all users of the site, including without limitation users who are contributors of content.",
   },
   {
     id: "operator",
     title: "2. Service Operator",
     content:
-      "AgileKit is operated by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP) in Ukraine ('Operator'). Business Address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com | +380632841506. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to Bohdan Ivanchenko.",
+      "AgileKit is operated by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine ('Operator'). Business Address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com | +380632841506. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to Bohdan Ivanchenko.",
   },
   {
     id: "description",
@@ -97,13 +97,13 @@ const sections = [
     id: "refunds",
     title: "14. Refund Policy",
     content:
-      "We offer a 30-day money-back guarantee for all paid features and subscriptions. If you are not satisfied with your purchase, you may request a full refund within 30 days of the original purchase date by contacting us at ivanchenko.b@gmail.com. Refunds will be processed within 5-10 business days. After 30 days, no refunds will be issued except as required by applicable law.",
+      "We offer a 30-day money-back guarantee for all paid features and subscriptions. If you are not satisfied with your purchase, you may request a full refund within 30 days of the original purchase date through Paddle, our payment processor. Refunds will be processed within 5-10 business days. After 30 days, no refunds will be issued except as required by applicable law.",
   },
   {
     id: "payment-processing",
     title: "15. Payment Processing",
     content:
-      "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns. For payment-related questions, please contact Paddle directly or reach out to us at ivanchenko.b@gmail.com.",
+      "Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle handles all payment processing, billing inquiries, and refund requests. For general product questions or support, you may contact us at ivanchenko.b@gmail.com.",
   },
   {
     id: "contact",
