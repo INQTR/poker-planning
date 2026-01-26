@@ -205,7 +205,7 @@ export function FeaturesContent() {
 
               <p className="mt-8 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 From real-time collaboration to advanced analytics, AgileKit has
-                everything your team needs. Free forever, no sign-up required.
+                everything your team needs. Core features free, no sign-up required.
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -503,10 +503,10 @@ export function FeaturesContent() {
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
                 <div className="relative">
                   <div className="text-5xl font-bold mb-2">$0</div>
-                  <h3 className="text-xl font-semibold mb-2">Free Forever</h3>
+                  <h3 className="text-xl font-semibold mb-2">Free Core</h3>
                   <p className="text-white/80">
-                    No premium tiers, no hidden costs, no trial periods. Just
-                    free.
+                    Core features free. Optional paid features may be available
+                    in the future.
                   </p>
                 </div>
               </div>

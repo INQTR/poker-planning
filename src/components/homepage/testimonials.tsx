@@ -15,7 +15,7 @@ interface Testimonial {
 }
 
 const featuredTestimonial: Testimonial = {
-  body: "AgileKit has transformed our sprint planning sessions. The real-time collaboration and intuitive interface have made our estimations 50% faster and much more accurate. The fact that it's completely free is just incredible.",
+  body: "AgileKit has transformed our sprint planning sessions. The real-time collaboration and intuitive interface have made our estimations 50% faster and much more accurate. The fact that the core features being free is just incredible.",
   author: {
     name: "Sarah Chen",
     handle: "sarahchen",

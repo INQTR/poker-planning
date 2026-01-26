@@ -30,7 +30,7 @@ export class HomePage {
 
     // Trust indicators
     this.trustIndicators = {
-      freeForever: page.locator("text=100% Free Forever").first(),
+      freeForever: page.locator("text=Free to Use").first(),
       noAccount: page.locator("text=No Account Required").first(),
       realtime: page.locator("text=Real-time Collaboration").first(),
     };
@@ -59,7 +59,7 @@ export class HomePage {
     const mainContent = this.page.locator("main").first();
 
     await expect(
-      mainContent.locator("text=100% Free Forever").first()
+      mainContent.locator("text=Free to Use").first()
     ).toBeVisible();
     await expect(
       mainContent.locator("text=No Account Required").first()

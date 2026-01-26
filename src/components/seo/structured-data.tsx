@@ -67,7 +67,7 @@ const faqData = [
   {
     question: "How much does AgileKit cost?",
     answer:
-      "AgileKit is completely free forever. There are no hidden costs, premium tiers, or limitations on team size or number of sessions. As an open-source project, we believe in making quality tools accessible to everyone.",
+      "AgileKit's core features are completely free. There are no limitations on team size or number of sessions for core functionality. As an open-source project, we believe in making quality tools accessible to everyone. Optional paid features may be available in the future.",
   },
   {
     question: "Do I need to create an account?",
@@ -97,7 +97,7 @@ const faqData = [
   {
     question: "How does it compare to other planning poker tools?",
     answer:
-      "Unlike other tools that charge monthly fees or limit features, we offer everything for free with no restrictions. Our tool is open-source, requires no registration, and includes all features like real-time voting, multiple card sets, and team collaboration.",
+      "Unlike other tools that charge monthly fees or limit features, our core features are free with no restrictions. Our tool is open-source, requires no registration, and includes features like real-time voting, multiple card sets, and team collaboration.",
   },
   {
     question: "Can I contribute to the project?",

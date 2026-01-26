@@ -13,7 +13,7 @@ const values = [
     icon: Heart,
     title: "Open Source",
     description:
-      "Free forever. Community-driven development with full transparency.",
+      "Core features free. Community-driven development with full transparency.",
     color: "text-rose-500",
     bgColor: "bg-rose-500/10 dark:bg-rose-500/20",
   },
@@ -89,8 +89,9 @@ export function AboutContent() {
               </span>
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              AgileKit is a free, open-source estimation tool for Scrum teams.
-              No sign-up required. Just create a room and start estimating.
+              AgileKit is an open-source estimation tool with free core features
+              for Scrum teams. No sign-up required. Just create a room and start
+              estimating.
             </p>
 
             {/* GitHub stars badge */}
