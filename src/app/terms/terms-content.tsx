@@ -31,7 +31,7 @@ const sections = [
     id: "description",
     title: "3. Description of Service",
     content:
-      "AgileKit provides a free, web-based planning poker tool for Agile teams to estimate work items. The service includes real-time collaboration features, voting mechanisms, and session management. We reserve the right to modify, suspend, or discontinue the service at any time without notice.",
+      "AgileKit provides a web-based planning poker tool for Agile teams to estimate work items. The core service is free and includes real-time collaboration features, voting mechanisms, and session management. We may offer optional paid features or subscriptions in the future. We reserve the right to modify, suspend, or discontinue the service at any time without notice.",
   },
   {
     id: "use-license",
@@ -85,7 +85,7 @@ const sections = [
     id: "governing-law",
     title: "12. Governing Law",
     content:
-      "These Terms of Service and any separate agreements shall be governed by and construed in accordance with the laws of the jurisdiction in which the service operator is located, without regard to its conflict of law provisions. Any disputes shall be resolved through good faith negotiations.",
+      "These Terms of Service and any separate agreements shall be governed by and construed in accordance with the laws of Ukraine, without regard to its conflict of law provisions. Any disputes shall be resolved through good faith negotiations.",
   },
   {
     id: "changes",
