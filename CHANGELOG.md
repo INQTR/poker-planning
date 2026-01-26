@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.0.0...agilekit-v2.1.0) (2026-01-26)
+
+
+### Features
+
+* improve demo experience with guided tour and light mode support ([#129](https://github.com/INQTR/poker-planning/issues/129)) ([29a6ef7](https://github.com/INQTR/poker-planning/commit/29a6ef738fe818102f84a427d3bfdc58a1f15e28))
+
+
+### Documentation
+
+* update Terms and Privacy pages for Paddle verification ([#127](https://github.com/INQTR/poker-planning/issues/127)) ([332da5f](https://github.com/INQTR/poker-planning/commit/332da5f2b4d3e97affa117aba72c3925870440e7))
+
 ## [2.0.0](https://github.com/INQTR/poker-planning/compare/agilekit-v1.1.1...agilekit-v2.0.0) (2026-01-25)
 
 
