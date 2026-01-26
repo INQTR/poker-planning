@@ -78,7 +78,7 @@ export function FeaturesSection() {
             </h2>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               While others charge for basics, we believe great tools should be
-              accessible to everyone. Simple, powerful, and completely free.
+              accessible to everyone. Simple, powerful, and free at its core.
             </p>
           </div>
 
@@ -143,10 +143,10 @@ export function FeaturesSection() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        100% Free Forever
+                        Free to Use
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        No credit card. No trial. Just free.
+                        Core features free. No credit card required.
                       </p>
                     </div>
                   </div>
@@ -155,7 +155,7 @@ export function FeaturesSection() {
                       $0
                     </span>
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      /forever
+                      /for core features
                     </span>
                   </div>
                 </div>
