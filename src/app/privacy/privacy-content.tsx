@@ -18,7 +18,7 @@ const sections = [
     id: "introduction",
     title: "1. Introduction",
     content:
-      "This Privacy Policy explains how AgileKit collects, uses, and protects your information when you use our service. We are committed to ensuring that your privacy is protected and that we handle your data responsibly.",
+      "This Privacy Policy explains how AgileKit, operated by Bohdan Ivanchenko ('we', 'us', or 'our'), collects, uses, and protects your information when you use our service. We are committed to ensuring that your privacy is protected and that we handle your data responsibly.",
   },
   {
     id: "information-collection",
@@ -78,7 +78,7 @@ const sections = [
     id: "contact",
     title: "11. Contact Information",
     content:
-      "If you have any questions or concerns about this Privacy Policy or our data practices, please contact us through our GitHub repository at https://github.com/INQTR/poker-planning/issues or contribute to the discussion at https://github.com/INQTR/poker-planning/discussions.",
+      "If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at ivanchenko.b@gmail.com or +380632841506. You can also reach us through our GitHub repository at https://github.com/INQTR/poker-planning/issues or contribute to the discussion at https://github.com/INQTR/poker-planning/discussions.",
   },
 ];
 
@@ -97,9 +97,9 @@ export function PrivacyContent() {
           <div className="mx-auto max-w-7xl px-6 py-32 sm:py-40 lg:px-8">
             <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
               <div className="flex items-center gap-x-4 text-xs">
-                <time dateTime="2025-01-07" className="text-gray-500">
+                <time dateTime="2026-01-26" className="text-gray-500">
                   <Calendar className="mr-1 inline h-3 w-3" />
-                  Last updated: January 7, 2025
+                  Last updated: January 26, 2026
                 </time>
               </div>
               <h1 className="mt-2 text-5xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
@@ -244,7 +244,7 @@ export function PrivacyContent() {
                   Effective Date
                 </h3>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  This privacy policy is effective as of January 7, 2025 and
+                  This privacy policy is effective as of January 26, 2026 and
                   will remain in effect except with respect to any changes in
                   its provisions in the future.
                 </p>
