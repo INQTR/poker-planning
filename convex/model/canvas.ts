@@ -12,7 +12,7 @@ const NOTE_Y = -200;
 // Layout configuration for session + player node positioning
 const LAYOUT_CONFIG = {
   nodesep: 150, // Horizontal spacing between players
-  ranksep: 300, // Vertical spacing between session and players
+  ranksep: 400, // Vertical spacing between session and players
 };
 
 // Node dimensions for layout calculations

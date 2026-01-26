@@ -4,8 +4,12 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { RoomCanvas } from "@/components/room/room-canvas";
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 
 export function DemoContent() {
+  const searchParams = useSearchParams();
+  const isEmbedded = searchParams.get("embed") === "true";
+
   const demoRoom = useQuery(api.demo.getDemoRoom);
   const initializeDemo = useMutation(api.demo.initializeDemo);
   const hasInitialized = useRef(false);
@@ -31,13 +35,8 @@ export function DemoContent() {
 
   return (
     <div className="relative h-screen bg-white dark:bg-black">
-      {/* Demo mode badge */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-50 dark:bg-zinc-900 text-gray-900 dark:text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-        Live Demo - View Only
-      </div>
-
       {/* Demo canvas */}
-      <RoomCanvas roomData={demoRoom} isDemoMode={true} />
+      <RoomCanvas roomData={demoRoom} isDemoMode={true} isEmbedded={isEmbedded} />
     </div>
   );
 }

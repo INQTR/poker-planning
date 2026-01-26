@@ -29,6 +29,13 @@ export async function getDemoRoomId(
   return demoRoom?._id ?? null;
 }
 
+// Sample issues for the demo room
+const DEMO_ISSUES = [
+  { title: "Add user authentication", status: "voting" as const },
+  { title: "Setup CI/CD pipeline", status: "pending" as const },
+  { title: "Database migration", status: "pending" as const },
+] as const;
+
 /**
  * Ensures the demo room exists, creating it if necessary
  */
@@ -54,6 +61,16 @@ export async function ensureDemoRoom(
       await createDemoBots(ctx, existingRoom._id);
     }
 
+    // Verify issues exist
+    const existingIssues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", existingRoom._id))
+      .collect();
+
+    if (existingIssues.length === 0) {
+      await createDemoIssues(ctx, existingRoom._id);
+    }
+
     return existingRoom._id;
   }
 
@@ -66,6 +83,7 @@ export async function ensureDemoRoom(
     isGameOver: false,
     createdAt: Date.now(),
     lastActivityAt: Date.now(),
+    nextIssueNumber: DEMO_ISSUES.length + 1,
   });
 
   // Initialize canvas nodes
@@ -74,7 +92,45 @@ export async function ensureDemoRoom(
   // Create bot users
   await createDemoBots(ctx, roomId);
 
+  // Create demo issues
+  const currentIssueId = await createDemoIssues(ctx, roomId);
+
+  // Set the current issue (the one being voted on)
+  if (currentIssueId) {
+    await ctx.db.patch(roomId, { currentIssueId });
+  }
+
   return roomId;
+}
+
+/**
+ * Creates sample issues for the demo room
+ */
+async function createDemoIssues(
+  ctx: MutationCtx,
+  roomId: Id<"rooms">
+): Promise<Id<"issues"> | null> {
+  const now = Date.now();
+  let currentIssueId: Id<"issues"> | null = null;
+
+  for (let i = 0; i < DEMO_ISSUES.length; i++) {
+    const issue = DEMO_ISSUES[i];
+    const issueId = await ctx.db.insert("issues", {
+      roomId,
+      sequentialId: i + 1,
+      title: issue.title,
+      status: issue.status,
+      createdAt: now,
+      order: i,
+    });
+
+    // Track the voting issue as the current one
+    if (issue.status === "voting") {
+      currentIssueId = issueId;
+    }
+  }
+
+  return currentIssueId;
 }
 
 /**
@@ -86,22 +142,22 @@ export async function createDemoBots(
 ): Promise<void> {
   const now = Date.now();
 
+  // Fetch all existing bot memberships once before the loop
+  const existingMemberships = await ctx.db
+    .query("roomMemberships")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .filter((q) => q.eq(q.field("isBot"), true))
+    .collect();
+
+  const existingBotUserIds = existingMemberships.map((m) => m.userId);
+  const existingBotUsers = await Promise.all(
+    existingBotUserIds.map((id) => ctx.db.get(id))
+  );
+  const existingBotNames = new Set(existingBotUsers.map((u) => u?.name));
+
   for (const botConfig of BOT_CONFIGS) {
-    // Check if bot membership already exists via memberships
-    const existingMemberships = await ctx.db
-      .query("roomMemberships")
-      .withIndex("by_room", (q) => q.eq("roomId", roomId))
-      .filter((q) => q.eq(q.field("isBot"), true))
-      .collect();
-
-    // Check if any existing membership belongs to a user with this bot name
-    const existingBotUserIds = existingMemberships.map((m) => m.userId);
-    const existingBotUsers = await Promise.all(
-      existingBotUserIds.map((id) => ctx.db.get(id))
-    );
-    const existingBot = existingBotUsers.find((u) => u?.name === botConfig.name);
-
-    if (existingBot) continue;
+    // Skip if bot already exists in this room
+    if (existingBotNames.has(botConfig.name)) continue;
 
     // Create global bot user with a unique authUserId
     const authUserId = `bot-${botConfig.name.toLowerCase().replace(/\s+/g, "-")}`;

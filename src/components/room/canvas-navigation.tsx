@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useReactFlow } from "@xyflow/react";
 import {
   Copy,
@@ -34,6 +35,7 @@ import { useRoomPresence } from "@/hooks/useRoomPresence";
 import { RoomSettingsPanel } from "./room-settings-panel";
 import { IssuesPanel } from "./issues-panel";
 import { UserMenu } from "@/components/user-menu";
+import { ShinyButton } from "@/components/ui/shiny-button";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -53,6 +55,7 @@ interface CanvasNavigationProps {
   isFullscreen?: boolean;
   isIssuesPanelOpen: boolean;
   onIssuesPanelChange: (open: boolean) => void;
+  isDemoMode?: boolean;
 }
 
 export const CanvasNavigation: FC<CanvasNavigationProps> = ({
@@ -62,18 +65,20 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   isFullscreen = false,
   isIssuesPanelOpen,
   onIssuesPanelChange,
+  isDemoMode = false,
 }) => {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
+  const router = useRouter();
 
   // Track user presence inside navigation to avoid canvas re-renders
   const usersWithPresence = useRoomPresence(
     roomData.room._id,
     currentUserId,
-    roomData.users
+    roomData.users,
   );
   const { toast } = useToast();
-  const [isFullscreenSupported] = useState(() =>
-    typeof document !== 'undefined' && document.fullscreenEnabled
+  const [isFullscreenSupported] = useState(
+    () => typeof document !== "undefined" && document.fullscreenEnabled,
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -81,12 +86,16 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
 
   const handleCopyRoomUrl = async () => {
     if (roomData?.room) {
-      const url = `${window.location.origin}/room/${roomData.room._id}`;
+      const url = isDemoMode
+        ? `${window.location.origin}/demo`
+        : `${window.location.origin}/room/${roomData.room._id}`;
       const success = await copyTextToClipboard(url);
       if (success) {
         toast({
-          title: "Room URL copied!",
-          description: "Share this link with others to join the room.",
+          title: isDemoMode ? "Demo URL copied!" : "Room URL copied!",
+          description: isDemoMode
+            ? "Share this link to show others the demo."
+            : "Share this link with others to join the room.",
         });
       } else {
         toast({
@@ -112,13 +121,13 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
 
   const handleFullscreen = () => {
     if (!isFullscreenSupported) return;
-    
+
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
     } else {
       document.exitFullscreen();
     }
-    
+
     onToggleFullscreen?.();
   };
 
@@ -150,16 +159,27 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           </Link>
 
           {/* Room Name */}
-          <span
-            className="flex-1 mx-2 text-sm font-semibold text-gray-800 dark:text-gray-200 truncate text-center"
-            data-testid="mobile-room-name"
-          >
-            {room.name || `Room ${room._id.slice(0, 6)}`}
-          </span>
+          <div className="flex-1 mx-2 flex items-center justify-center gap-2 min-w-0">
+            {isDemoMode && (
+              <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary shrink-0">
+                Demo
+              </span>
+            )}
+            <span
+              className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate"
+              data-testid="mobile-room-name"
+            >
+              {room.name || `Room ${room._id.slice(0, 6)}`}
+            </span>
+          </div>
 
           {/* User Presence Avatars */}
           <div data-testid="mobile-user-avatars">
-            <UserPresenceAvatars users={usersWithPresence} maxVisible={3} size="sm" />
+            <UserPresenceAvatars
+              users={usersWithPresence}
+              maxVisible={3}
+              size="sm"
+            />
           </div>
 
           {/* Hamburger Menu */}
@@ -265,12 +285,27 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                   Room Settings
                 </Button>
 
-                {/* User Menu */}
+                {/* User Menu / Demo CTA */}
                 <div className="pt-2 border-t border-gray-200 dark:border-border">
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 block">
-                    Account
-                  </span>
-                  <UserMenu />
+                  {isDemoMode ? (
+                    <div className="flex justify-center">
+                      <ShinyButton
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          router.push("/room/new");
+                        }}
+                      >
+                        Create Your Room
+                      </ShinyButton>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 block">
+                        Account
+                      </span>
+                      <UserMenu />
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
@@ -307,10 +342,19 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </Link>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
+          <Separator
+            orientation="vertical"
+            className="h-6 mx-1 !self-center"
+            aria-hidden="true"
+          />
 
           {/* Room Info Section */}
           <div className="flex items-center gap-2 px-2">
+            {isDemoMode && (
+              <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary">
+                Demo
+              </span>
+            )}
             <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
               {room.name || `Room ${room._id.slice(0, 6)}`}
             </span>
@@ -334,11 +378,22 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
+          <Separator
+            orientation="vertical"
+            className="h-6 mx-1 !self-center"
+            aria-hidden="true"
+          />
 
           {/* Users Section */}
-          <div className="flex items-center gap-2 px-2" data-testid="desktop-user-avatars">
-            <UserPresenceAvatars users={usersWithPresence} maxVisible={4} size="sm" />
+          <div
+            className="flex items-center gap-2 px-2"
+            data-testid="desktop-user-avatars"
+          >
+            <UserPresenceAvatars
+              users={usersWithPresence}
+              maxVisible={4}
+              size="sm"
+            />
           </div>
         </div>
       </div>
@@ -409,7 +464,11 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
+          <Separator
+            orientation="vertical"
+            className="h-6 mx-1 !self-center"
+            aria-hidden="true"
+          />
 
           {/* Additional Actions */}
           <div className="flex items-center gap-1 px-2">
@@ -443,7 +502,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                     onClick={() => onIssuesPanelChange(!isIssuesPanelOpen)}
                     className={cn(
                       buttonClass,
-                      isIssuesPanelOpen && "bg-gray-100 dark:bg-surface-3"
+                      isIssuesPanelOpen && "bg-gray-100 dark:bg-surface-3",
                     )}
                     aria-label="Issues panel"
                     aria-expanded={isIssuesPanelOpen}
@@ -497,7 +556,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                     onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                     className={cn(
                       buttonClass,
-                      isSettingsOpen && "bg-gray-100 dark:bg-surface-3"
+                      isSettingsOpen && "bg-gray-100 dark:bg-surface-3",
                     )}
                     aria-label="Room settings"
                     aria-expanded={isSettingsOpen}
@@ -512,10 +571,20 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
             </Tooltip>
           </div>
 
-          <Separator orientation="vertical" className="h-6 mx-1 !self-center" aria-hidden="true" />
+          <Separator
+            orientation="vertical"
+            className="h-6 mx-1 !self-center"
+            aria-hidden="true"
+          />
 
-          {/* User Menu */}
-          <UserMenu />
+          {/* User Menu / Demo CTA */}
+          {isDemoMode ? (
+            <ShinyButton onClick={() => router.push("/room/new")}>
+              Create Your Room
+            </ShinyButton>
+          ) : (
+            <UserMenu />
+          )}
         </div>
       </div>
 
@@ -526,6 +595,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         triggerRef={settingsButtonRef}
+        isDemoMode={isDemoMode}
       />
 
       {/* Issues Panel */}
@@ -534,6 +604,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         roomName={room.name}
         isOpen={isIssuesPanelOpen}
         onClose={() => onIssuesPanelChange(false)}
+        isDemoMode={isDemoMode}
       />
     </>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { FC, useRef, useState, useEffect } from "react";
-import { X, Sun, Moon, Monitor, UserMinus } from "lucide-react";
+import Link from "next/link";
+import { X, Sun, Moon, Monitor, UserMinus, ArrowRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useMutation } from "convex/react";
 
@@ -43,6 +44,7 @@ interface RoomSettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
+  isDemoMode?: boolean;
 }
 
 export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
@@ -51,6 +53,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   isOpen,
   onClose,
   triggerRef,
+  isDemoMode = false,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const { roomUser } = useAuth();
@@ -250,23 +253,26 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
             <Input
               id="room-name"
               value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
+              onChange={(e) => !isDemoMode && setRoomName(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") handleSaveRoomName();
+                if (e.key === "Enter" && !isDemoMode) handleSaveRoomName();
               }}
               placeholder="Enter room name"
               className="h-8 text-sm"
+              readOnly={isDemoMode}
             />
-            <Button
-              size="sm"
-              onClick={handleSaveRoomName}
-              disabled={
-                isSaving || !roomName.trim() || roomName === roomData.room.name
-              }
-              className="h-8 px-3"
-            >
-              {isSaving ? "..." : "Save"}
-            </Button>
+            {!isDemoMode && (
+              <Button
+                size="sm"
+                onClick={handleSaveRoomName}
+                disabled={
+                  isSaving || !roomName.trim() || roomName === roomData.room.name
+                }
+                className="h-8 px-3"
+              >
+                {isSaving ? "..." : "Save"}
+              </Button>
+            )}
           </div>
         </div>
 
@@ -288,7 +294,8 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           <Switch
             id="auto-reveal"
             checked={roomData.room.autoCompleteVoting}
-            onCheckedChange={handleToggleAutoReveal}
+            onCheckedChange={isDemoMode ? undefined : handleToggleAutoReveal}
+            disabled={isDemoMode}
           />
         </div>
 
@@ -396,30 +403,44 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                       )}
                     </div>
                   </div>
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveUser(u._id, u.name)}
-                          disabled={removingUserId === u._id}
-                          className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shrink-0"
-                          aria-label={`Remove ${u.name}`}
-                        >
-                          <UserMinus className="h-4 w-4" />
-                        </Button>
-                      }
-                    />
-                    <TooltipContent>
-                      <p>Remove user</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {!isDemoMode && (
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveUser(u._id, u.name)}
+                            disabled={removingUserId === u._id}
+                            className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 shrink-0"
+                            aria-label={`Remove ${u.name}`}
+                          >
+                            <UserMinus className="h-4 w-4" />
+                          </Button>
+                        }
+                      />
+                      <TooltipContent>
+                        <p>Remove user</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
               ))
             )}
           </div>
         </div>
+
+        {/* Demo CTA */}
+        {isDemoMode && (
+          <div className="pt-4 border-t border-gray-200/50 dark:border-border shrink-0">
+            <Link href="/room/new">
+              <Button className="w-full gap-2" size="sm">
+                Create a room to customize settings
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Remove user confirmation dialog */}

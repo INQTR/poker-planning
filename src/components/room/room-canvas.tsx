@@ -22,6 +22,7 @@ import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/components/auth/auth-provider";
 import { useLatest } from "@/hooks/use-latest";
 import { CanvasNavigation } from "./canvas-navigation";
+import { DemoExplainer } from "./demo-explainer";
 import { useCanvasNodes } from "./hooks/useCanvasNodes";
 import { NodePickerToolbar } from "./node-picker-toolbar";
 import { Id } from "@/convex/_generated/dataModel";
@@ -34,7 +35,7 @@ import {
   TimerNode,
   VotingCardNode,
 } from "./nodes";
-import type { CustomNodeType, PlayerNodeData } from "./types";
+import { DEMO_VIEWER_ID, type CustomNodeType, type PlayerNodeData } from "./types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import {
   AlertDialog,
@@ -50,6 +51,7 @@ import {
 interface RoomCanvasProps {
   roomData: RoomWithRelatedData;
   isDemoMode?: boolean;
+  isEmbedded?: boolean;
 }
 
 // Define node types outside component to prevent re-renders
@@ -63,7 +65,7 @@ const nodeTypes: NodeTypes = {
   timer: TimerNode,
 } as const;
 
-function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): ReactElement {
+function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: RoomCanvasProps): ReactElement {
   const { roomUser } = useAuth();
   const [nodes, setNodes, onNodesChange] = useNodesState<CustomNodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -284,6 +286,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
     roomData,
     currentUserId: roomUser?.id,
     selectedCardValue,
+    isDemoMode,
     onRevealCards: handleRevealCards,
     onResetGame: handleResetGame,
     onCardSelect: handleCardSelect,
@@ -406,12 +409,13 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      {!isDemoMode && roomUser && (
+      {(isDemoMode || roomUser) && !(isDemoMode && isEmbedded) && (
         <CanvasNavigation
           roomData={roomData}
-          currentUserId={roomUser.id}
+          currentUserId={roomUser?.id ?? DEMO_VIEWER_ID}
           isIssuesPanelOpen={isIssuesPanelOpen}
           onIssuesPanelChange={setIsIssuesPanelOpen}
+          isDemoMode={isDemoMode}
         />
       )}
       <ReactFlow
@@ -457,6 +461,9 @@ function RoomCanvasInner({ roomData, isDemoMode = false }: RoomCanvasProps): Rea
           isDemoMode={isDemoMode}
         />
       )}
+
+      {/* Demo explainer - only shown in demo mode, not when embedded */}
+      {isDemoMode && !isEmbedded && <DemoExplainer />}
 
       {/* Delete note confirmation dialog */}
       <AlertDialog
