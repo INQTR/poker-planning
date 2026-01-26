@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import {
   HowItWorks,
   FAQ,
@@ -12,7 +12,6 @@ import {
 } from "@/components/homepage";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { GithubIcon } from "@/components/icons";
 
 interface VersionInfo {
   version: string;
@@ -131,16 +130,14 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                   <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
                 </Link>
 
-                <a
-                  href="https://github.com/INQTR/poker-planning"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid="hero-github-link"
+                <Link
+                  href="/demo"
+                  data-testid="hero-demo-link"
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-zinc-950 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:hover:bg-zinc-900 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
                 >
-                  <GithubIcon className="h-5 w-5" />
-                  View on GitHub
-                </a>
+                  <Play className="h-5 w-5" />
+                  Try Interactive Demo
+                </Link>
               </div>
             </div>
 
@@ -149,7 +146,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
               <div className="relative rounded-2xl lg:rounded-l-2xl lg:rounded-r-none overflow-hidden shadow-2xl">
                 {/* Demo iframe */}
                 <iframe
-                  src="/demo"
+                  src="/demo?embed=true"
                   className="w-full h-[500px] lg:h-[700px] border-0 bg-white dark:bg-black"
                   title="Live Planning Poker Demo"
                   sandbox="allow-scripts allow-same-origin"

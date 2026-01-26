@@ -21,6 +21,7 @@ interface IssueItemProps {
   onUpdateTitle: (issueId: Id<"issues">, title: string) => void;
   onUpdateEstimate: (issueId: Id<"issues">, estimate: string) => void;
   onDelete: (issueId: Id<"issues">) => void;
+  isDemoMode?: boolean;
 }
 
 export const IssueItem: FC<IssueItemProps> = ({
@@ -30,6 +31,7 @@ export const IssueItem: FC<IssueItemProps> = ({
   onUpdateTitle,
   onUpdateEstimate,
   onDelete,
+  isDemoMode = false,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingEstimate, setIsEditingEstimate] = useState(false);
@@ -116,10 +118,10 @@ export const IssueItem: FC<IssueItemProps> = ({
           <span
             className={cn(
               "text-sm font-medium text-gray-900 dark:text-gray-100 truncate block",
-              !isVoting && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+              !isVoting && !isDemoMode && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
             )}
-            onClick={() => !isVoting && onStartVoting(issue._id)}
-            title={isVoting ? issue.title : `Click to vote on: ${issue.title}`}
+            onClick={() => !isVoting && !isDemoMode && onStartVoting(issue._id)}
+            title={isDemoMode ? issue.title : (isVoting ? issue.title : `Click to vote on: ${issue.title}`)}
           >
             {issue.title}
           </span>
@@ -135,6 +137,10 @@ export const IssueItem: FC<IssueItemProps> = ({
         ) : isCompleted ? (
           <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-green-100 dark:bg-status-success-bg text-green-700 dark:text-status-success-fg">
             Done
+          </span>
+        ) : isDemoMode ? (
+          <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-gray-100 dark:bg-surface-2 text-gray-500 dark:text-gray-400">
+            Pending
           </span>
         ) : (
           <Button
@@ -162,47 +168,50 @@ export const IssueItem: FC<IssueItemProps> = ({
         ) : (
           <span
             className={cn(
-              "text-sm font-mono cursor-pointer hover:text-blue-600 dark:hover:text-blue-400",
+              "text-sm font-mono",
+              !isDemoMode && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400",
               issue.finalEstimate
                 ? "text-gray-900 dark:text-gray-100 font-medium"
                 : "text-gray-400 dark:text-gray-500"
             )}
-            onClick={() => setIsEditingEstimate(true)}
-            title="Click to edit estimate"
+            onClick={() => !isDemoMode && setIsEditingEstimate(true)}
+            title={isDemoMode ? (issue.finalEstimate ?? "No estimate") : "Click to edit estimate"}
           >
             {issue.finalEstimate ?? "-"}
           </span>
         )}
       </div>
 
-      {/* Actions Menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3"
+      {/* Actions Menu (hidden in demo mode) */}
+      {!isDemoMode && (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Issue actions</span>
+              </Button>
+            }
+          />
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={() => setIsEditingTitle(true)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit title
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onDelete(issue._id)}
+              className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
             >
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Issue actions</span>
-            </Button>
-          }
-        />
-        <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onClick={() => setIsEditingTitle(true)}>
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit title
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => onDelete(issue._id)}
-            className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 };

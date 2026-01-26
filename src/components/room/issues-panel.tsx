@@ -1,7 +1,8 @@
 "use client";
 
 import { FC, useRef, useState } from "react";
-import { X, Download, Plus, ListTodo, Loader2, Zap } from "lucide-react";
+import Link from "next/link";
+import { X, Download, Plus, ListTodo, Loader2, Zap, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ interface IssuesPanelProps {
   roomName: string;
   isOpen: boolean;
   onClose: () => void;
+  isDemoMode?: boolean;
 }
 
 export const IssuesPanel: FC<IssuesPanelProps> = ({
@@ -29,6 +31,7 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
   roomName,
   isOpen,
   onClose,
+  isDemoMode = false,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -239,42 +242,46 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
         </div>
       </div>
 
-      {/* Add Issue Input - at top */}
-      <div className="border-b border-gray-200/50 dark:border-border p-4">
-        <div className="flex gap-2">
-          <Input
-            value={newIssueTitle}
-            onChange={(e) => setNewIssueTitle(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Add new issue..."
-            className="h-9 text-sm"
-            disabled={isAddingIssue}
-          />
-          <Button
-            onClick={handleAddIssue}
-            disabled={!newIssueTitle.trim() || isAddingIssue}
-            className="h-9 px-3"
-            size="sm"
-          >
-            {isAddingIssue ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Plus className="h-4 w-4" />
-            )}
-          </Button>
+      {/* Add Issue Input - at top (hidden in demo mode) */}
+      {!isDemoMode && (
+        <div className="border-b border-gray-200/50 dark:border-border p-4">
+          <div className="flex gap-2">
+            <Input
+              value={newIssueTitle}
+              onChange={(e) => setNewIssueTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Add new issue..."
+              className="h-9 text-sm"
+              disabled={isAddingIssue}
+            />
+            <Button
+              onClick={handleAddIssue}
+              disabled={!newIssueTitle.trim() || isAddingIssue}
+              className="h-9 px-3"
+              size="sm"
+            >
+              {isAddingIssue ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Issues List */}
       <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-2">
         {/* Quick Vote option - always first */}
         <button
-          onClick={handleSwitchToQuickVote}
+          onClick={isDemoMode ? undefined : handleSwitchToQuickVote}
+          disabled={isDemoMode}
           className={cn(
             "w-full p-3 rounded-lg border text-left transition-colors",
             isQuickVoteMode
               ? "bg-primary/10 border-primary dark:bg-primary/20"
-              : "bg-gray-50 dark:bg-surface-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+              : "bg-gray-50 dark:bg-surface-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700",
+            isDemoMode && "cursor-default"
           )}
         >
           <div className="flex items-center gap-2">
@@ -317,11 +324,23 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
               onUpdateTitle={handleUpdateTitle}
               onUpdateEstimate={handleUpdateEstimate}
               onDelete={handleDeleteIssue}
+              isDemoMode={isDemoMode}
             />
           ))
         )}
       </div>
 
+      {/* Demo CTA */}
+      {isDemoMode && (
+        <div className="p-4 border-t border-gray-200/50 dark:border-border">
+          <Link href="/room/new">
+            <Button className="w-full gap-2" size="sm">
+              Start your session to track issues
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

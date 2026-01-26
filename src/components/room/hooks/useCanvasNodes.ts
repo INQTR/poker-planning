@@ -20,6 +20,7 @@ interface UseCanvasNodesProps {
   roomData: RoomWithRelatedData;
   currentUserId?: string;
   selectedCardValue: string | null;
+  isDemoMode?: boolean;
   onRevealCards?: () => void;
   onResetGame?: () => void;
   onCardSelect?: (cardValue: string) => void;
@@ -42,6 +43,7 @@ export function useCanvasNodes({
   roomData,
   currentUserId,
   selectedCardValue,
+  isDemoMode = false,
   onRevealCards,
   onResetGame,
   onCardSelect,
@@ -218,40 +220,42 @@ export function useCanvasNodes({
       }
     });
 
-    // Generate voting cards client-side for non-spectator users
-    if (currentUserId) {
-      const currentUser = users.find((u: RoomUserData) => u._id === currentUserId);
-      if (currentUser && !currentUser.isSpectator) {
-        const cards = room.votingScale?.cards ?? DEFAULT_SCALE.cards;
-        const cardCount = cards.length;
-        const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
-        const startX = CANVAS_CENTER_X - totalWidth / 2;
+    // Generate voting cards client-side for non-spectator users or demo mode
+    const shouldShowVotingCards = currentUserId
+      ? !users.find((u: RoomUserData) => u._id === currentUserId)?.isSpectator
+      : isDemoMode;
 
-        cards.forEach((cardValue, index) => {
-          const votingCardNode: CustomNodeType = {
-            id: `card-${currentUserId}-${index}`,
-            type: "votingCard",
-            position: { x: startX + index * VOTING_CARD_SPACING, y: VOTING_CARD_Y },
-            data: {
-              card: { value: cardValue },
-              userId: currentUserId,
-              roomId,
-              isSelectable: !room.isGameOver,
-              isSelected: cardValue === selectedCardValue,
-              onCardSelect: callbackRefs.current.onCardSelect,
-            },
-            selected: cardValue === selectedCardValue,
-            draggable: false,
-          };
-          allNodes.push(votingCardNode);
-        });
-      }
+    if (shouldShowVotingCards) {
+      const cards = room.votingScale?.cards ?? DEFAULT_SCALE.cards;
+      const cardCount = cards.length;
+      const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
+      const startX = CANVAS_CENTER_X - totalWidth / 2;
+      const effectiveUserId = currentUserId ?? "demo-viewer";
+
+      cards.forEach((cardValue, index) => {
+        const votingCardNode: CustomNodeType = {
+          id: `card-${effectiveUserId}-${index}`,
+          type: "votingCard",
+          position: { x: startX + index * VOTING_CARD_SPACING, y: VOTING_CARD_Y },
+          data: {
+            card: { value: cardValue },
+            userId: effectiveUserId,
+            roomId,
+            isSelectable: !room.isGameOver && !isDemoMode,
+            isSelected: cardValue === selectedCardValue,
+            onCardSelect: isDemoMode ? undefined : callbackRefs.current.onCardSelect,
+          },
+          selected: cardValue === selectedCardValue,
+          draggable: false,
+        };
+        allNodes.push(votingCardNode);
+      });
     }
 
     return allNodes;
     // Callbacks are accessed via callbackRefs to avoid adding them as dependencies
-    // This reduces re-computations from 15 deps to 7 deps
-  }, [canvasNodes, roomData, currentUserId, selectedCardValue, roomId, currentIssueId, currentIssueTitle]);
+    // This reduces re-computations from 15 deps to 8 deps
+  }, [canvasNodes, roomData, currentUserId, selectedCardValue, roomId, currentIssueId, currentIssueTitle, isDemoMode]);
   /* eslint-enable react-hooks/refs */
 
   const edges = useMemo(() => {
