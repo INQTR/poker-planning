@@ -35,7 +35,7 @@ import {
   TimerNode,
   VotingCardNode,
 } from "./nodes";
-import type { CustomNodeType, PlayerNodeData } from "./types";
+import { DEMO_VIEWER_ID, type CustomNodeType, type PlayerNodeData } from "./types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import {
   AlertDialog,
@@ -412,7 +412,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
       {(isDemoMode || roomUser) && !(isDemoMode && isEmbedded) && (
         <CanvasNavigation
           roomData={roomData}
-          currentUserId={roomUser?.id ?? "demo-user"}
+          currentUserId={roomUser?.id ?? DEMO_VIEWER_ID}
           isIssuesPanelOpen={isIssuesPanelOpen}
           onIssuesPanelChange={setIsIssuesPanelOpen}
           isDemoMode={isDemoMode}

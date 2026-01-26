@@ -5,7 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Edge } from "@xyflow/react";
 import { useMemo, useRef, useEffect } from "react";
-import type { CustomNodeType } from "../types";
+import { DEMO_VIEWER_ID, type CustomNodeType } from "../types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import type { RoomUserData } from "@/convex/model/users";
 import { DEFAULT_SCALE } from "@/convex/scales";
@@ -230,7 +230,7 @@ export function useCanvasNodes({
       const cardCount = cards.length;
       const totalWidth = (cardCount - 1) * VOTING_CARD_SPACING;
       const startX = CANVAS_CENTER_X - totalWidth / 2;
-      const effectiveUserId = currentUserId ?? "demo-viewer";
+      const effectiveUserId = currentUserId ?? DEMO_VIEWER_ID;
 
       cards.forEach((cardValue, index) => {
         const votingCardNode: CustomNodeType = {

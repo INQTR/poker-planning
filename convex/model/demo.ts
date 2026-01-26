@@ -142,22 +142,22 @@ export async function createDemoBots(
 ): Promise<void> {
   const now = Date.now();
 
+  // Fetch all existing bot memberships once before the loop
+  const existingMemberships = await ctx.db
+    .query("roomMemberships")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .filter((q) => q.eq(q.field("isBot"), true))
+    .collect();
+
+  const existingBotUserIds = existingMemberships.map((m) => m.userId);
+  const existingBotUsers = await Promise.all(
+    existingBotUserIds.map((id) => ctx.db.get(id))
+  );
+  const existingBotNames = new Set(existingBotUsers.map((u) => u?.name));
+
   for (const botConfig of BOT_CONFIGS) {
-    // Check if bot membership already exists via memberships
-    const existingMemberships = await ctx.db
-      .query("roomMemberships")
-      .withIndex("by_room", (q) => q.eq("roomId", roomId))
-      .filter((q) => q.eq(q.field("isBot"), true))
-      .collect();
-
-    // Check if any existing membership belongs to a user with this bot name
-    const existingBotUserIds = existingMemberships.map((m) => m.userId);
-    const existingBotUsers = await Promise.all(
-      existingBotUserIds.map((id) => ctx.db.get(id))
-    );
-    const existingBot = existingBotUsers.find((u) => u?.name === botConfig.name);
-
-    if (existingBot) continue;
+    // Skip if bot already exists in this room
+    if (existingBotNames.has(botConfig.name)) continue;
 
     // Create global bot user with a unique authUserId
     const authUserId = `bot-${botConfig.name.toLowerCase().replace(/\s+/g, "-")}`;

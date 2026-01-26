@@ -3,6 +3,9 @@ import type { Id } from "@/convex/_generated/dataModel";
 import type { SanitizedVote } from "@/convex/model/rooms";
 import type { RoomUserData } from "@/convex/model/users";
 
+// Demo mode constants
+export const DEMO_VIEWER_ID = "demo-viewer" as const;
+
 // Node data types
 export type PlayerNodeData = {
   user: RoomUserData;
