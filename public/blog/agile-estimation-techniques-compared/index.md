@@ -395,5 +395,5 @@ Create a room, share the link, start voting. Works on any device—your remote t
 [^2]: Grenning, J. (2002). Planning Poker. https://wingman-sw.com/articles/planning-poker
 [^3]: Tversky, A. & Kahneman, D. (1974). Judgment under Uncertainty: Heuristics and Biases. Science. https://www.science.org/doi/10.1126/science.185.4157.1124
 [^4]: RAND Corporation. Delphi Method. https://www.rand.org/topics/delphi-method.html
-[^5]: Boehm, B. (1981). Software Engineering Economics. Prentice-Hall.
+[^5]: Boehm, B. (1981). Software Engineering Economics. Prentice-Hall. ISBN 0-13-822122-7.
 [^6]: Jørgensen, M. & Escott, W. (2022). Relative vs. absolute estimation in software development. Information and Software Technology. https://www.sciencedirect.com/science/article/pii/S0950584922000660
