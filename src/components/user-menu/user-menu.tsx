@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -25,23 +26,28 @@ import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { Moon, Sun, LogOut, UserPen, Monitor, Eye } from "lucide-react";
+import type { Id } from "@/convex/_generated/dataModel";
 
 export function UserMenu() {
-  const { authUser, roomUser, setRoomUser } = useAuth();
+  const { authUserId, isAnonymous } = useAuth();
   const { theme, setTheme } = useTheme();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  // Get roomId from URL params (if on a room page)
+  const params = useParams();
+  const roomId = params.roomId as Id<"rooms"> | undefined;
 
   // Get global user data
   const globalUser = useQuery(
     api.users.getGlobalUser,
-    authUser?.authUserId ? { authUserId: authUser.authUserId } : "skip"
+    authUserId ? { authUserId } : "skip"
   );
 
-  // Get room membership data (for spectator status)
+  // Get room membership data (for spectator status) - only if in a room
   const roomMembership = useQuery(
     api.users.getByAuthUserId,
-    authUser?.authUserId && roomUser?.roomId
-      ? { authUserId: authUser.authUserId, roomId: roomUser.roomId }
+    authUserId && roomId
+      ? { authUserId, roomId }
       : "skip"
   );
 
@@ -49,26 +55,26 @@ export function UserMenu() {
   const editUser = useMutation(api.users.edit);
   const deleteUser = useMutation(api.users.deleteUser);
 
-  if (!authUser || !globalUser) {
+  if (!authUserId || !globalUser) {
     return null;
   }
 
-  const userName = globalUser.name || authUser.preferredName || "Guest";
-  const isInRoom = !!roomUser;
+  const userName = globalUser.name || "Guest";
+  const isInRoom = !!roomMembership;
   const isSpectator = roomMembership?.isSpectator ?? false;
 
   const handleEditName = async (name: string) => {
     await editGlobalUser({
-      authUserId: authUser.authUserId,
+      authUserId,
       name,
     });
   };
 
   const handleSpectatorToggle = async (checked: boolean) => {
-    if (!roomUser) return;
+    if (!roomMembership || !roomId) return;
     await editUser({
-      userId: roomUser.id,
-      roomId: roomUser.roomId,
+      userId: roomMembership._id,
+      roomId,
       isSpectator: checked,
     });
   };
@@ -76,11 +82,9 @@ export function UserMenu() {
   const handleSignOut = async () => {
     // Only delete user completely if they are anonymous
     // Non-anonymous users keep their data for when they sign back in
-    if (authUser.isAnonymous) {
-      await deleteUser({ authUserId: authUser.authUserId });
+    if (isAnonymous) {
+      await deleteUser({ authUserId });
     }
-    // Clear local room state
-    setRoomUser(null);
     // Sign out from auth (clears session cookie)
     await authClient.signOut();
   };

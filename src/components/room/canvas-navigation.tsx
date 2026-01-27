@@ -45,6 +45,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
+import type { Id } from "@/convex/_generated/dataModel";
 import { copyTextToClipboard } from "@/utils/copy-text-to-clipboard";
 import { UserPresenceAvatars } from "./user-presence-avatars";
 
@@ -592,6 +593,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
       <RoomSettingsPanel
         roomData={roomData}
         usersWithPresence={usersWithPresence}
+        currentUserId={isDemoMode ? undefined : (currentUserId as Id<"users">)}
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         triggerRef={settingsButtonRef}

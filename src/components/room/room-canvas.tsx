@@ -19,7 +19,6 @@ import type { NodeChange, EdgeChange } from "@xyflow/react";
 
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useAuth } from "@/components/auth/auth-provider";
 import { useLatest } from "@/hooks/use-latest";
 import { CanvasNavigation } from "./canvas-navigation";
 import { DemoExplainer } from "./demo-explainer";
@@ -50,6 +49,7 @@ import {
 
 interface RoomCanvasProps {
   roomData: RoomWithRelatedData;
+  currentUserId?: Id<"users">;
   isDemoMode?: boolean;
   isEmbedded?: boolean;
 }
@@ -65,8 +65,7 @@ const nodeTypes: NodeTypes = {
   timer: TimerNode,
 } as const;
 
-function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: RoomCanvasProps): ReactElement {
-  const { roomUser } = useAuth();
+function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedded = false }: RoomCanvasProps): ReactElement {
   const [nodes, setNodes, onNodesChange] = useNodesState<CustomNodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const { fitView } = useReactFlow();
@@ -148,42 +147,42 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
   // Handle note content updates
   const handleUpdateNoteContent = useCallback(
     async (nodeId: string, content: string) => {
-      if (isDemoMode || !roomUser) return;
+      if (isDemoMode || !currentUserId) return;
       try {
         await updateNoteContentMutation({
           roomId: roomIdRef.current,
           nodeId,
           content,
-          userId: roomUser.id,
+          userId: currentUserId,
         });
       } catch (error) {
         console.error("Failed to update note content:", error);
       }
     },
-    [isDemoMode, updateNoteContentMutation, roomUser, roomIdRef]
+    [isDemoMode, updateNoteContentMutation, currentUserId, roomIdRef]
   );
 
   // Handle creating a new note for an issue
   const handleCreateNote = useCallback(
     async (issueId: Id<"issues">) => {
-      if (isDemoMode || !roomUser) return;
+      if (isDemoMode || !currentUserId) return;
       try {
         await createNoteMutation({
           roomId: roomIdRef.current,
           issueId,
-          userId: roomUser.id,
+          userId: currentUserId,
         });
       } catch (error) {
         console.error("Failed to create note:", error);
       }
     },
-    [isDemoMode, createNoteMutation, roomUser, roomIdRef]
+    [isDemoMode, createNoteMutation, currentUserId, roomIdRef]
   );
 
   // Handle note deletion request
   const handleDeleteNote = useCallback(
     (nodeId: string, hasContent: boolean) => {
-      if (isDemoMode || !roomUser) return;
+      if (isDemoMode || !currentUserId) return;
       if (hasContent) {
         // Show confirmation dialog for notes with content
         setPendingDeleteNodeId(nodeId);
@@ -192,27 +191,27 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
         deleteNoteMutation({
           roomId: roomIdRef.current,
           nodeId,
-          userId: roomUser.id,
+          userId: currentUserId,
         }).catch((error) => {
           console.error("Failed to delete note:", error);
         });
       }
     },
-    [isDemoMode, deleteNoteMutation, roomIdRef, roomUser]
+    [isDemoMode, deleteNoteMutation, roomIdRef, currentUserId]
   );
 
   // Handle confirmed deletion
   const handleConfirmDelete = useCallback(() => {
-    if (!pendingDeleteNodeId || !roomUser) return;
+    if (!pendingDeleteNodeId || !currentUserId) return;
     deleteNoteMutation({
       roomId: roomIdRef.current,
       nodeId: pendingDeleteNodeId,
-      userId: roomUser.id,
+      userId: currentUserId,
     }).catch((error) => {
       console.error("Failed to delete note:", error);
     });
     setPendingDeleteNodeId(null);
-  }, [pendingDeleteNodeId, deleteNoteMutation, roomIdRef, roomUser]);
+  }, [pendingDeleteNodeId, deleteNoteMutation, roomIdRef, currentUserId]);
 
   // Handle player deletion request (shows confirmation)
   const handleDeletePlayer = useCallback(
@@ -236,7 +235,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
 
   // Extract vote state for narrowed effect dependencies
   const userVote = roomData?.votes.find(
-    (v: SanitizedVote) => v.userId === roomUser?.id
+    (v: SanitizedVote) => v.userId === currentUserId
   );
   const hasVoted = userVote?.hasVoted;
   const voteLabel = userVote?.cardLabel;
@@ -245,7 +244,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
   // Reset selected card when game is reset
   // Narrowed dependencies to primitives to avoid unnecessary re-runs
   useEffect(() => {
-    if (!roomData || !roomUser) return;
+    if (!roomData || !currentUserId) return;
 
     // Sync local selection state with server state - intentional state sync pattern
     if (!hasVoted) {
@@ -253,19 +252,19 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
     } else if (isGameOver && voteLabel) {
       setSelectedCardValue(voteLabel);
     }
-  }, [roomUser, roomData, hasVoted, isGameOver, voteLabel]);
+  }, [currentUserId, roomData, hasVoted, isGameOver, voteLabel]);
 
   // Handle card selection
   const handleCardSelect = useCallback(
     async (cardValue: string) => {
-      if (isDemoMode || !roomUser) return;
+      if (isDemoMode || !currentUserId) return;
 
       setSelectedCardValue(cardValue);
 
       try {
         await pickCard({
           roomId: roomIdRef.current,
-          userId: roomUser.id,
+          userId: currentUserId,
           cardLabel: cardValue,
           cardValue: parseInt(cardValue) || 0,
         });
@@ -274,7 +273,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
         setSelectedCardValue(null);
       }
     },
-    [isDemoMode, pickCard, roomUser, roomIdRef]
+    [isDemoMode, pickCard, currentUserId, roomIdRef]
   );
 
   // Get room ID
@@ -284,7 +283,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
   const { nodes: layoutNodes, edges: layoutEdges, currentIssue, hasNoteForCurrentIssue } = useCanvasNodes({
     roomId,
     roomData,
-    currentUserId: roomUser?.id,
+    currentUserId,
     selectedCardValue,
     isDemoMode,
     onRevealCards: handleRevealCards,
@@ -312,18 +311,18 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
   const debouncedPositionUpdate = useMemo(
     () =>
       debounce((nodeId: string, position: { x: number; y: number }) => {
-        if (!roomUser) return;
+        if (!currentUserId) return;
 
         updateNodePosition({
           roomId: roomIdRef.current,
           nodeId,
           position,
-          userId: roomUser.id,
+          userId: currentUserId,
         }).catch((error) => {
           console.error("Failed to update node position:", error);
         });
       }, 100),
-    [roomUser, updateNodePosition, roomIdRef]
+    [currentUserId, updateNodePosition, roomIdRef]
   );
   /* eslint-enable react-hooks/refs */
 
@@ -399,7 +398,7 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
     return () => clearTimeout(timeoutId);
   }, [roomData?.users, fitView]);
 
-  if (!roomData || (!roomUser && !isDemoMode)) {
+  if (!roomData || (!currentUserId && !isDemoMode)) {
     return (
       <div className="flex items-center justify-center h-screen">
         Loading...
@@ -409,10 +408,10 @@ function RoomCanvasInner({ roomData, isDemoMode = false, isEmbedded = false }: R
 
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      {(isDemoMode || roomUser) && !(isDemoMode && isEmbedded) && (
+      {(isDemoMode || currentUserId) && !(isDemoMode && isEmbedded) && (
         <CanvasNavigation
           roomData={roomData}
-          currentUserId={roomUser?.id ?? DEMO_VIEWER_ID}
+          currentUserId={currentUserId ?? DEMO_VIEWER_ID}
           isIssuesPanelOpen={isIssuesPanelOpen}
           onIssuesPanelChange={setIsIssuesPanelOpen}
           isDemoMode={isDemoMode}

@@ -87,57 +87,49 @@ Indexed by: `by_room`, `by_user`, `by_room_user`
 
 ```
 1. User visits /room/[roomId]
-2. No BetterAuth session exists → JoinRoomDialog shown
+2. useConvexAuth() returns isAuthenticated=false → JoinRoomDialog shown
 3. User enters name and clicks "Join Room"
 4. authClient.signIn.anonymous() creates session → cookie set
 5. joinRoom mutation:
    - Creates global user record (users table)
    - Creates room membership (roomMemberships table)
-6. roomUser state set → RoomCanvas renders
+6. existingMembership query auto-updates → RoomCanvas renders
 ```
 
 ### Returning User (Same Room, Page Refresh)
 
 ```
 1. User refreshes /room/[roomId]
-2. BetterAuth session loaded from cookie
+2. useConvexAuth() validates token → isAuthenticated=true
 3. existingMembership query finds user in this room
-4. useEffect restores roomUser from membership
-5. RoomCanvas renders (no JoinRoomDialog shown)
+4. RoomCanvas renders directly (no intermediate state)
 ```
 
 ### Returning User (Different Room)
 
 ```
 1. User visits new /room/[newRoomId]
-2. BetterAuth session exists
+2. useConvexAuth() returns isAuthenticated=true
 3. existingMembership = null (not in this room)
 4. globalUser query returns their user record
 5. Auto-join triggers: joinRoom mutation with existing name
-6. RoomCanvas renders automatically
+6. existingMembership query auto-updates → RoomCanvas renders
 ```
 
 ## Auth Provider Context
 
+The auth provider uses `useConvexAuth()` for auth state (which waits for Convex to validate the BetterAuth token) and BetterAuth's `useSession()` only for extracting the `authUserId` needed for mutations.
+
 ```typescript
 interface AuthContextType {
-  authUser: AuthUser | null;    // BetterAuth session (persists)
-  roomUser: RoomUser | null;    // Current room membership (transient)
-  setRoomUser: (user: RoomUser | null) => void;
-  isLoading: boolean;           // Session loading state
-}
-
-interface AuthUser {
-  authUserId: string;           // BetterAuth ID
-  preferredName?: string;
-}
-
-interface RoomUser {
-  id: Id<"users">;              // Convex user ID
-  name: string;
-  roomId: Id<"rooms">;
+  authUserId: string | null;    // BetterAuth ID (for mutations)
+  isAnonymous: boolean;         // Whether the session is anonymous
+  isLoading: boolean;           // Auth loading state (from Convex)
+  isAuthenticated: boolean;     // Whether user is authenticated (from Convex)
 }
 ```
+
+**Important**: Per [Convex-BetterAuth docs](https://labs.convex.dev/better-auth), we use `useConvexAuth()` instead of BetterAuth's `useSession()` for auth state because BetterAuth reflects authentication before Convex validates the token.
 
 ## API Reference
 
@@ -217,17 +209,32 @@ Anonymous auth provides persistence across refreshes without requiring user regi
 The room content component carefully sequences loading states to prevent UI flicker:
 
 ```typescript
-// 1. Wait for auth session to load
+// 1. Wait for Convex auth validation
 if (authLoading) return <Loading message="Checking session" />;
 
-// 2. If no session, show join dialog immediately
-if (!authUser) return <JoinRoomDialog />;
+// 2. If not authenticated, show join dialog immediately
+if (!isAuthenticated) return <JoinRoomDialog />;
 
 // 3. Wait for membership queries
-if (!queriesLoaded || existingMembership) return <Loading message="Checking membership" />;
+if (!queriesLoaded) return <Loading message="Checking membership" />;
 
-// 4. No membership found - show join dialog
+// 4. If membership exists, show room canvas
+if (existingMembership) return <RoomCanvas currentUserId={existingMembership._id} />;
+
+// 5. No membership found - show join dialog (auto-join may trigger)
 return <JoinRoomDialog />;
 ```
 
 This prevents the JoinRoomDialog from flashing when a returning user refreshes the page.
+
+### Key Design Decision: No Client-Side Room State
+
+The refactored architecture derives room membership from Convex queries instead of maintaining client-side state:
+
+- **Before**: `roomUser` state synced via useEffect from queries
+- **After**: `existingMembership` query result used directly
+
+This simplifies the code by:
+1. Removing 3 useEffects that synchronized state
+2. Eliminating potential race conditions between state and queries
+3. Using Convex's real-time subscriptions as the single source of truth

@@ -36,6 +36,10 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     session: {
       expiresIn: 60 * 60 * 24 * 365, // 1 year
       updateAge: 60 * 60 * 24 * 7,   // refresh weekly
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Cache duration in seconds
+      },
     },
     trustedOrigins: [
       siteUrl,

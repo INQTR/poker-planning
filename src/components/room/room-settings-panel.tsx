@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/components/auth/auth-provider";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -41,6 +40,7 @@ import { formatLastSeen } from "./user-presence-avatars";
 interface RoomSettingsPanelProps {
   roomData: RoomWithRelatedData;
   usersWithPresence: UserWithPresence[];
+  currentUserId?: Id<"users">;
   isOpen: boolean;
   onClose: () => void;
   triggerRef?: React.RefObject<HTMLButtonElement | null>;
@@ -50,13 +50,13 @@ interface RoomSettingsPanelProps {
 export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   roomData,
   usersWithPresence,
+  currentUserId,
   isOpen,
   onClose,
   triggerRef,
   isDemoMode = false,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const { roomUser } = useAuth();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 
@@ -164,7 +164,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
 
   // Filter out current user and sort: online first, then by join time
   const otherUsers = usersWithPresence
-    .filter((u) => u._id !== roomUser?.id)
+    .filter((u) => u._id !== currentUserId)
     .sort((a, b) => {
       // Online users first
       if (a.isOnline !== b.isOnline) {
