@@ -19,7 +19,6 @@ import {
   Code2,
   Database,
   Palette,
-  Sparkles,
   FileDown,
   History,
   Settings,
