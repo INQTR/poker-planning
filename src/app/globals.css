@@ -194,10 +194,10 @@
 /* Custom animations for voting cards */
 @keyframes shimmer {
   0% {
-    background-position: 200% 0;
+    transform: translateX(-100%) skewX(-12deg);
   }
   100% {
-    background-position: -200% 0;
+    transform: translateX(200%) skewX(-12deg);
   }
 }
 
