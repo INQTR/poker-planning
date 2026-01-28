@@ -80,7 +80,7 @@ export function AboutContent() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative py-24 sm:py-32">
+        <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32">
           <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
               Planning poker,{" "}

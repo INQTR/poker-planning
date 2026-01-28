@@ -40,7 +40,7 @@ export default async function BlogPage() {
       <BreadcrumbSchema items={breadcrumbItems} />
       <Navbar />
       <main className="flex-1">
-        <div className="max-w-3xl mx-auto px-6 pt-28 pb-16">
+        <div className="max-w-3xl mx-auto px-6 pt-32 pb-16 sm:pt-40">
           <div className="flex items-center justify-between mb-12">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">

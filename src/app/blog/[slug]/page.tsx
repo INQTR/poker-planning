@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       <BreadcrumbSchema items={breadcrumbItems} />
       <Navbar />
       <main className="flex-1">
-        <article className="max-w-6xl mx-auto px-6 pt-28 pb-16">
+        <article className="max-w-6xl mx-auto px-6 pt-32 pb-16 sm:pt-40">
           {/* Back link */}
           <Link
             href="/blog"
