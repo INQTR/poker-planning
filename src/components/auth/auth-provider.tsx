@@ -1,62 +1,44 @@
 "use client";
 
-import { createContext, useContext, useState, useMemo, ReactNode } from "react";
-import { Id } from "@/convex/_generated/dataModel";
+import { createContext, useContext, useMemo, ReactNode } from "react";
+import { useConvexAuth } from "convex/react";
 import { authClient } from "@/lib/auth-client";
 
-// BetterAuth user - account-level identity
-interface AuthUser {
-  authUserId: string;
-  preferredName?: string;
-  isAnonymous?: boolean;
-}
-
-// Room membership record
-interface RoomUser {
-  id: Id<"users">;
-  name: string;
-  roomId: Id<"rooms">;
-}
-
 interface AuthContextType {
-  // BetterAuth account (persists across rooms)
-  authUser: AuthUser | null;
-  // Room membership (specific to current room, derived from queries)
-  roomUser: RoomUser | null;
-  setRoomUser: (user: RoomUser | null) => void;
+  // BetterAuth user ID (needed for mutations that require authUserId)
+  authUserId: string | null;
+  // Whether the user is anonymous (from BetterAuth session)
+  isAnonymous: boolean;
+  // Auth loading state (from Convex - waits for token validation)
   isLoading: boolean;
+  // Whether user is authenticated (from Convex - token validated)
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  authUser: null,
-  roomUser: null,
-  setRoomUser: () => {},
+  authUserId: null,
+  isAnonymous: false,
   isLoading: true,
+  isAuthenticated: false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data: session, isPending: sessionLoading } = authClient.useSession();
-  const [roomUser, setRoomUser] = useState<RoomUser | null>(null);
+  // Use Convex's auth state - this waits for token validation
+  // Per docs: "Better Auth will reflect an authenticated user before Convex does"
+  const { isAuthenticated, isLoading: convexAuthLoading } = useConvexAuth();
 
-  // Memoize authUser to prevent object recreation on every render
-  const authUser = useMemo<AuthUser | null>(
-    () =>
-      session?.user
-        ? {
-            authUserId: session.user.id,
-            preferredName: session.user.name ?? undefined,
-            isAnonymous: session.user.isAnonymous ?? false,
-          }
-        : null,
-    [session],
-  );
-
-  const isLoading = sessionLoading;
+  // Still need BetterAuth session for authUserId (used in mutations)
+  const { data: session } = authClient.useSession();
 
   // Memoize context value to prevent cascading re-renders in consumers
   const value = useMemo(
-    () => ({ authUser, roomUser, setRoomUser, isLoading }),
-    [authUser, roomUser, setRoomUser, isLoading],
+    () => ({
+      authUserId: session?.user?.id ?? null,
+      isAnonymous: session?.user?.isAnonymous ?? false,
+      isLoading: convexAuthLoading,
+      isAuthenticated,
+    }),
+    [session, convexAuthLoading, isAuthenticated],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

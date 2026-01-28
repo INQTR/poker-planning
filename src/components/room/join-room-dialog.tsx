@@ -18,7 +18,7 @@ interface JoinRoomDialogProps {
 }
 
 export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
-  const { setRoomUser, authUser } = useAuth();
+  const { authUserId } = useAuth();
   const joinRoom = useMutation(api.users.join);
 
   // Start with empty name for first-time users
@@ -35,7 +35,7 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
     setIsJoining(true);
     try {
       // Create anonymous session if one doesn't exist
-      let currentAuthUserId = authUser?.authUserId;
+      let currentAuthUserId = authUserId;
       if (!currentAuthUserId) {
         const { data } = await authClient.signIn.anonymous();
         if (!data?.user?.id) {
@@ -45,20 +45,15 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
         currentAuthUserId = data.user.id;
       }
 
-      const userId = await joinRoom({
+      await joinRoom({
         roomId,
         name: userName,
         isSpectator,
         authUserId: currentAuthUserId,
       });
 
-      setRoomUser({
-        id: userId,
-        name: userName,
-        roomId,
-      });
-
-      // Page will automatically re-render and show the room
+      // No need to set state - existingMembership query will auto-update
+      // and room-content.tsx will re-render with the new membership
     } catch (error) {
       console.error("Failed to join room:", error);
       toast.error("Failed to join room");

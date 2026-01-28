@@ -6,7 +6,7 @@ import { UserMenu } from "@/components/user-menu/user-menu";
 import { Button } from "@/components/ui/button";
 
 export function NavbarActions() {
-  const { authUser, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Show nothing while loading to prevent flash
   if (isLoading) {
@@ -14,7 +14,7 @@ export function NavbarActions() {
   }
 
   // Show UserMenu if authenticated
-  if (authUser) {
+  if (isAuthenticated) {
     return <UserMenu />;
   }
 

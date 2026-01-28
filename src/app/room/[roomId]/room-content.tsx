@@ -13,7 +13,7 @@ import { toast } from "@/lib/toast";
 export function RoomContent() {
   const params = useParams();
   const roomId = params.roomId as Id<"rooms">;
-  const { roomUser, setRoomUser, authUser, isLoading: authLoading } = useAuth();
+  const { authUserId, isLoading: authLoading, isAuthenticated } = useAuth();
   const roomData = useQuery(api.rooms.get, { roomId });
   const joinRoom = useMutation(api.users.join);
   const [isAutoJoining, setIsAutoJoining] = useState(false);
@@ -22,35 +22,30 @@ export function RoomContent() {
   // Query for existing membership by authUserId (for this room)
   const existingMembership = useQuery(
     api.users.getByAuthUserId,
-    authUser?.authUserId ? { roomId, authUserId: authUser.authUserId } : "skip"
+    authUserId ? { roomId, authUserId } : "skip"
   );
 
   // Query for global user (to check if they've joined any room before)
   const globalUser = useQuery(
     api.users.getGlobalUser,
-    authUser?.authUserId ? { authUserId: authUser.authUserId } : "skip"
+    authUserId ? { authUserId } : "skip"
   );
 
-  // Check if user exists in room's user list
-  const userExistsInRoom = roomData?.users.some((u) => u._id === roomUser?.id);
-  const isInRoom = roomUser?.roomId === roomId && userExistsInRoom;
+  // User is in room if they have a membership in the database
+  const isInRoom = existingMembership !== null && existingMembership !== undefined;
 
   // Auto-join callback
   const performAutoJoin = useCallback(async () => {
-    if (!globalUser || !authUser?.authUserId) return;
+    if (!globalUser || !authUserId) return;
 
     setIsAutoJoining(true);
     try {
-      const userId = await joinRoom({
+      await joinRoom({
         roomId,
         name: globalUser.name,
-        authUserId: authUser.authUserId,
+        authUserId,
       });
-      setRoomUser({
-        id: userId,
-        name: globalUser.name,
-        roomId,
-      });
+      // No need to set state - existingMembership query will auto-update
     } catch (error) {
       console.error("Auto-join failed:", error);
       toast.error("Failed to join room automatically");
@@ -58,18 +53,7 @@ export function RoomContent() {
     } finally {
       setIsAutoJoining(false);
     }
-  }, [globalUser, authUser, roomId, joinRoom, setRoomUser]);
-
-  // Auto-restore membership if authUserId has existing membership but roomUser is not set
-  useEffect(() => {
-    if (!roomUser && existingMembership && roomData) {
-      setRoomUser({
-        id: existingMembership._id,
-        name: existingMembership.name,
-        roomId,
-      });
-    }
-  }, [roomUser, existingMembership, roomData, setRoomUser, roomId]);
+  }, [globalUser, authUserId, roomId, joinRoom]);
 
   // Auto-join if global user exists but no membership in this room
   useEffect(() => {
@@ -77,8 +61,8 @@ export function RoomContent() {
       !autoJoinAttemptedRef.current &&
       roomData?.room &&
       globalUser &&
-      existingMembership === null && // No membership in this room
-      authUser?.authUserId;
+      existingMembership === null && // No membership in this room (query returned null, not undefined)
+      authUserId;
 
     if (shouldAutoJoin) {
       autoJoinAttemptedRef.current = true;
@@ -86,14 +70,7 @@ export function RoomContent() {
         autoJoinAttemptedRef.current = false;
       });
     }
-  }, [roomData, globalUser, existingMembership, authUser, performAutoJoin]);
-
-  // Clear stale session if roomUser is set but they're not actually in the database
-  useEffect(() => {
-    if (roomUser?.roomId === roomId && roomData && !roomData.users.some((u) => u._id === roomUser.id)) {
-      setRoomUser(null);
-    }
-  }, [roomUser, roomId, roomData, setRoomUser]);
+  }, [roomData, globalUser, existingMembership, authUserId, performAutoJoin]);
 
   if (!roomData) {
     return (
@@ -129,41 +106,42 @@ export function RoomContent() {
     );
   }
 
-  if (!isInRoom) {
-    // Wait for auth state to be determined before deciding what to show
-    if (authLoading) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Loading...</h2>
-            <p className="text-muted-foreground">Checking session</p>
-          </div>
+  // Wait for auth state to be determined before deciding what to show
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Loading...</h2>
+          <p className="text-muted-foreground">Checking session</p>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
-    // If no session exists, show JoinRoomDialog directly (session will be created on join)
-    if (!authUser) {
-      return <JoinRoomDialog roomId={roomId} roomName={roomData.room.name} />;
-    }
-
-    // If session exists, wait for queries to determine auto-join
-    const queriesLoaded = existingMembership !== undefined && globalUser !== undefined;
-
-    // If existing membership found, show loading while useEffect restores roomUser
-    if (!queriesLoaded || existingMembership) {
-      return (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2">Loading...</h2>
-            <p className="text-muted-foreground">Checking membership</p>
-          </div>
-        </div>
-      );
-    }
-
+  // If not authenticated, show JoinRoomDialog (session will be created on join)
+  if (!isAuthenticated) {
     return <JoinRoomDialog roomId={roomId} roomName={roomData.room.name} />;
   }
 
-  return <RoomCanvas roomData={roomData} />;
+  // If authenticated, wait for queries to load
+  const queriesLoaded = existingMembership !== undefined && globalUser !== undefined;
+
+  if (!queriesLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-2">Loading...</h2>
+          <p className="text-muted-foreground">Checking membership</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user has membership, show the room canvas
+  if (isInRoom) {
+    return <RoomCanvas roomData={roomData} currentUserId={existingMembership._id} />;
+  }
+
+  // No membership - show join dialog (auto-join may be in progress if globalUser exists)
+  return <JoinRoomDialog roomId={roomId} roomName={roomData.room.name} />;
 }
