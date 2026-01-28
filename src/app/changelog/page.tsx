@@ -85,7 +85,7 @@ export default async function ChangelogPage() {
       <div className="relative z-10">
         <Navbar />
 
-        <main className="pt-24 pb-16 sm:pt-28 sm:pb-20">
+        <main className="pt-32 pb-16 sm:pt-40 sm:pb-20">
           <div className="mx-auto max-w-3xl px-6 lg:px-8">
             <header className="mb-16">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">

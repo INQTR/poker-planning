@@ -19,7 +19,6 @@ import {
   Code2,
   Database,
   Palette,
-  Sparkles,
   FileDown,
   History,
   Settings,
@@ -45,7 +44,8 @@ const coreFeatures = [
   },
   {
     name: "Multiple Voting Scales",
-    description: "Fibonacci, Standard, T-Shirt sizes, or create your own custom scale",
+    description:
+      "Fibonacci, Standard, T-Shirt sizes, or create your own custom scale",
     icon: Layers,
     gradient: "from-amber-500 to-orange-600",
   },
@@ -64,7 +64,8 @@ const coreFeatures = [
   },
   {
     name: "Issues Management",
-    description: "Create, edit, and track issues with CSV export and vote statistics",
+    description:
+      "Create, edit, and track issues with CSV export and vote statistics",
     icon: FileText,
     gradient: "from-sky-500 to-blue-600",
   },
@@ -82,7 +83,8 @@ const coreFeatures = [
   },
   {
     name: "Synchronized Timer",
-    description: "Server-synced countdown with start, pause, and reset controls",
+    description:
+      "Server-synced countdown with start, pause, and reset controls",
     icon: Timer,
     gradient: "from-fuchsia-500 to-purple-600",
   },
@@ -186,16 +188,9 @@ export function FeaturesContent() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative pt-28 pb-16 sm:pt-32 sm:pb-24">
+        <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-24">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
-              <div className="mb-8 flex justify-center">
-                <div className="relative flex items-center gap-2 rounded-full bg-primary/10 dark:bg-primary/20 px-4 py-2 text-sm font-medium text-primary ring-1 ring-primary/20">
-                  <Sparkles className="h-4 w-4" />
-                  <span>Everything you need for sprint planning</span>
-                </div>
-              </div>
-
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl lg:text-7xl">
                 Powerful features,
                 <span className="block mt-2 bg-gradient-to-r from-primary via-purple-500 to-violet-600 bg-clip-text text-transparent">
@@ -205,7 +200,8 @@ export function FeaturesContent() {
 
               <p className="mt-8 text-lg leading-8 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 From real-time collaboration to advanced analytics, AgileKit has
-                everything your team needs. Core features free, no sign-up required.
+                everything your team needs. Core features free, no sign-up
+                required.
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -282,14 +278,14 @@ export function FeaturesContent() {
                   className={cn(
                     "group relative overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 p-8 ring-1 ring-gray-200 dark:ring-zinc-800 transition-all duration-300 hover:ring-primary/50",
                     index === 0 && "sm:col-span-2 sm:row-span-2",
-                    index === 2 && "lg:col-span-2"
+                    index === 2 && "lg:col-span-2",
                   )}
                 >
                   {/* Gradient background on hover */}
                   <div
                     className={cn(
                       "absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 bg-gradient-to-br",
-                      feature.gradient
+                      feature.gradient,
                     )}
                   />
 
@@ -297,7 +293,7 @@ export function FeaturesContent() {
                     <div
                       className={cn(
                         "inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br mb-6",
-                        feature.gradient
+                        feature.gradient,
                       )}
                     >
                       <feature.icon className="h-6 w-6 text-white" />
@@ -306,7 +302,7 @@ export function FeaturesContent() {
                     <h3
                       className={cn(
                         "font-semibold text-gray-900 dark:text-white mb-2",
-                        index === 0 ? "text-2xl" : "text-lg"
+                        index === 0 ? "text-2xl" : "text-lg",
                       )}
                     >
                       {feature.name}
@@ -314,7 +310,7 @@ export function FeaturesContent() {
                     <p
                       className={cn(
                         "text-gray-600 dark:text-gray-400",
-                        index === 0 ? "text-base" : "text-sm"
+                        index === 0 ? "text-base" : "text-sm",
                       )}
                     >
                       {feature.description}
@@ -623,8 +619,8 @@ export function FeaturesContent() {
                 </span>
               </h2>
               <p className="mt-6 text-lg text-gray-300">
-                Join teams worldwide using AgileKit. Start your first session
-                in seconds.
+                Join teams worldwide using AgileKit. Start your first session in
+                seconds.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
