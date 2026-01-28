@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.1.1](https://github.com/INQTR/poker-planning/compare/agilekit-v2.1.0...agilekit-v2.1.1) (2026-01-28)
+
+
+### Bug Fixes
+
+* navbar layout stability and page spacing improvements ([#136](https://github.com/INQTR/poker-planning/issues/136)) ([05ddeca](https://github.com/INQTR/poker-planning/commit/05ddeca3df612c7b22468599a7d294c0574bdae6))
+
+
+### Documentation
+
+* add agile estimation techniques comparison article ([#131](https://github.com/INQTR/poker-planning/issues/131)) ([ef6620a](https://github.com/INQTR/poker-planning/commit/ef6620a11a05231891ca8e228af312bfa8e9621b))
+
+
+### Miscellaneous
+
+* **deps:** bump hono from 4.11.4 to 4.11.7 ([#130](https://github.com/INQTR/poker-planning/issues/130)) ([83946bd](https://github.com/INQTR/poker-planning/commit/83946bd204091de8ab1dd0dd7d9b8b33c684c1bb))
+* **deps:** bump next from 16.1.4 to 16.1.6 ([#134](https://github.com/INQTR/poker-planning/issues/134)) ([1f8c5b4](https://github.com/INQTR/poker-planning/commit/1f8c5b48fae28d6c87ce81d8110dfe8dc5595885))
+
+
+### Code Refactoring
+
+* **auth:** use useConvexAuth and remove roomUser state ([#135](https://github.com/INQTR/poker-planning/issues/135)) ([8cd329b](https://github.com/INQTR/poker-planning/commit/8cd329b5165fa86ecf8a2eb8204aa9849a08f98b))
+
 ## [2.1.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.0.0...agilekit-v2.1.0) (2026-01-26)
 
 
