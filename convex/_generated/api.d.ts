@@ -9,6 +9,7 @@
  */
 
 import type * as admin from "../admin.js";
+import type * as analytics from "../analytics.js";
 import type * as auth from "../auth.js";
 import type * as canvas from "../canvas.js";
 import type * as cleanup from "../cleanup.js";
@@ -18,6 +19,7 @@ import type * as demo from "../demo.js";
 import type * as http from "../http.js";
 import type * as issues from "../issues.js";
 import type * as maintenance from "../maintenance.js";
+import type * as model_analytics from "../model/analytics.js";
 import type * as model_canvas from "../model/canvas.js";
 import type * as model_cleanup from "../model/cleanup.js";
 import type * as model_demo from "../model/demo.js";
@@ -41,6 +43,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
+  analytics: typeof analytics;
   auth: typeof auth;
   canvas: typeof canvas;
   cleanup: typeof cleanup;
@@ -50,6 +53,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   issues: typeof issues;
   maintenance: typeof maintenance;
+  "model/analytics": typeof model_analytics;
   "model/canvas": typeof model_canvas;
   "model/cleanup": typeof model_cleanup;
   "model/demo": typeof model_demo;
