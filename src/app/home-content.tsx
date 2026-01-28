@@ -9,6 +9,7 @@ import {
   CallToAction,
   AppPreview,
   FeaturesSection,
+  PricingSection,
 } from "@/components/homepage";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -164,6 +165,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
         <HowItWorks />
         <AppPreview />
         <FeaturesSection />
+        <PricingSection />
         <UseCases />
         {/* TODO: we need to get real testimonials from real users */}
         {/* <Testimonials /> */}

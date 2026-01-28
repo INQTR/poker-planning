@@ -6,3 +6,4 @@ export * from "./call-to-action";
 export * from "./app-preview";
 export * from "./features-section";
 export * from "./testimonials";
+export * from "./pricing-section";
