@@ -1,5 +1,3 @@
-"use client";
-
 import { Users, Vote, ChartBar, Zap, MoveRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,7 +36,7 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="relative isolate overflow-hidden bg-white dark:bg-black py-24 sm:py-32"
+      className="relative isolate overflow-hidden bg-background py-24 sm:py-32"
     >
       {/* Subtle radial gradient backdrop */}
       <div className="absolute inset-0 -z-10">
@@ -51,10 +49,10 @@ export function HowItWorks() {
           <p className="text-sm font-medium tracking-[0.2em] uppercase text-primary mb-4">
             How It Works
           </p>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
             How Planning Poker Works
           </h2>
-          <p className="mt-5 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+          <p className="mt-5 text-lg text-muted-foreground max-w-xl mx-auto">
             Transform your sprint planning in minutes
           </p>
         </div>
@@ -63,7 +61,7 @@ export function HowItWorks() {
         <div className="relative">
           {/* Horizontal connector line - desktop only */}
           <div className="hidden lg:block absolute top-[3.25rem] left-[calc(12.5%+1rem)] right-[calc(12.5%+1rem)] h-px">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-300 dark:via-zinc-700 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-border to-transparent" />
             {/* Animated gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/50 to-transparent animate-[shimmer_3s_ease-in-out_infinite] opacity-0 group-hover:opacity-100" />
           </div>
@@ -83,27 +81,27 @@ export function HowItWorks() {
                   {/* Step Number + Icon Container */}
                   <div className="relative mb-6">
                     {/* Outer ring */}
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 dark:from-primary/30 dark:to-primary/10 scale-[1.4] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 scale-[1.4] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-sm" />
 
                     {/* Main circle */}
                     <div
                       className={cn(
                         "relative w-[6.5rem] h-[6.5rem] rounded-full",
-                        "bg-gray-50 dark:bg-zinc-900/80",
-                        "border border-gray-200 dark:border-zinc-800",
+                        "bg-muted",
+                        "border border-border",
                         "flex items-center justify-center",
                         "transition-all duration-500",
-                        "group-hover:border-primary/50 group-hover:bg-primary/5 dark:group-hover:bg-primary/10"
+                        "group-hover:border-primary/50 group-hover:bg-primary/5"
                       )}
                     >
                       {/* Step number - positioned top-right */}
-                      <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 flex items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400 group-hover:border-primary/50 group-hover:text-primary transition-all duration-300">
+                      <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-background border border-border flex items-center justify-center text-sm font-semibold text-muted-foreground group-hover:border-primary/50 group-hover:text-primary transition-all duration-300">
                         {step.id}
                       </span>
 
                       {/* Icon */}
                       <step.icon
-                        className="w-8 h-8 text-gray-600 dark:text-gray-400 group-hover:text-primary transition-colors duration-300"
+                        className="w-8 h-8 text-muted-foreground group-hover:text-primary transition-colors duration-300"
                         strokeWidth={1.5}
                       />
                     </div>
@@ -111,16 +109,16 @@ export function HowItWorks() {
 
                   {/* Arrow connector for mobile/tablet - between cards */}
                   {index < steps.length - 1 && (
-                    <div className="lg:hidden absolute -bottom-4 left-1/2 -translate-x-1/2 text-gray-300 dark:text-zinc-700">
+                    <div className="lg:hidden absolute -bottom-4 left-1/2 -translate-x-1/2 text-border">
                       <MoveRight className="w-5 h-5 rotate-90 md:rotate-0" />
                     </div>
                   )}
 
                   {/* Content */}
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors duration-300">
+                  <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-500 leading-relaxed max-w-[220px]">
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[220px]">
                     {step.description}
                   </p>
                 </div>

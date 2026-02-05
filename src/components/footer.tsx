@@ -2,6 +2,60 @@ import Link from "next/link";
 import Image from "next/image";
 import { SVGProps } from "react";
 
+interface NavItem {
+  name: string;
+  href: string;
+}
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const className =
+    "text-sm leading-6 text-muted-foreground hover:text-foreground transition-colors";
+
+  if (href.startsWith("http")) {
+    return (
+      <a
+        href={href}
+        className={className}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    );
+  }
+
+  if (href.startsWith("/#")) {
+    return (
+      <a href={href} className={`${className} cursor-pointer`}>
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+}
+
+function FooterNavSection({ title, items }: { title: string; items: NavItem[] }) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold leading-6 text-foreground">
+        {title}
+      </h3>
+      <ul className="mt-6 space-y-4">
+        {items.map((item) => (
+          <li key={item.name}>
+            <FooterLink href={item.href}>{item.name}</FooterLink>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 const navigation = {
   product: [
     { name: "Features", href: "/features" },
@@ -57,7 +111,7 @@ export const Footer = () => {
   return (
     <footer
       aria-labelledby="footer-heading"
-      className="bg-gray-50 dark:bg-black border-t border-gray-200 dark:border-zinc-900"
+      className="bg-muted border-t border-border"
     >
       <h2 id="footer-heading" className="sr-only">
         Footer
@@ -74,11 +128,11 @@ export const Footer = () => {
                 className="mr-2"
                 aria-hidden="true"
               />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
+              <span className="text-xl font-bold text-foreground">
                 AgileKit
               </span>
             </Link>
-            <p className="text-sm leading-6 text-gray-600 dark:text-gray-300">
+            <p className="text-sm leading-6 text-muted-foreground">
               The free, open-source planning poker tool for Agile teams. Improve
               your sprint planning and estimation accuracy.
             </p>
@@ -87,7 +141,7 @@ export const Footer = () => {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -99,102 +153,16 @@ export const Footer = () => {
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                  Product
-                </h3>
-                <ul className="mt-6 space-y-4">
-                  {navigation.product.map((item) => (
-                    <li key={item.name}>
-                      {item.href.startsWith("http") ? (
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {item.name}
-                        </a>
-                      ) : item.href.startsWith("/#") ? (
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white cursor-pointer"
-                        >
-                          {item.name}
-                        </a>
-                      ) : (
-                        <Link
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                        >
-                          {item.name}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <FooterNavSection title="Product" items={navigation.product} />
               <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                  Company
-                </h3>
-                <ul className="mt-6 space-y-4">
-                  {navigation.company.map((item) => (
-                    <li key={item.name}>
-                      {item.href.startsWith("http") ? (
-                        <a
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {item.name}
-                        </a>
-                      ) : (
-                        <Link
-                          href={item.href}
-                          className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                        >
-                          {item.name}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                <FooterNavSection title="Company" items={navigation.company} />
               </div>
             </div>
-            <div>
-              <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">
-                Legal
-              </h3>
-              <ul className="mt-6 space-y-4">
-                {navigation.legal.map((item) => (
-                  <li key={item.name}>
-                    {item.href.startsWith("http") ? (
-                      <a
-                        href={item.href}
-                        className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {item.name}
-                      </a>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className="text-sm leading-6 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                      >
-                        {item.name}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <FooterNavSection title="Legal" items={navigation.legal} />
           </div>
         </div>
-        <div className="mt-16 border-t border-gray-900/10 dark:border-gray-700 pt-8 sm:mt-20 lg:mt-24">
-          <p className="text-xs leading-5 text-gray-500 dark:text-gray-400">
+        <div className="mt-16 border-t border-border pt-8 sm:mt-20 lg:mt-24">
+          <p className="text-xs leading-5 text-muted-foreground">
             &copy; {new Date().getFullYear()} AgileKit. Open source
             under MIT License. Made with ❤️ by the community.
           </p>

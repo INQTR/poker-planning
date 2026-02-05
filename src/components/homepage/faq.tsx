@@ -56,17 +56,17 @@ const faqs = [
 
 export function FAQ() {
   return (
-    <div id="faq" className="bg-white dark:bg-black">
+    <div id="faq" className="bg-background">
       <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
         <div className="mx-auto max-w-4xl">
           <div className="text-center">
-            <p className="text-base font-semibold leading-7 text-gray-900 dark:text-gray-100">
+            <p className="text-base font-semibold leading-7 text-foreground">
               FAQs
             </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Planning Poker FAQ
             </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-muted-foreground">
               Everything you need to know about planning poker and our tool
             </p>
           </div>
@@ -75,22 +75,22 @@ export function FAQ() {
               <AccordionItem
                 key={faq.question}
                 value={`item-${index}`}
-                className="border-gray-200 dark:border-zinc-800"
+                className="border-border"
               >
-                <AccordionTrigger className="text-base font-semibold leading-7 text-gray-900 dark:text-white hover:no-underline">
+                <AccordionTrigger className="text-base font-semibold leading-7 text-foreground hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-base leading-7 text-gray-600 dark:text-gray-300">
+                <AccordionContent className="text-base leading-7 text-muted-foreground">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
           <div className="mt-16 text-center">
-            <p className="text-base font-semibold text-gray-900 dark:text-white">
+            <p className="text-base font-semibold text-foreground">
               Still have questions?
             </p>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+            <p className="mt-2 text-sm text-muted-foreground">
               Learn more about our{" "}
               <Link
                 href="/features"

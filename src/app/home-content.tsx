@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import {
@@ -10,6 +8,7 @@ import {
   AppPreview,
   FeaturesSection,
 } from "@/components/homepage";
+import { GradientBlob } from "@/components/homepage/gradient-blob";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
@@ -24,10 +23,10 @@ interface HomeContentProps {
 
 export function HomeContent({ versionInfo }: HomeContentProps) {
   return (
-    <div className="bg-white dark:bg-black">
+    <div className="bg-background">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-white px-4 py-2 rounded-md"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-primary-foreground px-4 py-2 rounded-md"
       >
         Skip to main content
       </a>
@@ -36,12 +35,12 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
 
       <main
         id="main-content"
-        className="relative isolate overflow-hidden bg-white dark:bg-black"
+        className="relative isolate overflow-hidden bg-background"
       >
         {/* Background gradient effects */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <svg
-            className="absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_center,white,transparent)]"
+            className="absolute inset-0 h-full w-full stroke-border [mask-image:radial-gradient(100%_100%_at_top_center,white,transparent)]"
             aria-hidden="true"
           >
             <defs>
@@ -67,25 +66,13 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
             className="absolute inset-x-0 -top-20 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-40"
             aria-hidden="true"
           >
-            <div
-              className="relative left-[calc(50%+10rem)] aspect-1155/678 w-6xl -translate-x-1/2 rotate-30 bg-linear-to-tr from-primary to-purple-600 opacity-25 sm:left-[calc(50%+5rem)] sm:w-360"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
+            <GradientBlob className="relative left-[calc(50%+10rem)] w-6xl -translate-x-1/2 rotate-30 sm:left-[calc(50%+5rem)] sm:w-360" />
           </div>
           <div
             className="absolute inset-x-0 top-[calc(50%-15rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(50%-25rem)]"
             aria-hidden="true"
           >
-            <div
-              className="relative left-[calc(50%+25rem)] aspect-1155/678 w-6xl -translate-x-1/2 bg-linear-to-tr from-primary to-purple-600 opacity-25 sm:left-[calc(50%+40rem)] sm:w-360"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
+            <GradientBlob className="relative left-[calc(50%+25rem)] w-6xl -translate-x-1/2 sm:left-[calc(50%+40rem)] sm:w-360" />
           </div>
         </div>
 
@@ -98,19 +85,19 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                   href="/changelog"
                   className="inline-flex items-center gap-2 mb-4 text-sm transition-opacity hover:opacity-80"
                 >
-                  <span className="rounded-full bg-primary/10 dark:bg-primary/20 px-2.5 py-0.5 text-primary font-medium">
+                  <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-primary font-medium">
                     v{versionInfo.version}
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400">
+                  <span className="text-muted-foreground">
                     {versionInfo.relativeTime}
                   </span>
                 </Link>
               )}
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
                 Free Planning Poker Online
               </h1>
 
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 lg:max-w-xl">
+              <p className="mt-6 text-lg leading-8 text-muted-foreground lg:max-w-xl">
                 Join thousands of Scrum teams using our intuitive platform for
                 sprint planning and story point estimation. Perfect for remote
                 teams. No sign-up, no fees.
@@ -120,7 +107,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                 <Link
                   href="/room/new"
                   data-testid="hero-start-button"
-                  className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Start New Game
@@ -133,7 +120,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                 <Link
                   href="/demo"
                   data-testid="hero-demo-link"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-zinc-950 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:hover:bg-zinc-900 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-muted px-8 py-4 text-base font-semibold text-foreground backdrop-blur-sm transition-all duration-200 hover:bg-accent hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   <Play className="h-5 w-5" />
                   Try Interactive Demo
@@ -147,7 +134,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                 {/* Demo iframe */}
                 <iframe
                   src="/demo?embed=true"
-                  className="w-full h-[500px] lg:h-[700px] border-0 bg-white dark:bg-black"
+                  className="w-full h-[500px] lg:h-[700px] border-0 bg-background"
                   title="Live Planning Poker Demo"
                   sandbox="allow-scripts allow-same-origin"
                 />
@@ -159,7 +146,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
         </div>
 
         {/* Bottom gradient fade */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-white dark:from-black to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-background to-transparent" />
 
         <HowItWorks />
         <AppPreview />

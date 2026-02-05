@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import Image from "next/image";
+import { GradientBlob } from "@/components/homepage/gradient-blob";
 
 interface Author {
   name: string;
@@ -144,58 +145,46 @@ const testimonials: Testimonial[][][] = [
 
 export function Testimonials() {
   return (
-    <div className="relative isolate bg-white dark:bg-gray-900 py-24 sm:py-32 lg:py-40">
+    <div className="relative isolate bg-background py-24 sm:py-32 lg:py-40">
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-1/2 -z-10 -translate-y-1/2 transform-gpu overflow-hidden opacity-30 blur-3xl"
       >
-        <div
-          className="ml-[max(50%,38rem)] aspect-[1313/771] w-[82.0625rem] bg-gradient-to-tr from-primary to-purple-600"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        />
+        <GradientBlob className="ml-[max(50%,38rem)] w-[82.0625rem] aspect-[1313/771]" />
       </div>
       <div
         aria-hidden="true"
         className="absolute inset-x-0 top-0 -z-10 flex transform-gpu overflow-hidden pt-32 opacity-25 blur-3xl sm:pt-40 xl:justify-end"
       >
-        <div
-          className="ml-[-22rem] aspect-[1313/771] w-[82.0625rem] flex-none origin-top-right rotate-[30deg] bg-gradient-to-tr from-primary to-purple-600 xl:ml-0 xl:mr-[calc(50%-12rem)]"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        />
+        <GradientBlob className="ml-[-22rem] w-[82.0625rem] aspect-[1313/771] flex-none origin-top-right rotate-[30deg] xl:ml-0 xl:mr-[calc(50%-12rem)]" />
       </div>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-base font-semibold leading-7 text-primary">
             Testimonials
           </h2>
-          <p className="mt-2 text-4xl font-semibold tracking-tight text-balance text-gray-900 dark:text-white sm:text-5xl">
+          <p className="mt-2 text-4xl font-semibold tracking-tight text-balance text-foreground sm:text-5xl">
             Loved by agile teams worldwide
           </p>
         </div>
-        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 grid-rows-1 gap-8 text-sm leading-6 text-gray-900 dark:text-gray-100 sm:mt-20 sm:grid-cols-2 xl:mx-0 xl:max-w-none xl:grid-flow-col xl:grid-cols-4">
-          <figure className="rounded-2xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-100/10 sm:col-span-2 xl:col-start-2 xl:row-end-1">
-            <blockquote className="p-6 text-lg font-semibold tracking-tight text-gray-900 dark:text-white sm:p-12 sm:text-xl sm:leading-8">
+        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 grid-rows-1 gap-8 text-sm leading-6 text-foreground sm:mt-20 sm:grid-cols-2 xl:mx-0 xl:max-w-none xl:grid-flow-col xl:grid-cols-4">
+          <figure className="rounded-2xl bg-card shadow-lg ring-1 ring-border sm:col-span-2 xl:col-start-2 xl:row-end-1">
+            <blockquote className="p-6 text-lg font-semibold tracking-tight text-foreground sm:p-12 sm:text-xl sm:leading-8">
               <p>{`"${featuredTestimonial.body}"`}</p>
             </blockquote>
-            <figcaption className="flex flex-wrap items-center gap-x-4 gap-y-4 border-t border-gray-900/10 dark:border-gray-100/10 px-6 py-4 sm:flex-nowrap">
+            <figcaption className="flex flex-wrap items-center gap-x-4 gap-y-4 border-t border-border px-6 py-4 sm:flex-nowrap">
               <Image
                 alt={featuredTestimonial.author.name}
                 src={featuredTestimonial.author.imageUrl}
                 width={40}
                 height={40}
-                className="h-10 w-10 flex-none rounded-full bg-gray-50"
+                className="h-10 w-10 flex-none rounded-full bg-muted"
               />
               <div className="flex-auto">
-                <div className="font-semibold text-gray-900 dark:text-white">
+                <div className="font-semibold text-foreground">
                   {featuredTestimonial.author.name}
                 </div>
-                <div className="text-gray-600 dark:text-gray-400">{`@${featuredTestimonial.author.handle}`}</div>
+                <div className="text-muted-foreground">{`@${featuredTestimonial.author.handle}`}</div>
               </div>
               {featuredTestimonial.author.company && (
                 <div className="flex items-center gap-1">
@@ -228,9 +217,9 @@ export function Testimonials() {
                   {column.map((testimonial) => (
                     <figure
                       key={testimonial.author.handle}
-                      className="rounded-2xl bg-white dark:bg-gray-800 p-6 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-100/10"
+                      className="rounded-2xl bg-card p-6 shadow-lg ring-1 ring-border"
                     >
-                      <blockquote className="text-gray-900 dark:text-gray-100">
+                      <blockquote className="text-foreground">
                         <p>{`"${testimonial.body}"`}</p>
                       </blockquote>
                       <figcaption className="mt-6 flex items-center gap-x-4">
@@ -239,13 +228,13 @@ export function Testimonials() {
                           src={testimonial.author.imageUrl}
                           width={40}
                           height={40}
-                          className="h-10 w-10 rounded-full bg-gray-50"
+                          className="h-10 w-10 rounded-full bg-muted"
                         />
                         <div>
-                          <div className="font-semibold text-gray-900 dark:text-white">
+                          <div className="font-semibold text-foreground">
                             {testimonial.author.name}
                           </div>
-                          <div className="text-gray-600 dark:text-gray-400">{`@${testimonial.author.handle}`}</div>
+                          <div className="text-muted-foreground">{`@${testimonial.author.handle}`}</div>
                         </div>
                       </figcaption>
                     </figure>

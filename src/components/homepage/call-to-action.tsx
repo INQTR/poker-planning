@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 export const CallToAction = () => {
   return (
-    <div className="relative isolate overflow-hidden bg-gray-900 dark:bg-black">
+    <div className="relative isolate overflow-hidden bg-gray-900 dark:bg-background">
       {/* Background gradient effects */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <svg
@@ -95,7 +95,7 @@ export const CallToAction = () => {
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/room/new"
-              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Start Planning Now
@@ -118,7 +118,7 @@ export const CallToAction = () => {
       </div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-gray-900 dark:from-black to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-gray-900 dark:from-background to-transparent" />
     </div>
   );
 };
