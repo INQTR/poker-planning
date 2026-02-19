@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.2](https://github.com/INQTR/poker-planning/compare/agilekit-v2.1.1...agilekit-v2.1.2) (2026-02-19)
+
+
+### Miscellaneous
+
+* **deps:** bump @isaacs/brace-expansion from 5.0.0 to 5.0.1 ([#138](https://github.com/INQTR/poker-planning/issues/138)) ([7c71eb3](https://github.com/INQTR/poker-planning/commit/7c71eb3dc343b6b8cbab26dad306f239d04a344d))
+* **deps:** bump @modelcontextprotocol/sdk from 1.25.2 to 1.26.0 ([#140](https://github.com/INQTR/poker-planning/issues/140)) ([cdc0297](https://github.com/INQTR/poker-planning/commit/cdc02977b8296cc2af4a5b86a23fcbc1a2baefb2))
+* **deps:** bump qs from 6.14.1 to 6.14.2 ([#141](https://github.com/INQTR/poker-planning/issues/141)) ([05cb8ba](https://github.com/INQTR/poker-planning/commit/05cb8ba7e825c15001b6aa9912ce9f759133d296))
+
 ## [2.1.1](https://github.com/INQTR/poker-planning/compare/agilekit-v2.1.0...agilekit-v2.1.1) (2026-01-28)
 
 
