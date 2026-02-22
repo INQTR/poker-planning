@@ -3,122 +3,39 @@ import { ArrowRight } from "lucide-react";
 
 export const CallToAction = () => {
   return (
-    <div className="relative isolate overflow-hidden bg-gray-900 dark:bg-black">
-      {/* Background gradient effects */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <svg
-          className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-white/10 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
-          aria-hidden="true"
-        >
-          <defs>
-            <pattern
-              id="e813992c-7d03-4cc4-a2bd-151760b470a0"
-              width={200}
-              height={200}
-              x="50%"
-              y={-1}
-              patternUnits="userSpaceOnUse"
-            >
-              <path d="M100 200V.5M.5 .5H200" fill="none" />
-            </pattern>
-          </defs>
-          <svg x="50%" y={-1} className="overflow-visible fill-gray-800/20">
-            <path
-              d="M-100.5 0h201v201h-201Z M699.5 0h201v201h-201Z M499.5 400h201v201h-201Z M-300.5 600h201v201h-201Z"
-              strokeWidth={0}
-            />
-          </svg>
-          <rect
-            width="100%"
-            height="100%"
-            strokeWidth={0}
-            fill="url(#e813992c-7d03-4cc4-a2bd-151760b470a0)"
-          />
-        </svg>
-        <div
-          className="absolute left-[calc(50%-4rem)] top-10 -z-10 transform-gpu blur-3xl sm:left-[calc(50%-18rem)] lg:left-48 lg:top-[calc(50%-30rem)] xl:left-[calc(50%-24rem)]"
-          aria-hidden="true"
-        >
-          <div
-            className="aspect-[1108/632] w-[69.25rem] bg-gradient-to-r from-primary to-purple-600 opacity-20"
-            style={{
-              clipPath:
-                "polygon(73.6% 51.7%, 91.7% 11.8%, 100% 46.4%, 97.4% 82.2%, 92.5% 84.9%, 75.7% 64%, 55.3% 47.5%, 46.5% 49.4%, 45% 62.9%, 50.3% 87.2%, 21.3% 64.1%, 0.1% 100%, 5.4% 51.1%, 21.4% 63.9%, 58.9% 0.2%, 73.6% 51.7%)",
-            }}
-          />
-        </div>
-      </div>
+    <section className="bg-white dark:bg-black py-24 sm:py-32 overflow-hidden relative">
+      <div className="mx-auto max-w-[90rem] px-6 lg:px-8 relative z-10">
+        <div className="relative rounded-[3rem] overflow-hidden bg-black dark:bg-white py-24 px-6 sm:px-12 text-center">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#00000015_1px,transparent_1px),linear-gradient(to_bottom,#00000015_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+          
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter text-white dark:text-black mb-8 leading-[1.05]">
+              Ready to estimate?
+            </h2>
+            <p className="text-xl sm:text-2xl text-gray-400 dark:text-gray-600 mb-12 font-light">
+              Start your first planning session in seconds. Zero configuration, zero friction.
+            </p>
 
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-            Ready to improve your
-            <span className="relative">
-              <span className="relative bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                {" "}
-                sprint planning
-              </span>
-              <svg
-                className="absolute -bottom-2 left-0 w-full"
-                viewBox="0 0 300 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/room/new"
+                className="inline-flex h-16 w-full sm:w-auto items-center justify-center gap-2 bg-white dark:bg-black px-12 text-lg font-bold tracking-tight text-black dark:text-white hover:scale-105 transition-transform duration-200 rounded-2xl"
               >
-                <path
-                  d="M2 8.5C2 8.5 101 2 149.5 2C198 2 298 8.5 298 8.5"
-                  stroke="url(#gradient)"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-                <defs>
-                  <linearGradient
-                    id="gradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="0%"
-                  >
-                    <stop offset="0%" stopColor="#7c3aed" />
-                    <stop offset="100%" stopColor="#a78bfa" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </span>
-            ?
-          </h2>
-
-          <p className="mt-6 text-lg leading-8 text-gray-300">
-            Start your first planning session in seconds. No credit card, no
-            sign-up, no barriers. Just pure collaboration.
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/room/new"
-              className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Start Planning Now
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </span>
-              {/* Animated glow effect */}
-              <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
-            </Link>
-
-            <a
-              href="https://github.com/INQTR/poker-planning"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/50"
-            >
-              View on GitHub
-            </a>
+                Create Free Room
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <a
+                href="https://github.com/INQTR/poker-planning"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-16 w-full sm:w-auto items-center justify-center bg-transparent border-2 border-white/20 dark:border-black/20 px-12 text-lg font-bold tracking-tight text-white dark:text-black hover:bg-white/10 dark:hover:bg-black/10 transition-colors rounded-2xl"
+              >
+                View on GitHub
+              </a>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-gray-900 dark:from-black to-transparent" />
-    </div>
+    </section>
   );
 };

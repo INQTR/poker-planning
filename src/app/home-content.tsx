@@ -25,10 +25,10 @@ interface HomeContentProps {
 
 export function HomeContent({ versionInfo }: HomeContentProps) {
   return (
-    <div className="bg-white dark:bg-black">
+    <div className="bg-white dark:bg-black selection:bg-primary/10 selection:text-primary">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-primary text-white px-4 py-2 rounded-md"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-sm font-medium"
       >
         Skip to main content
       </a>
@@ -37,138 +37,84 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
 
       <main
         id="main-content"
-        className="relative isolate overflow-hidden bg-white dark:bg-black"
+        className="relative bg-white dark:bg-black"
       >
-        {/* Background gradient effects */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <svg
-            className="absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-white/10 [mask-image:radial-gradient(100%_100%_at_top_center,white,transparent)]"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern
-                id="hero-pattern"
-                width={200}
-                height={200}
-                x="50%"
-                y={-1}
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M100 200V.5M.5 .5H200" fill="none" />
-              </pattern>
-            </defs>
-            <rect
-              width="100%"
-              height="100%"
-              strokeWidth={0}
-              fill="url(#hero-pattern)"
-            />
-          </svg>
-          <div
-            className="absolute inset-x-0 -top-20 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-40"
-            aria-hidden="true"
-          >
-            <div
-              className="relative left-[calc(50%+10rem)] aspect-1155/678 w-6xl -translate-x-1/2 rotate-30 bg-linear-to-tr from-primary to-purple-600 opacity-25 sm:left-[calc(50%+5rem)] sm:w-360"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
-          </div>
-          <div
-            className="absolute inset-x-0 top-[calc(50%-15rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(50%-25rem)]"
-            aria-hidden="true"
-          >
-            <div
-              className="relative left-[calc(50%+25rem)] aspect-1155/678 w-6xl -translate-x-1/2 bg-linear-to-tr from-primary to-purple-600 opacity-25 sm:left-[calc(50%+40rem)] sm:w-360"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
-          </div>
-        </div>
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32 overflow-hidden bg-white dark:bg-black">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+          
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+              {/* Left Column */}
+              <div className="flex flex-col items-start lg:py-20">
+                {versionInfo && (
+                  <Link
+                    href="/changelog"
+                    className="inline-flex items-center gap-2 mb-8 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <span>What's new in v{versionInfo.version}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
+                
+                <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
+                  Planning poker,<br />
+                  <span className="text-gray-300 dark:text-zinc-700">without the noise.</span>
+                </h1>
+                
+                <p className="mt-8 text-xl sm:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 max-w-xl font-light">
+                  A radically simple estimation tool for agile teams. 
+                  No accounts required. Free forever. Start a session instantly.
+                </p>
+                
+                <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                  <Link
+                    href="/room/new"
+                    className="inline-flex h-14 items-center justify-center gap-2 bg-black dark:bg-white px-10 text-base font-medium text-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors rounded-2xl w-full sm:w-auto"
+                  >
+                    Start Session
+                  </Link>
+                  <Link
+                    href="/demo"
+                    className="inline-flex h-14 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-10 text-base font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"
+                  >
+                    <Play className="h-4 w-4" fill="currentColor" />
+                    Interactive Demo
+                  </Link>
+                </div>
+              </div>
 
-        <div className="pt-28 pb-16 sm:pt-32 sm:pb-20 lg:pt-36 lg:pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center">
-            {/* Left side: Content - 50% */}
-            <div className="text-center lg:text-left px-6 lg:pl-16 xl:pl-36 lg:pr-8">
-              {versionInfo && (
-                <Link
-                  href="/changelog"
-                  className="inline-flex items-center gap-2 mb-4 text-sm transition-opacity hover:opacity-80"
-                >
-                  <span className="rounded-full bg-primary/10 dark:bg-primary/20 px-2.5 py-0.5 text-primary font-medium">
-                    v{versionInfo.version}
-                  </span>
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {versionInfo.relativeTime}
-                  </span>
-                </Link>
-              )}
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl lg:text-6xl">
-                Free Planning Poker Online
-              </h1>
-
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300 lg:max-w-xl">
-                Join thousands of Scrum teams using our intuitive platform for
-                sprint planning and story point estimation. Perfect for remote
-                teams. No sign-up, no fees.
-              </p>
-
-              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                <Link
-                  href="/room/new"
-                  data-testid="hero-start-button"
-                  className="group relative inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    Start New Game
-                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </span>
-                  {/* Animated glow effect */}
-                  <div className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/50 blur-xl" />
-                </Link>
-
-                <Link
-                  href="/demo"
-                  data-testid="hero-demo-link"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-gray-100 dark:bg-zinc-950 px-8 py-4 text-base font-semibold text-gray-900 dark:text-white backdrop-blur-sm transition-all duration-200 hover:bg-gray-200 dark:hover:bg-zinc-900 hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-                >
-                  <Play className="h-5 w-5" />
-                  Try Interactive Demo
-                </Link>
+              {/* Right Column (Visual) - Edge-to-edge on right */}
+              <div className="relative w-full lg:w-[135%] aspect-square sm:aspect-video lg:aspect-[4/3] rounded-[2rem] overflow-hidden border border-gray-200/80 dark:border-zinc-800/80 shadow-2xl bg-white dark:bg-black flex flex-col ring-1 ring-inset ring-black/5 dark:ring-white/5">
+                {/* macOS style browser header */}
+                <div className="flex items-center gap-2 px-4 h-6 sm:h-8 bg-gray-50/80 dark:bg-zinc-900/80 border-b border-gray-200/50 dark:border-zinc-800/50 backdrop-blur-md shrink-0">
+                  <div className="flex gap-1.5 sm:gap-2">
+                    <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-400 dark:bg-red-500"></div>
+                    <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 dark:bg-amber-500"></div>
+                    <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-400 dark:bg-green-500"></div>
+                  </div>
+                </div>
+                {/* Simulated Glass overlay on top of iframe container */}
+                <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5 dark:ring-white/5 rounded-[2rem] z-10"></div>
+                <div className="relative flex-1 w-full bg-white dark:bg-black">
+                  <iframe
+                    src="/demo?embed=true"
+                    className="absolute inset-0 w-[calc(100%+2px)] h-[calc(100%+2px)] -left-[1px] -top-[1px] border-none outline-none ring-0"
+                    title="Live Planning Poker Demo"
+                    sandbox="allow-scripts allow-same-origin"
+                    style={{ border: 'none', outline: 'none' }}
+                  />
+                </div>
               </div>
             </div>
-
-            {/* Right side: Live Demo - 50%, extends to screen edge */}
-            <div className="relative px-6 lg:pl-0 lg:pr-0 lg:-mr-6 xl:-mr-8">
-              <div className="relative rounded-2xl lg:rounded-l-2xl lg:rounded-r-none overflow-hidden shadow-2xl">
-                {/* Demo iframe */}
-                <iframe
-                  src="/demo?embed=true"
-                  className="w-full h-[500px] lg:h-[700px] border-0 bg-white dark:bg-black"
-                  title="Live Planning Poker Demo"
-                  sandbox="allow-scripts allow-same-origin"
-                />
-              </div>
-              {/* Subtle glow effect */}
-              <div className="absolute -inset-4 right-0 -z-10 bg-linear-to-tr from-primary/15 to-purple-600/15 rounded-3xl lg:rounded-r-none blur-2xl" />
-            </div>
           </div>
-        </div>
-
-        {/* Bottom gradient fade */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-white dark:from-black to-transparent" />
+        </section>
 
         <HowItWorks />
         <AppPreview />
         <FeaturesSection />
         <PricingSection />
         <UseCases />
-        {/* TODO: we need to get real testimonials from real users */}
-        {/* <Testimonials /> */}
         <FAQ />
         <CallToAction />
       </main>

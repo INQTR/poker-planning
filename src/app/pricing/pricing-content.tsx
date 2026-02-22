@@ -26,7 +26,7 @@ const faqs = [
   {
     question: "Do all team members need a Pro account?",
     answer:
-      "No, only the facilitator needs Pro. Everyone else joins free and gets full access to the session features.",
+      "No, only the facilitator needs Pro. Everyone else joins free.",
   },
   {
     question: "What happens to my sessions after 5 days on Free?",
@@ -105,11 +105,12 @@ export function PricingContent() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-                Support the project with Pro
+                Better planning, forever free
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                AgileKit is free forever. Subscribe to Pro to unlock extra
-                features and support ongoing development.
+                AgileKit is 100% free for teams of any size. Upgrade to Pro to
+                unlock permanent history, analytics, and support the project you
+                love.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
                 <span>No credit card required</span>
@@ -271,11 +272,11 @@ export function PricingContent() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
-                Ready to start planning?
+                Ready to plan better?
               </h2>
               <p className="mt-6 text-lg text-gray-300">
-                Join thousands of teams using AgileKit for better sprint
-                estimation.
+                Join thousands of teams using AgileKit for faster, more accurate
+                sprint estimation.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link

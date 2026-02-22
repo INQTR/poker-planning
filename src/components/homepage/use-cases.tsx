@@ -1,99 +1,62 @@
-import { Users, Globe, BarChart3, Zap } from "lucide-react";
+import { Globe, Zap, BarChart3, Users } from "lucide-react";
+
+const useCases = [
+  {
+    title: "Remote-first",
+    description: "Real-time collaboration that works seamlessly across continents.",
+    icon: Globe,
+  },
+  {
+    title: "Instant execution",
+    description: "No lag, no waiting. Built on a high-performance reactive backend.",
+    icon: Zap,
+  },
+  {
+    title: "Data-driven",
+    description: "Visualize voting patterns to identify disagreement and align quickly.",
+    icon: BarChart3,
+  },
+  {
+    title: "Universal access",
+    description: "Designed for all teams. No accounts required to participate.",
+    icon: Users,
+  },
+];
 
 export function UseCases() {
   return (
-    <div id="use-cases" className="bg-gray-50 py-24 sm:py-32 dark:bg-black">
-      <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-        <h2 className="mx-auto mt-2 max-w-lg text-center text-pretty text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl dark:text-white">
-          Everything you need for sprint planning
-        </h2>
-        <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
-          <div className="relative lg:row-span-2">
-            <div className="absolute inset-px rounded-lg bg-white lg:rounded-l-[2rem] dark:bg-zinc-950" />
-            <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
-              <div className="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-white">
-                  Remote-first design
-                </p>
-                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center dark:text-gray-300">
-                  Built for distributed teams. Real-time collaboration that
-                  works seamlessly across continents with low bandwidth
-                  requirements.
-                </p>
-              </div>
-              <div className="relative min-h-[30rem] w-full grow max-lg:mx-auto max-lg:max-w-sm">
-                <div className="absolute inset-x-10 top-10 bottom-0 flex items-center justify-center rounded-t-xl bg-gradient-to-br from-primary/10 to-purple-500/10 dark:from-primary/20 dark:to-purple-500/20">
-                  <Globe className="h-32 w-32 text-primary/50 dark:text-primary/40" />
-                </div>
-              </div>
-            </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-l-[2rem] dark:ring-white/10" />
+    <section id="use-cases" className="bg-white dark:bg-black py-24 sm:py-32">
+      <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          <div>
+            <h2 className="text-sm font-bold tracking-widest text-primary uppercase mb-4">
+              Architecture
+            </h2>
+            <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1] mb-6">
+              Built for modern teams.
+            </h3>
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light">
+              Under the hood, a real-time sync engine ensures every vote, reveal, and state change happens instantaneously across all clients.
+            </p>
           </div>
-          <div className="relative max-lg:row-start-1">
-            <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem] dark:bg-zinc-950" />
-            <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
-              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-white">
-                  Lightning fast
-                </p>
-                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center dark:text-gray-300">
-                  Instant room creation, real-time voting, and immediate
-                  consensus. No waiting, no lag.
-                </p>
-              </div>
-              <div className="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
-                <div className="relative">
-                  <Zap className="h-24 w-24 text-primary dark:text-primary/90" />
-                  <div className="absolute inset-0 animate-ping">
-                    <Zap className="h-24 w-24 text-primary/30 dark:text-primary/20" />
-                  </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {useCases.map((useCase) => (
+              <div key={useCase.title} className="flex flex-col p-8 bg-gray-50 dark:bg-zinc-900/50 rounded-3xl border border-gray-200/50 dark:border-zinc-800/50">
+                <div className="p-3 bg-white dark:bg-black rounded-2xl w-fit mb-6 border border-gray-200/50 dark:border-zinc-800/50">
+                  <useCase.icon className="w-6 h-6 text-gray-900 dark:text-white" strokeWidth={2} />
                 </div>
-              </div>
-            </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem] dark:ring-white/10" />
-          </div>
-          <div className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-            <div className="absolute inset-px rounded-lg bg-white dark:bg-zinc-950" />
-            <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]">
-              <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-white">
-                  Team insights
-                </p>
-                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center dark:text-gray-300">
-                  Visualize voting patterns and team consensus in real-time with
-                  intuitive displays.
+                <h4 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
+                  {useCase.title}
+                </h4>
+                <p className="text-base text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                  {useCase.description}
                 </p>
               </div>
-              <div className="flex flex-1 items-center justify-center max-lg:py-6 lg:pb-2">
-                <BarChart3 className="h-20 w-20 text-primary dark:text-primary/90" />
-              </div>
-            </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 dark:ring-white/10" />
-          </div>
-          <div className="relative lg:row-span-2">
-            <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-b-[2rem] lg:rounded-r-[2rem] dark:bg-zinc-950" />
-            <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
-              <div className="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-white">
-                  Built for everyone
-                </p>
-                <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center dark:text-gray-300">
-                  From startups to enterprises, educators to consultants. No
-                  accounts, no limits, just pure collaboration.
-                </p>
-              </div>
-              <div className="relative min-h-[30rem] w-full grow">
-                <div className="absolute top-10 right-0 bottom-0 left-10 overflow-hidden rounded-tl-xl bg-gradient-to-br from-purple-50 to-primary/5 shadow-inner dark:from-purple-900/20 dark:to-primary/10">
-                  <div className="flex h-full items-center justify-center">
-                    <Users className="h-32 w-32 text-primary/40 dark:text-primary/30" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem] dark:ring-white/10" />
+            ))}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

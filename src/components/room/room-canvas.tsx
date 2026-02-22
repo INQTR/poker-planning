@@ -407,7 +407,7 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
   }
 
   return (
-    <div className="w-full h-screen relative overflow-hidden">
+    <div className="w-full h-screen relative overflow-hidden bg-transparent">
       {(isDemoMode || currentUserId) && !(isDemoMode && isEmbedded) && (
         <CanvasNavigation
           roomData={roomData}

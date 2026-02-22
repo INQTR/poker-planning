@@ -1,0 +1,58 @@
+---
+description: Design guidelines for modern UI with clean split, glassmorphism, bold typography, and rounded elements. Use when redesigning pages or components.
+globs: **/*.tsx, **/*.css
+---
+# Design Guidelines (Version 5 Style)
+
+This document outlines the core design principles and Tailwind CSS utility classes used in the project, specifically adapted for the modern "Version 5" style iteration. Use these guidelines when creating new components or redesigning existing ones to ensure consistency.
+
+## Layout & Containers
+
+- **Max Width**: Use `max-w-[90rem]` for major section containers to provide a spacious, wide layout (rather than the standard `max-w-7xl`).
+- **Section Padding**: Use generous padding for sections, typically `py-24 sm:py-32`.
+- **Card Containers**: 
+  - Use `rounded-3xl` for large visual blocks, prominent cards, and major layout sections.
+  - Use `rounded-2xl` for smaller cards, inner containers, and buttons.
+- **Shadows & Rings**: 
+  - **Important**: Keep the UI flat. Do **not** use box shadows (`shadow-md`, `shadow-xl`, etc.) or glassmorphism rings (`ring-1 ring-inset...`) on general cards, containers, buttons, or UI elements.
+  - The **only exception** is the main hero iframe/demo container, which is allowed to have a shadow (`shadow-2xl`) and ring to elevate it as the primary focal point of the page.
+  - Borders should be very subtle to delineate cards: `border border-gray-200/50 dark:border-zinc-800/50`.
+
+## Typography
+
+- **Headings (H1/H2/H3)**: 
+  - Use bold, tightly tracked fonts: `font-bold tracking-tighter`.
+  - For massive hero headings, use `text-6xl sm:text-7xl lg:text-8xl`.
+  - For section headings, use `text-4xl sm:text-5xl lg:text-6xl`.
+  - Keep line heights tight: `leading-[1.1]` or `leading-[0.95]`.
+- **Subheadings / Eyebrows**:
+  - Use uppercase, tracked-out styling: `text-sm font-bold tracking-widest text-primary uppercase`.
+- **Body Text**:
+  - Use clean, legible sizes with light font weights: `text-lg sm:text-xl font-light leading-relaxed text-gray-600 dark:text-gray-400`.
+- **Small Details**:
+  - Make secondary titles and small features stand out slightly with `text-lg font-bold tracking-tight`.
+
+## Colors & Themes
+
+- **Backgrounds**: 
+  - Alternate between `bg-white dark:bg-black` for primary sections and `bg-gray-50/50 dark:bg-zinc-900/10` for secondary or alternating sections.
+  - Use subtle grid backgrounds or faint linear gradients to add texture without noise (e.g., `bg-[linear-gradient(...)] bg-[size:4rem_4rem]`).
+- **Text Accents**:
+  - For two-part headings, use high contrast for the first part (`text-gray-900 dark:text-white`) and lower contrast for the second part (`text-gray-400 dark:text-zinc-600` or `text-gray-300`).
+
+## Interactive Elements & Buttons
+
+- **Primary Buttons**: 
+  - Large and pill-like: `h-14` or `h-16`, `px-10` or `px-12`, `rounded-2xl`.
+  - Style: `bg-black dark:bg-white text-white dark:text-black`.
+  - Typography: `font-bold tracking-tight`.
+  - Hover: `hover:scale-105 transition-transform duration-200`.
+- **Secondary Buttons**: 
+  - Same size and shape as primary buttons.
+  - Style: `bg-transparent border-2 border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white`.
+
+## Visual Details (Flat Design)
+
+- The design is intentionally flat and clean. Avoid floating effects, shadows, and glassmorphism.
+- Use solid backgrounds or subtle gradients for sections.
+- For cards and containers, use clean borders (`border-gray-200/50 dark:border-zinc-800/50`) without shadows or inset rings.
