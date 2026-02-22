@@ -70,15 +70,16 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                 <div className="mt-12 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                   <Link
                     href="/room/new"
-                    className="inline-flex h-14 items-center justify-center gap-2 bg-black dark:bg-white px-10 text-base font-medium text-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors rounded-2xl w-full sm:w-auto"
+                    className="inline-flex h-16 items-center justify-center gap-2 bg-black dark:bg-white px-12 text-lg font-bold tracking-tight text-white dark:text-black hover:scale-105 transition-transform duration-200 rounded-2xl w-full sm:w-auto"
                   >
                     Start Session
+                    <ArrowRight className="h-5 w-5" />
                   </Link>
                   <Link
                     href="/demo"
-                    className="inline-flex h-14 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-10 text-base font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"
+                    className="inline-flex h-16 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-12 text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"
                   >
-                    <Play className="h-4 w-4" fill="currentColor" />
+                    <Play className="h-5 w-5" fill="currentColor" />
                     Interactive Demo
                   </Link>
                 </div>

@@ -56,15 +56,35 @@ export function AppPreview() {
           </div>
 
           <div className="lg:col-span-7 relative">
-            <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden border border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
-              <Image
-                alt="Planning Poker app interface showing real-time collaboration"
-                src="/agilekit-screenshot.png"
-                fill
-                className="object-cover object-left-top"
-                sizes="(max-width: 1024px) 100vw, 60vw"
-                priority
-              />
+            <div className="relative w-full aspect-square sm:aspect-video lg:aspect-[4/3] rounded-[2rem] overflow-hidden border border-gray-200/80 dark:border-zinc-800/80 bg-white dark:bg-black flex flex-col ring-1 ring-inset ring-black/5 dark:ring-white/5">
+              {/* macOS style browser header */}
+              <div className="flex items-center gap-2 px-4 h-6 sm:h-8 bg-gray-50/80 dark:bg-zinc-900/80 border-b border-gray-200/50 dark:border-zinc-800/50 backdrop-blur-md shrink-0">
+                <div className="flex gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-red-400 dark:bg-red-500"></div>
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 dark:bg-amber-500"></div>
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-400 dark:bg-green-500"></div>
+                </div>
+              </div>
+              {/* Simulated Glass overlay on top of image container */}
+              <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-black/5 dark:ring-white/5 rounded-[2rem] z-10"></div>
+              <div className="relative flex-1 w-full bg-white dark:bg-black">
+                <Image
+                  alt="Planning Poker app interface showing real-time collaboration"
+                  src="/agilekit_light.png"
+                  fill
+                  className="object-cover object-left-top dark:hidden"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  priority
+                />
+                <Image
+                  alt="Planning Poker app interface showing real-time collaboration"
+                  src="/agilekit_dark.png"
+                  fill
+                  className="object-cover object-left-top hidden dark:block"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  priority
+                />
+              </div>
             </div>
           </div>
 
