@@ -30,26 +30,20 @@ if (!authSecret) {
 // as well as helper methods for general use.
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
+// Google OAuth is optional — anonymous auth and magic links work without it
 const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-if (!googleClientId || !googleClientSecret) {
-  throw new Error(
-    "Missing Google OAuth credentials. " +
-      "Set them with: npx convex env set GOOGLE_CLIENT_ID <id> && npx convex env set GOOGLE_CLIENT_SECRET <secret>"
-  );
-}
+const googleProvider =
+  googleClientId && googleClientSecret
+    ? { google: { clientId: googleClientId, clientSecret: googleClientSecret } }
+    : {};
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
   return betterAuth({
     baseURL: siteUrl,
     secret: authSecret,
     database: authComponent.adapter(ctx),
-    socialProviders: {
-      google: {
-        clientId: googleClientId,
-        clientSecret: googleClientSecret,
-      },
-    },
+    socialProviders: googleProvider,
     session: {
       expiresIn: 60 * 60 * 24 * 365, // 1 year
       updateAge: 60 * 60 * 24 * 7,   // refresh weekly

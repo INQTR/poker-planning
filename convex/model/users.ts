@@ -49,11 +49,13 @@ async function findOrCreateGlobalUser(
     return existingUser._id;
   }
 
-  // Create new global user
+  // Create new global user.
+  // Don't set accountType here — we can't reliably determine it from a mutation
+  // context. The BetterAuth session (isAnonymous) is the authoritative source
+  // for the frontend. linkAnonymousToPermanent sets "permanent" on upgrade.
   return await ctx.db.insert("users", {
     authUserId: args.authUserId,
     name: args.name,
-    accountType: "anonymous",
     createdAt: Date.now(),
   });
 }
