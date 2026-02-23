@@ -355,8 +355,32 @@ export async function linkAnonymousToPermament(
       }
     }
 
-    // Transfer votes similarly
-    // ... (same pattern: check for conflicts, transfer or delete)
+    // Transfer votes
+    // Rule: If both permanent and anonymous users have voted on the same issue,
+    // keep the permanent user's vote and delete the anonymous vote.
+    const votes = await ctx.db
+      .query("votes")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    for (const vote of votes) {
+      const existingVote = await ctx.db
+        .query("votes")
+        .withIndex("by_user", (q) => q.eq("userId", existingPermanent._id))
+        .filter((q) => q.eq(q.field("issueId"), vote.issueId))
+        .first();
+
+      if (existingVote) {
+        // Permanent user already voted on this issue
+        await ctx.db.delete(vote._id);
+      } else {
+        await ctx.db.patch(vote._id, { userId: existingPermanent._id });
+      }
+    }
+
+    // Transfer canvas nodes (ownership)
+    // Rule: Same as above. Favor the permanent user's node on conflict.
+    // ... (implementation similar to votes)
 
     // Delete the old anonymous user record
     await ctx.db.delete(user._id);
@@ -508,7 +532,9 @@ Create a dedicated sign-in page with two options:
 **Behavior:**
 - Google: calls `authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" })`
 - Magic link: calls `authClient.signIn.magicLink({ email, callbackURL: "/dashboard" })`, shows "check your email" state
-- Guest: calls `authClient.signIn.anonymous()` and redirects to homepage
+- Guest:
+  - If user is already in an anonymous session (`isAnonymous === true`), act as "Cancel / Return to Room" and redirect back to `?from=` (or homepage). Do not call `signIn.anonymous()` again to avoid session rotation and losing room state.
+  - If no session exists, call `authClient.signIn.anonymous()` and redirect to `?from=` (or homepage).
 - If user came from a specific room (via query param `?from=/room/xyz`), redirect back there after sign-in
 
 **States:**
@@ -577,7 +603,20 @@ Adapt the user menu based on account type:
 
 ---
 
-### 0.10 Frontend: Account linking from room context
+### 0.10 Frontend: Update Room UI for Avatars
+
+**Files:** `src/components/room/nodes/player-node.tsx`, `src/components/room/room-canvas.tsx` (cursors)
+
+When a permanent user has an `avatarUrl` (from Google OAuth), the room UI should display it instead of a generic generated avatar or initials.
+
+**Acceptance criteria:**
+- Player nodes on the canvas display the user's Google profile picture if `avatarUrl` is present.
+- Multiplayer cursors (if showing avatars) use the `avatarUrl`.
+- Fallback remains the existing generic avatar/initials for anonymous users or those without an avatar.
+
+---
+
+### 0.11 Frontend: Account linking from room context
 
 When an anonymous user is in a room and clicks "Create account" in the user menu, they should be redirected to `/auth/signin?from=/room/[roomId]`. After signing in (Google or magic link), account linking happens automatically (Task 0.5), and the user is redirected back to their room.
 
@@ -604,7 +643,7 @@ When an anonymous user is in a room and clicks "Create account" in the user menu
 
 ---
 
-### 0.11 Frontend: Magic link verification page
+### 0.12 Frontend: Magic link verification page
 
 **File:** `src/app/auth/verify/page.tsx` (new)
 
@@ -624,7 +663,7 @@ When users click the magic link in their email, BetterAuth verifies the token at
 
 ---
 
-### 0.12 Update authentication documentation
+### 0.13 Update authentication documentation
 
 **File:** `docs/authentication.md`
 
@@ -638,7 +677,7 @@ Update the existing auth docs to cover:
 
 ---
 
-### 0.13 Google Cloud Console setup guide
+### 0.14 Google Cloud Console setup guide
 
 **File:** `docs/google-oauth-setup.md` (new)
 
@@ -678,10 +717,11 @@ BETTER_AUTH_SECRET     # Already set
 
 | Risk | Mitigation |
 |------|------------|
-| Account linking fails mid-transfer | `onLinkAccount` runs inside BetterAuth's transaction; application data transfer should be atomic (single Convex mutation) |
+| Account linking fails mid-transfer | `onLinkAccount` runs inside BetterAuth's transaction; application data transfer is inherently atomic because Convex mutations execute within a single ACID transaction. |
 | User signs in with Google, gets new authUserId, but old anonymous data stays orphaned | `onLinkAccount` callback explicitly handles data transfer |
 | Magic link email goes to spam | Use verified domain on Resend, proper SPF/DKIM, minimal HTML template |
 | Google OAuth callback URL mismatch in production | `baseURL` in BetterAuth config uses `siteUrl` from env; document correct redirect URI setup |
+| Magic links failing in Vercel preview environments | Ensure the frontend's origin is dynamically passed or that BetterAuth's `baseURL` properly handles preview URLs (e.g. using `origin` headers). `SITE_URL` env var must not be rigidly hardcoded to production if testing in previews. |
 | User has anonymous session in browser A, signs in with Google in browser B | Two separate sessions — no conflict. Browser A stays anonymous until that session signs in too |
 | Rate limiting on magic link sends | BetterAuth has built-in rate limiting. Can add additional per-email throttling if needed |
 
@@ -706,8 +746,9 @@ BETTER_AUTH_SECRET     # Already set
 | 0.7 Auth context update | S |
 | 0.8 Sign-in page | M |
 | 0.9 User menu update | S |
-| 0.10 Room context linking | S |
-| 0.11 Magic link verification | S |
-| 0.12 Update docs | S |
-| 0.13 Google setup guide | S |
+| 0.10 Avatar UI update | S |
+| 0.11 Room context linking | S |
+| 0.12 Magic link verification | S |
+| 0.13 Update docs | S |
+| 0.14 Google setup guide | S |
 | **Total** | **Large** |
