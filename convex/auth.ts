@@ -64,6 +64,33 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       "https://*.agilekit.app",
       "https://*.vercel.app", // Vercel preview deployments
     ],
+    // Sync Google avatar to Convex users table during login
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            if (user.image && "runMutation" in ctx) {
+              const actionCtx = ctx as GenericActionCtx<DataModel>;
+              await actionCtx.runMutation(internal.users.syncAvatarFromAuth, {
+                authUserId: user.id,
+                avatarUrl: user.image,
+              });
+            }
+          },
+        },
+        update: {
+          after: async (user) => {
+            if (user.image && "runMutation" in ctx) {
+              const actionCtx = ctx as GenericActionCtx<DataModel>;
+              await actionCtx.runMutation(internal.users.syncAvatarFromAuth, {
+                authUserId: user.id,
+                avatarUrl: user.image,
+              });
+            }
+          },
+        },
+      },
+    },
     plugins: [
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),

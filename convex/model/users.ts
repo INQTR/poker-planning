@@ -309,6 +309,24 @@ export async function updateGlobalUserName(
 }
 
 /**
+ * Syncs avatar URL from auth provider to the global user record
+ */
+export async function syncGlobalUserAvatar(
+  ctx: MutationCtx,
+  authUserId: string,
+  avatarUrl: string
+): Promise<void> {
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", authUserId))
+    .first();
+
+  if (user && user.avatarUrl !== avatarUrl) {
+    await ctx.db.patch(user._id, { avatarUrl });
+  }
+}
+
+/**
  * Completely deletes a user from the system (on sign out)
  * Removes from all rooms, deletes memberships, votes, canvas nodes, presence, and the user record
  */

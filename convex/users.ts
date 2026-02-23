@@ -122,6 +122,17 @@ export const deleteUser = mutation({
   },
 });
 
+// Sync avatar URL from auth provider to global user (called from databaseHooks)
+export const syncAvatarFromAuth = internalMutation({
+  args: {
+    authUserId: v.string(),
+    avatarUrl: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Users.syncGlobalUserAvatar(ctx, args.authUserId, args.avatarUrl);
+  },
+});
+
 // Ensure a global user exists (for guest sign-in from auth page)
 export const ensureGlobalUser = mutation({
   args: {
