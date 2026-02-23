@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.2.0...agilekit-v2.3.0) (2026-02-23)
+
+
+### Features
+
+* add permanent accounts (Google OAuth + email magic link) ([#146](https://github.com/INQTR/poker-planning/issues/146)) ([17eff9c](https://github.com/INQTR/poker-planning/commit/17eff9c140ba1f82cf9a543667303b79372a870b))
+
 ## [2.2.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.1.2...agilekit-v2.2.0) (2026-02-23)
 
 
