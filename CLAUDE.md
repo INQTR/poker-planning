@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AgileKit is an open-source online planning poker tool for Scrum teams. The project is a modern Next.js/Convex stack with a whiteboard-style interface using React Flow.
 
+## Git Workflow Rules
+
+**IMPORTANT**: Always ask the user before committing or pushing changes, even if bypass permissions are enabled. Do not assume permission to commit or push based on tool access alone.
+
 ## Development Commands
 
 ```bash
@@ -40,7 +44,7 @@ npx playwright test -g "should create a new room"
 - **Backend**: Convex (serverless TypeScript functions with real-time reactivity)
 - **Auth**: BetterAuth with anonymous sessions (see [docs/authentication.md](docs/authentication.md))
 - **Styling**: shadcn/ui, Tailwind CSS 4
-- **UI Primitives**: Base UI (`@base-ui/react`) - NOT Radix UI. Components like Dialog, DropdownMenu, etc. use Base UI primitives.
+- **UI Primitives**: Base UI (`@base-ui/react`) - NOT Radix UI. Components like Dialog, DropdownMenu, etc. use Base UI primitives. Base UI does not support `asChild` pattern; use `render` prop instead (e.g., `<DropdownMenuItem render={<Link href="..." />}>`).
 - **Canvas**: @xyflow/react for the whiteboard interface
 
 ### Convex Backend Pattern

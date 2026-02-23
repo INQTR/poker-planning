@@ -9,7 +9,8 @@
 
 [**Try AgileKit Now**](https://agilekit.app) | [Report Bug](https://github.com/INQTR/poker-planning/issues) | [Request Feature](https://github.com/INQTR/poker-planning/issues)
 
-![AgileKit Planning Poker Room - Free Scrum Estimation Tool](public/agilekit-screenshot.png "AgileKit Planning Poker Room")
+![AgileKit Planning Poker Room - Free Scrum Estimation Tool](public/agilekit_light.png#gh-light-mode-only "AgileKit Planning Poker Room")
+![AgileKit Planning Poker Room - Free Scrum Estimation Tool](public/agilekit_dark.png#gh-dark-mode-only "AgileKit Planning Poker Room")
 
 ## Features
 
