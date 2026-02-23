@@ -47,8 +47,9 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
         provider: "google",
         callbackURL: from,
       });
-    } catch (err: any) {
-      setError(err?.message || "Failed to sign in with Google");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to sign in with Google";
+      setError(message);
       setLoadingGoogle(false);
     }
   };
@@ -65,8 +66,9 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
         callbackURL: from,
       });
       setIsSent(true);
-    } catch (err: any) {
-      setError(err?.message || "Failed to send magic link");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to send magic link";
+      setError(message);
     } finally {
       setLoadingMagic(false);
     }
@@ -84,8 +86,9 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
         await authClient.signIn.anonymous();
         router.push(from);
       }
-    } catch (err: any) {
-      setError(err?.message || "Failed to continue as guest");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to continue as guest";
+      setError(message);
       setLoadingGuest(false);
     }
   };

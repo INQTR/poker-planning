@@ -285,7 +285,7 @@ export function FeaturesContent() {
                   Smart Analytics
                 </p>
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
-                  Understand your team's<br />
+                  Understand your team&apos;s<br />
                   <span className="text-gray-400 dark:text-zinc-600">estimation patterns.</span>
                 </h2>
                 <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light leading-relaxed">
@@ -471,7 +471,7 @@ export function FeaturesContent() {
               </p>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
                 Coming Soon.<br />
-                <span className="text-gray-400 dark:text-zinc-600">What's next.</span>
+                <span className="text-gray-400 dark:text-zinc-600">What&apos;s next.</span>
               </h2>
             </div>
 
