@@ -11,7 +11,7 @@ export const sendMagicLinkEmail = internalAction({
           "Set it with: npx convex env set RESEND_API_KEY <your-key>"
       );
     }
-    
+
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -23,6 +23,9 @@ export const sendMagicLinkEmail = internalAction({
         to,
         subject: "Sign in to AgileKit",
         html: magicLinkEmailTemplate(url),
+        headers: {
+          "X-Entity-Ref-ID": crypto.randomUUID(),
+        },
       }),
     });
 

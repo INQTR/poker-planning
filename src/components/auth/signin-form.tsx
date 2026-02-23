@@ -214,8 +214,8 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
                   />
                 </Field>
                 <Field>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full"
                     disabled={loadingGoogle || loadingMagic || loadingGuest || !email}
                   >
@@ -224,27 +224,29 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
                     ) : null}
                     Send magic link
                   </Button>
-                  <div className="text-center mt-2">
-                    <button
-                      type="button"
-                      onClick={handleGuestSignIn}
-                      disabled={loadingGoogle || loadingMagic || loadingGuest}
-                      className="text-sm underline-offset-4 hover:underline disabled:opacity-50 text-muted-foreground hover:text-foreground"
-                    >
-                      {loadingGuest ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <Loader2 className="size-4 animate-spin" /> Continuing...
-                        </span>
-                      ) : isAnonymous ? (
-                        "Cancel and return to room"
-                      ) : (
-                        "Continue as guest (anonymous)"
-                      )}
-                    </button>
-                  </div>
                 </Field>
               </FieldGroup>
             </form>
+          )}
+
+          {/* Guest button outside the form to prevent auto-submit by password managers */}
+          {!isSent && (
+            <div className="mt-4">
+              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card mb-4">
+                Or
+              </FieldSeparator>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGuestSignIn}
+                disabled={loadingGoogle || loadingMagic || loadingGuest}
+              >
+                {loadingGuest ? (
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                ) : null}
+                {isAnonymous ? "Cancel and return to room" : "Continue as guest"}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
