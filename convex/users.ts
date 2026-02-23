@@ -1,4 +1,4 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import * as Users from "./model/users";
 
@@ -37,6 +37,7 @@ export const getByAuthUserId = query({
     return {
       _id: result.user._id,
       name: result.user.name,
+      avatarUrl: result.user.avatarUrl,
       isSpectator: result.membership.isSpectator,
       isBot: result.membership.isBot,
       joinedAt: result.membership.joinedAt,
@@ -118,5 +119,43 @@ export const deleteUser = mutation({
   },
   handler: async (ctx, args) => {
     await Users.deleteUserByAuthUserId(ctx, args.authUserId);
+  },
+});
+
+// Sync avatar URL from auth provider to global user (called from databaseHooks)
+export const syncAvatarFromAuth = internalMutation({
+  args: {
+    authUserId: v.string(),
+    avatarUrl: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Users.syncGlobalUserAvatar(ctx, args.authUserId, args.avatarUrl);
+  },
+});
+
+// Ensure a global user exists (for guest sign-in from auth page)
+export const ensureGlobalUser = mutation({
+  args: {
+    authUserId: v.string(),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Users.findOrCreateGlobalUser(ctx, {
+      authUserId: args.authUserId,
+      name: validateName(args.name),
+    });
+  },
+});
+
+export const linkAnonymousAccount = internalMutation({
+  args: {
+    oldAuthUserId: v.string(),
+    newAuthUserId: v.string(),
+    email: v.string(),
+    name: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await Users.linkAnonymousToPermanent(ctx, args);
   },
 });

@@ -6,7 +6,8 @@
 
 | # | Epic | Dependencies | Effort |
 |---|------|-------------|--------|
-| 1 | [Subscription Infrastructure](./01-subscription-infrastructure.md) | None | Large |
+| 0 | [Permanent Accounts](./00a-permanent-accounts.md) | None | Large |
+| 1 | [Subscription Infrastructure](./01-subscription-infrastructure.md) | Epic 0 | Large |
 | 2 | [Premium Gating](./02-premium-gating.md) | Epic 1 | Medium |
 | 3 | [Time-to-Consensus Tracking](./03-time-to-consensus.md) | Epic 2 | Medium |
 | 4 | [Voter Alignment Matrix](./04-voter-alignment.md) | Epic 2 | Medium |
@@ -19,6 +20,9 @@
 ## Recommended Build Order
 
 ```
+Phase 0 - Authentication
+  Epic 0: Permanent Accounts (Google OAuth + Email Magic Link)
+
 Phase 1 - Foundation
   Epic 1: Subscription Infrastructure (Paddle)
   Epic 2: Premium Gating
@@ -41,6 +45,9 @@ Phase 4 - Automation
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
+| Auth providers | Google OAuth + Email magic link | Google covers majority of users; magic link avoids password management |
+| Email service | Resend | Modern API, good deliverability, used for magic links and later for summaries (Epic 9) |
+| Account linking | BetterAuth `onLinkAccount` callback | Built-in anonymous→permanent upgrade, handles authUserId migration |
 | Payment provider | Paddle Billing (v2) | MoR model, handles tax/compliance globally |
 | Webhook handling | Convex `httpAction` | Already used for BetterAuth routes in `convex/http.ts` |
 | OAuth token storage | Encrypted in Convex DB (AES-256-GCM) | Per-user tokens need DB storage; static keys use env vars |
@@ -55,6 +62,11 @@ Phase 4 - Automation
 All new tables introduced across epics:
 
 ```typescript
+// Accounts (Epic 0) — extends existing users table
+users.email                // Email from OAuth or magic link
+users.avatarUrl            // Google profile picture
+users.accountType          // "anonymous" | "permanent"
+
 // Subscription (Epic 1)
 subscriptions              // Paddle subscription state per user
 paddleCustomers            // Maps internal userId -> Paddle customerId
@@ -77,6 +89,14 @@ notificationPreferences    // Per-user email preferences
 ## Environment Variables Needed
 
 ```bash
+# Google OAuth (Epic 0)
+GOOGLE_CLIENT_ID                  # Google OAuth client ID
+GOOGLE_CLIENT_SECRET              # Google OAuth client secret
+
+# Email / Magic Link (Epic 0)
+RESEND_API_KEY                    # Resend API key for magic link emails
+EMAIL_FROM_ADDRESS                # e.g., noreply@agilekit.app
+
 # Paddle (Epic 1)
 NEXT_PUBLIC_PADDLE_CLIENT_TOKEN    # Client-side token
 NEXT_PUBLIC_PADDLE_ENV             # "sandbox" | "production"
@@ -97,7 +117,5 @@ GITHUB_APP_CLIENT_SECRET           # GitHub App client secret
 GITHUB_APP_PRIVATE_KEY             # RSA private key (PEM)
 GITHUB_WEBHOOK_SECRET              # Webhook HMAC secret
 
-# Email (Epic 9)
-SENDGRID_API_KEY                   # Or Resend API key
-EMAIL_FROM_ADDRESS                 # e.g., noreply@agilekit.app
+# Email (Epic 9) — reuses RESEND_API_KEY and EMAIL_FROM_ADDRESS from Epic 0
 ```

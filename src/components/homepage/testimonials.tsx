@@ -77,7 +77,7 @@ export function Testimonials() {
               ))}
             </div>
             <blockquote className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.2] mb-10">
-              "{featuredTestimonial.body}"
+              &ldquo;{featuredTestimonial.body}&rdquo;
             </blockquote>
             <div className="flex items-center gap-4">
               <Image alt={featuredTestimonial.author.name} src={featuredTestimonial.author.imageUrl} width={56} height={56} className="rounded-full" />
@@ -96,7 +96,7 @@ export function Testimonials() {
                     {row.map((testimonial) => (
                       <div key={testimonial.author.handle} className="bg-white dark:bg-black rounded-3xl p-8 border border-gray-200/50 dark:border-zinc-800/50">
                         <blockquote className="text-base text-gray-600 dark:text-gray-400 font-light leading-relaxed mb-8">
-                          "{testimonial.body}"
+                          &ldquo;{testimonial.body}&rdquo;
                         </blockquote>
                         <div className="flex items-center gap-4">
                           <Image alt={testimonial.author.name} src={testimonial.author.imageUrl} width={40} height={40} className="rounded-full" />

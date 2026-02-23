@@ -61,9 +61,13 @@ export default defineSchema({
   users: defineTable({
     authUserId: v.string(), // BetterAuth ID (required, unique)
     name: v.string(),
+    email: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+    accountType: v.optional(v.union(v.literal("anonymous"), v.literal("permanent"))),
     createdAt: v.number(),
   })
-    .index("by_auth_user", ["authUserId"]),
+    .index("by_auth_user", ["authUserId"])
+    .index("by_email", ["email"]),
 
   // Room memberships (user <-> room relationship)
   roomMemberships: defineTable({
@@ -109,5 +113,6 @@ export default defineSchema({
     .index("by_room", ["roomId"])
     .index("by_room_node", ["roomId", "nodeId"])
     .index("by_room_type", ["roomId", "type"]) // For type-specific queries
-    .index("by_last_updated", ["lastUpdatedAt"]), // For activity tracking
+    .index("by_last_updated", ["lastUpdatedAt"]) // For activity tracking
+    .index("by_last_updated_by", ["lastUpdatedBy"]), // For account linking transfers
 });

@@ -14,7 +14,6 @@ export function RoomContent() {
   const params = useParams();
   const roomId = params.roomId as Id<"rooms">;
   const { authUserId, isLoading: authLoading, isAuthenticated } = useAuth();
-  const roomData = useQuery(api.rooms.get, { roomId });
   const joinRoom = useMutation(api.users.join);
   const [isAutoJoining, setIsAutoJoining] = useState(false);
   const autoJoinAttemptedRef = useRef(false);
@@ -30,6 +29,9 @@ export function RoomContent() {
     api.users.getGlobalUser,
     authUserId ? { authUserId } : "skip"
   );
+
+  // Room data query - currentUserId for vote unsanitization is derived server-side from auth context
+  const roomData = useQuery(api.rooms.get, { roomId });
 
   // User is in room if they have a membership in the database
   const isInRoom = existingMembership !== null && existingMembership !== undefined;

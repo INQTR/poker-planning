@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { getColorFromName, getInitial } from "@/lib/avatar-utils";
 
@@ -9,15 +10,38 @@ const sizeClasses = {
   lg: "size-10 text-base",
 };
 
+const sizePixels = {
+  sm: 24,
+  md: 32,
+  lg: 40,
+};
+
 interface UserAvatarProps {
   name: string;
+  avatarUrl?: string | null;
   size?: "sm" | "md" | "lg";
   className?: string;
 }
 
-export function UserAvatar({ name, size = "md", className }: UserAvatarProps) {
+export function UserAvatar({ name, avatarUrl, size = "md", className }: UserAvatarProps) {
   const initial = getInitial(name);
   const bgColor = getColorFromName(name);
+
+  if (avatarUrl) {
+    return (
+      <Image
+        src={avatarUrl}
+        alt={name}
+        width={sizePixels[size]}
+        height={sizePixels[size]}
+        className={cn(
+          "rounded-full object-cover",
+          sizeClasses[size],
+          className
+        )}
+      />
+    );
+  }
 
   return (
     <div

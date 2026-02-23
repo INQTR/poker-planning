@@ -52,7 +52,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                     href="/changelog"
                     className="inline-flex items-center gap-2 mb-8 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                   >
-                    <span>What's new in v{versionInfo.version}</span>
+                    <span>What&apos;s new in v{versionInfo.version}</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 )}

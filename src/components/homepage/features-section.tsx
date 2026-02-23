@@ -24,7 +24,7 @@ export function FeaturesSection() {
             </h2>
             <h3 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1] mb-6">
               Everything you need.<br />
-              <span className="text-gray-400 dark:text-zinc-600">Nothing you don't.</span>
+              <span className="text-gray-400 dark:text-zinc-600">Nothing you don&apos;t.</span>
             </h3>
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light mb-8 max-w-md">
               A comprehensive toolset designed specifically for agile estimation. Core functionality is completely free and instantly accessible.

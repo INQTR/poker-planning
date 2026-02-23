@@ -25,12 +25,13 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard } from "lucide-react";
+import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard, LogIn } from "lucide-react";
 import Link from "next/link";
 import type { Id } from "@/convex/_generated/dataModel";
+import { toast } from "@/lib/toast";
 
 export function UserMenu() {
-  const { authUserId, isAnonymous } = useAuth();
+  const { authUserId, isAnonymous, email } = useAuth();
   const { theme, setTheme } = useTheme();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -65,36 +66,51 @@ export function UserMenu() {
   const isSpectator = roomMembership?.isSpectator ?? false;
 
   const handleEditName = async (name: string) => {
-    await editGlobalUser({
-      authUserId,
-      name,
-    });
+    try {
+      await editGlobalUser({
+        authUserId,
+        name,
+      });
+    } catch {
+      toast.error("Failed to update name. Please try again.");
+    }
   };
 
   const handleSpectatorToggle = async (checked: boolean) => {
     if (!roomMembership || !roomId) return;
-    await editUser({
-      userId: roomMembership._id,
-      roomId,
-      isSpectator: checked,
-    });
+    try {
+      await editUser({
+        userId: roomMembership._id,
+        roomId,
+        isSpectator: checked,
+      });
+    } catch {
+      toast.error("Failed to update spectator mode. Please try again.");
+    }
   };
 
   const handleSignOut = async () => {
-    // Only delete user completely if they are anonymous
-    // Non-anonymous users keep their data for when they sign back in
-    if (isAnonymous) {
-      await deleteUser({ authUserId });
+    try {
+      // Only delete user completely if they are anonymous
+      // Non-anonymous users keep their data for when they sign back in
+      if (isAnonymous) {
+        await deleteUser({ authUserId });
+      }
+      // Sign out from auth (clears session cookie)
+      const result = await authClient.signOut();
+      if (result.error) {
+        toast.error(result.error.message || "Failed to sign out. Please try again.");
+      }
+    } catch {
+      toast.error("Failed to sign out. Please try again.");
     }
-    // Sign out from auth (clears session cookie)
-    await authClient.signOut();
   };
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger data-testid="user-menu-trigger" className="flex items-center gap-2 rounded-full border bg-background px-2 py-1.5 hover:bg-muted transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <UserAvatar name={userName} size="sm" />
+          <UserAvatar name={userName} avatarUrl={globalUser.avatarUrl} size="sm" />
           <span className="text-sm font-medium max-w-24 truncate hidden sm:block">
             {userName}
           </span>
@@ -107,14 +123,25 @@ export function UserMenu() {
         <DropdownMenuContent align="end" className="w-56">
           {/* Profile header */}
           <div className="flex items-center gap-3 px-2 py-2">
-            <UserAvatar name={userName} size="lg" />
+            <UserAvatar name={userName} avatarUrl={globalUser.avatarUrl} size="lg" />
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-medium truncate">{userName}</span>
-              <span className="text-xs text-muted-foreground">Guest</span>
+              <span className="text-xs text-muted-foreground">{email || "Guest"}</span>
             </div>
           </div>
 
           <DropdownMenuSeparator />
+
+          {/* Sign in link - only for anonymous users, shown first */}
+          {isAnonymous && (
+            <>
+              <DropdownMenuItem render={<Link href={roomId ? `/auth/signin?from=/room/${roomId}` : "/auth/signin"} />}>
+                <LogIn className="mr-2 size-4" />
+                Sign in
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
 
           {/* Edit name */}
           <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>

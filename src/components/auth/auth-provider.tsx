@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext, useMemo, ReactNode } from "react";
-import { useConvexAuth } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { authClient } from "@/lib/auth-client";
+import { api } from "@/convex/_generated/api";
 
 interface AuthContextType {
   // BetterAuth user ID (needed for mutations that require authUserId)
@@ -13,6 +14,10 @@ interface AuthContextType {
   isLoading: boolean;
   // Whether user is authenticated (from Convex - token validated)
   isAuthenticated: boolean;
+  // User's email address (for permanent accounts)
+  email: string | null;
+  // Whether this is a guest or permanent account
+  accountType: "anonymous" | "permanent" | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -20,6 +25,8 @@ const AuthContext = createContext<AuthContextType>({
   isAnonymous: false,
   isLoading: true,
   isAuthenticated: false,
+  email: null,
+  accountType: null,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -29,16 +36,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Still need BetterAuth session for authUserId (used in mutations)
   const { data: session } = authClient.useSession();
+  const authUserId = session?.user?.id;
+
+  const globalUser = useQuery(
+    api.users.getGlobalUser,
+    authUserId ? { authUserId } : "skip"
+  );
 
   // Memoize context value to prevent cascading re-renders in consumers
   const value = useMemo(
     () => ({
-      authUserId: session?.user?.id ?? null,
+      authUserId: authUserId ?? null,
       isAnonymous: session?.user?.isAnonymous ?? false,
       isLoading: convexAuthLoading,
       isAuthenticated,
+      // For permanent accounts, fall back to BetterAuth session email when app user email isn't set yet
+      // (e.g., merge case race condition where auto-join creates user before onLinkAccount).
+      // Anonymous users get a fake temp@xxx.com email from BetterAuth — never expose it.
+      email: globalUser?.email ?? (session?.user?.isAnonymous ? null : session?.user?.email ?? null),
+      accountType: globalUser?.accountType ?? (session?.user?.isAnonymous === false ? "permanent" : null),
     }),
-    [session, convexAuthLoading, isAuthenticated],
+    [session, convexAuthLoading, isAuthenticated, globalUser, authUserId],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

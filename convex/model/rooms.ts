@@ -90,7 +90,8 @@ export async function createRoom(
  */
 export async function getRoomWithRelatedData(
   ctx: QueryCtx,
-  roomId: Id<"rooms">
+  roomId: Id<"rooms">,
+  currentUserId?: Id<"users">
 ): Promise<RoomWithRelatedData | null> {
   const room = await ctx.db.get(roomId);
   if (!room) return null;
@@ -105,7 +106,7 @@ export async function getRoomWithRelatedData(
   ]);
 
   // Sanitize votes based on game state
-  const sanitizedVotes = sanitizeVotes(votes, room.isGameOver);
+  const sanitizedVotes = sanitizeVotes(votes, room.isGameOver, currentUserId);
 
   return {
     room,
@@ -115,20 +116,26 @@ export async function getRoomWithRelatedData(
 }
 
 /**
- * Sanitizes vote data based on game state
- * Hides card values when the game is not over
+ * Sanitizes vote data based on game state.
+ * Hides card values when the game is not over, except for the current user's
+ * own vote (they already know what they voted for).
  */
 export function sanitizeVotes(
   votes: Doc<"votes">[],
-  isGameOver: boolean
+  isGameOver: boolean,
+  currentUserId?: Id<"users">
 ): SanitizedVote[] {
-  return votes.map((vote) => ({
-    ...vote,
-    cardLabel: isGameOver ? vote.cardLabel : undefined,
-    cardValue: isGameOver ? vote.cardValue : undefined,
-    cardIcon: isGameOver ? vote.cardIcon : undefined,
-    hasVoted: !!vote.cardLabel,
-  }));
+  return votes.map((vote) => {
+    const isOwnVote = currentUserId && vote.userId === currentUserId;
+    const showCardData = isGameOver || isOwnVote;
+    return {
+      ...vote,
+      cardLabel: showCardData ? vote.cardLabel : undefined,
+      cardValue: showCardData ? vote.cardValue : undefined,
+      cardIcon: showCardData ? vote.cardIcon : undefined,
+      hasVoted: !!vote.cardLabel,
+    };
+  });
 }
 
 /**

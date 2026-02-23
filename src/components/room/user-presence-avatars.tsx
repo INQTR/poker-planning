@@ -6,6 +6,7 @@ import {
   AvatarFallback,
   AvatarGroup,
   AvatarGroupCount,
+  AvatarImage,
 } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -69,6 +70,7 @@ export const UserPresenceAvatars: FC<UserPresenceAvatarsProps> = ({
                   user.isOnline ? "ring-green-500" : "ring-gray-400 grayscale"
                 )}
               >
+                {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.name} />}
                 <AvatarFallback className={getColorFromName(user.name)}>
                   <span className="text-white font-medium">
                     {getInitial(user.name)}
@@ -107,6 +109,7 @@ export const UserPresenceAvatars: FC<UserPresenceAvatarsProps> = ({
                       user.isOnline ? "ring-2 ring-green-500" : "grayscale"
                     )}
                   >
+                    {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.name} />}
                     <AvatarFallback className={getColorFromName(user.name)}>
                       <span className="text-white font-medium text-xs">
                         {getInitial(user.name)}

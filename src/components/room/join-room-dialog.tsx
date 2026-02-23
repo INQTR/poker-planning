@@ -37,12 +37,16 @@ export function JoinRoomDialog({ roomId, roomName }: JoinRoomDialogProps) {
       // Create anonymous session if one doesn't exist
       let currentAuthUserId = authUserId;
       if (!currentAuthUserId) {
-        const { data } = await authClient.signIn.anonymous();
-        if (!data?.user?.id) {
+        const result = await authClient.signIn.anonymous();
+        if (result.error) {
+          toast.error(result.error.message || "Failed to create session. Please try again.");
+          return;
+        }
+        if (!result.data?.user?.id) {
           toast.error("Failed to create session. Please try again.");
           return;
         }
-        currentAuthUserId = data.user.id;
+        currentAuthUserId = result.data.user.id;
       }
 
       await joinRoom({
