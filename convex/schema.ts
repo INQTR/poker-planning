@@ -113,5 +113,6 @@ export default defineSchema({
     .index("by_room", ["roomId"])
     .index("by_room_node", ["roomId", "nodeId"])
     .index("by_room_type", ["roomId", "type"]) // For type-specific queries
-    .index("by_last_updated", ["lastUpdatedAt"]), // For activity tracking
+    .index("by_last_updated", ["lastUpdatedAt"]) // For activity tracking
+    .index("by_last_updated_by", ["lastUpdatedBy"]), // For account linking transfers
 });

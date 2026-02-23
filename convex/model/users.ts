@@ -413,11 +413,17 @@ export async function linkAnonymousToPermanent(
     }
 
     // Transfer canvas nodes (ownership & player nodes)
-    const playerNodes = await ctx.db
-      .query("canvasNodes")
-      .withIndex("by_room_node")
-      .filter((q) => q.eq(q.field("nodeId"), `player-${user._id}`))
-      .collect();
+    // Query each room the anonymous user is a member of to find their player nodes
+    const playerNodes: Doc<"canvasNodes">[] = [];
+    for (const membership of memberships) {
+      const node = await ctx.db
+        .query("canvasNodes")
+        .withIndex("by_room_node", (q) =>
+          q.eq("roomId", membership.roomId).eq("nodeId", `player-${user._id}`)
+        )
+        .first();
+      if (node) playerNodes.push(node);
+    }
 
     for (const node of playerNodes) {
       const existingPlayerNode = await ctx.db
@@ -441,7 +447,7 @@ export async function linkAnonymousToPermanent(
     // Update lastUpdatedBy on any canvas nodes touched by the anonymous user
     const updatedNodes = await ctx.db
       .query("canvasNodes")
-      .filter((q) => q.eq(q.field("lastUpdatedBy"), user._id))
+      .withIndex("by_last_updated_by", (q) => q.eq("lastUpdatedBy", user._id))
       .collect();
 
     for (const node of updatedNodes) {

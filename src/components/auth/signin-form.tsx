@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -38,6 +38,16 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
   const [loadingGuest, setLoadingGuest] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSent, setIsSent] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Cooldown timer after sending magic link
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setTimeout(() => setCooldownSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldownSeconds]);
+
+  const startCooldown = useCallback(() => setCooldownSeconds(30), []);
 
   const handleGoogleSignIn = async () => {
     setLoadingGoogle(true);
@@ -66,6 +76,7 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
         callbackURL: from,
       });
       setIsSent(true);
+      startCooldown();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to send magic link";
       setError(message);
@@ -122,15 +133,18 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
                   It expires in 10 minutes.
                 </p>
               </div>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="mt-4 w-full"
+                disabled={cooldownSeconds > 0}
                 onClick={() => {
                   setIsSent(false);
                   setEmail("");
                 }}
               >
-                Try another email
+                {cooldownSeconds > 0
+                  ? `Try another email (${cooldownSeconds}s)`
+                  : "Try another email"}
               </Button>
             </div>
           ) : (

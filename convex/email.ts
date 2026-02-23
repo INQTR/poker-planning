@@ -6,7 +6,8 @@ export const sendMagicLinkEmail = internalAction({
   handler: async (_ctx, { to, url }) => {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) {
-      console.warn("RESEND_API_KEY not set. Magic link email would have been sent to:", to, "with url:", url);
+      // Log the recipient but NOT the URL — it's a one-time authentication credential
+      console.warn("RESEND_API_KEY not set. Magic link email would have been sent to:", to);
       return;
     }
     

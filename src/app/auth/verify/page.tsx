@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -10,15 +10,18 @@ import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 
 function VerifyContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const error = searchParams.get("error");
   const token = searchParams.get("token");
 
   useEffect(() => {
     if (token && !error) {
-      router.replace(`/api/auth/magic-link/verify?${searchParams.toString()}`);
+      // Use window.location.href instead of router.replace() because this
+      // redirects to a BetterAuth API route, not a Next.js page route.
+      // router.replace() goes through Next.js routing which may not forward
+      // headers correctly for API endpoints.
+      window.location.href = `/api/auth/magic-link/verify?${searchParams.toString()}`;
     }
-  }, [token, error, router, searchParams]);
+  }, [token, error, searchParams]);
 
   return (
     <AuthPageLayout>
