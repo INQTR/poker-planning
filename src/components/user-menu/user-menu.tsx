@@ -25,9 +25,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard, Lock } from "lucide-react";
+import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard, LogIn } from "lucide-react";
 import Link from "next/link";
 import type { Id } from "@/convex/_generated/dataModel";
+import { toast } from "@/lib/toast";
 
 export function UserMenu() {
   const { authUserId, isAnonymous, email } = useAuth();
@@ -65,29 +66,44 @@ export function UserMenu() {
   const isSpectator = roomMembership?.isSpectator ?? false;
 
   const handleEditName = async (name: string) => {
-    await editGlobalUser({
-      authUserId,
-      name,
-    });
+    try {
+      await editGlobalUser({
+        authUserId,
+        name,
+      });
+    } catch {
+      toast.error("Failed to update name. Please try again.");
+    }
   };
 
   const handleSpectatorToggle = async (checked: boolean) => {
     if (!roomMembership || !roomId) return;
-    await editUser({
-      userId: roomMembership._id,
-      roomId,
-      isSpectator: checked,
-    });
+    try {
+      await editUser({
+        userId: roomMembership._id,
+        roomId,
+        isSpectator: checked,
+      });
+    } catch {
+      toast.error("Failed to update spectator mode. Please try again.");
+    }
   };
 
   const handleSignOut = async () => {
-    // Only delete user completely if they are anonymous
-    // Non-anonymous users keep their data for when they sign back in
-    if (isAnonymous) {
-      await deleteUser({ authUserId });
+    try {
+      // Only delete user completely if they are anonymous
+      // Non-anonymous users keep their data for when they sign back in
+      if (isAnonymous) {
+        await deleteUser({ authUserId });
+      }
+      // Sign out from auth (clears session cookie)
+      const result = await authClient.signOut();
+      if (result.error) {
+        toast.error(result.error.message || "Failed to sign out. Please try again.");
+      }
+    } catch {
+      toast.error("Failed to sign out. Please try again.");
     }
-    // Sign out from auth (clears session cookie)
-    await authClient.signOut();
   };
 
   return (
@@ -115,6 +131,17 @@ export function UserMenu() {
           </div>
 
           <DropdownMenuSeparator />
+
+          {/* Sign in link - only for anonymous users, shown first */}
+          {isAnonymous && (
+            <>
+              <DropdownMenuItem render={<Link href={roomId ? `/auth/signin?from=/room/${roomId}` : "/auth/signin"} />}>
+                <LogIn className="mr-2 size-4" />
+                Sign in
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
 
           {/* Edit name */}
           <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
@@ -146,14 +173,6 @@ export function UserMenu() {
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
-          )}
-
-          {/* Create account link - only for anonymous users */}
-          {isAnonymous && (
-            <DropdownMenuItem render={<Link href={roomId ? `/auth/signin?from=/room/${roomId}` : "/auth/signin"} />}>
-              <Lock className="mr-2 size-4" />
-              Create account
-            </DropdownMenuItem>
           )}
 
           {/* Appearance submenu */}

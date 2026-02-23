@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -15,7 +16,6 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
@@ -53,10 +53,15 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
     setLoadingGoogle(true);
     setError(null);
     try {
-      await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: "google",
         callbackURL: from,
       });
+      if (result.error) {
+        setError(result.error.message || `Sign in failed (${result.error.statusText})`);
+        setLoadingGoogle(false);
+      }
+      // On success, the browser redirects to Google — no need to handle data
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to sign in with Google";
       setError(message);
@@ -71,12 +76,16 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
     setLoadingMagic(true);
     setError(null);
     try {
-      await authClient.signIn.magicLink({
+      const result = await authClient.signIn.magicLink({
         email,
         callbackURL: from,
       });
-      setIsSent(true);
-      startCooldown();
+      if (result.error) {
+        setError(result.error.message || `Failed to send magic link (${result.error.statusText})`);
+      } else {
+        setIsSent(true);
+        startCooldown();
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to send magic link";
       setError(message);
@@ -94,7 +103,12 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
         router.push(from);
       } else {
         // Create new anonymous session
-        await authClient.signIn.anonymous();
+        const result = await authClient.signIn.anonymous();
+        if (result.error) {
+          setError(result.error.message || `Failed to continue as guest (${result.error.statusText})`);
+          setLoadingGuest(false);
+          return;
+        }
         router.push(from);
       }
     } catch (err: unknown) {
@@ -169,7 +183,7 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
                         <path d="M1 1h22v22H1z" fill="none"/>
                       </svg>
                     )}
-                    Login with Google
+                    Continue with Google
                   </Button>
                 </Field>
                 <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
@@ -198,7 +212,7 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
                     ) : null}
                     Send magic link
                   </Button>
-                  <FieldDescription className="text-center mt-2">
+                  <div className="text-center mt-2">
                     <button
                       type="button"
                       onClick={handleGuestSignIn}
@@ -215,17 +229,17 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
                         "Continue as guest (anonymous)"
                       )}
                     </button>
-                  </FieldDescription>
+                  </div>
                 </Field>
               </FieldGroup>
             </form>
           )}
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center text-balance text-muted-foreground text-sm">
-        By clicking continue, you agree to our <a href="/terms" className="underline underline-offset-4 hover:text-primary">Terms of Service</a>{" "}
-        and <a href="/privacy" className="underline underline-offset-4 hover:text-primary">Privacy Policy</a>.
-      </FieldDescription>
+      <div className="px-6 text-center text-balance text-muted-foreground text-sm">
+        By clicking continue, you agree to our <Link href="/terms" className="underline underline-offset-4 hover:text-primary">Terms of Service</Link>{" "}
+        and <Link href="/privacy" className="underline underline-offset-4 hover:text-primary">Privacy Policy</Link>.
+      </div>
     </div>
   );
 }

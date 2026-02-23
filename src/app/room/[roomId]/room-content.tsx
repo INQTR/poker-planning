@@ -30,11 +30,8 @@ export function RoomContent() {
     authUserId ? { authUserId } : "skip"
   );
 
-  // Pass currentUserId so the user's own vote card value is returned (not sanitized)
-  const currentUserId = existingMembership?._id;
-  const roomData = useQuery(api.rooms.get,
-    currentUserId ? { roomId, currentUserId } : { roomId }
-  );
+  // Room data query - currentUserId for vote unsanitization is derived server-side from auth context
+  const roomData = useQuery(api.rooms.get, { roomId });
 
   // User is in room if they have a membership in the database
   const isInRoom = existingMembership !== null && existingMembership !== undefined;

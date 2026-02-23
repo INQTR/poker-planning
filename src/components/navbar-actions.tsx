@@ -18,14 +18,14 @@ export function NavbarActions() {
     return <UserMenu />;
   }
 
-  // Show Get Started button if not authenticated
+  // Show Sign in button if not authenticated
   return (
     <Button
       className="hidden rounded-full sm:inline-flex"
-      render={<Link href="/room/new" />}
+      render={<Link href="/auth/signin" />}
       nativeButton={false}
     >
-      Get Started
+      Sign in
     </Button>
   );
 }

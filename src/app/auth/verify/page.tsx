@@ -26,48 +26,48 @@ function VerifyContent() {
   return (
     <AuthPageLayout>
       <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl">
-              {error ? "Verification Failed" : "Verifying..."}
-            </CardTitle>
-            <CardDescription>
-              {error
-                ? "There was an issue verifying your sign-in link."
-                : "Please wait while we securely sign you in."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4 text-center">
-            {error ? (
-              <>
-                <div className="rounded-full bg-destructive/10 p-3 mb-2">
-                  <AlertCircle className="size-8 text-destructive" />
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  This link has expired or is invalid. Please request a new one.
-                </p>
-                <Link href="/auth/signin" className="w-full">
-                  <Button className="w-full">Return to Sign In</Button>
-                </Link>
-              </>
-            ) : token ? (
-              <div className="py-6">
-                <Loader2 className="size-8 animate-spin text-primary mx-auto" />
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl">
+            {error ? "Verification Failed" : "Verifying..."}
+          </CardTitle>
+          <CardDescription>
+            {error
+              ? "There was an issue verifying your sign-in link."
+              : "Please wait while we securely sign you in."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-4 text-center">
+          {error ? (
+            <>
+              <div className="rounded-full bg-destructive/10 p-3 mb-2">
+                <AlertCircle className="size-8 text-destructive" />
               </div>
-            ) : (
-              <>
-                <div className="rounded-full bg-destructive/10 p-3 mb-2">
-                  <AlertCircle className="size-8 text-destructive" />
-                </div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  No verification token was provided.
-                </p>
-                <Link href="/auth/signin" className="w-full">
-                  <Button className="w-full">Return to Sign In</Button>
-                </Link>
-              </>
-            )}
-          </CardContent>
-        </Card>
+              <p className="text-sm text-muted-foreground mb-4">
+                This link has expired or is invalid. Please request a new one.
+              </p>
+              <Link href="/auth/signin" className="w-full">
+                <Button className="w-full">Return to Sign In</Button>
+              </Link>
+            </>
+          ) : token ? (
+            <div className="py-6">
+              <Loader2 className="size-8 animate-spin text-primary mx-auto" />
+            </div>
+          ) : (
+            <>
+              <div className="rounded-full bg-destructive/10 p-3 mb-2">
+                <AlertCircle className="size-8 text-destructive" />
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                No verification token was provided.
+              </p>
+              <Link href="/auth/signin" className="w-full">
+                <Button className="w-full">Return to Sign In</Button>
+              </Link>
+            </>
+          )}
+        </CardContent>
+      </Card>
     </AuthPageLayout>
   );
 }

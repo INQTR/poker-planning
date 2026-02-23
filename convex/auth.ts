@@ -71,6 +71,9 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       // BetterAuth HTTP handlers run as Convex actions, so ctx is always an ActionCtx
       anonymous({
         onLinkAccount: async ({ anonymousUser, newUser }) => {
+          if (!("runMutation" in ctx)) {
+            throw new Error("onLinkAccount must run in an action context");
+          }
           const actionCtx = ctx as GenericActionCtx<DataModel>;
           await actionCtx.runMutation(internal.users.linkAnonymousAccount, {
             oldAuthUserId: anonymousUser.user.id,
@@ -83,7 +86,9 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       }),
       magicLink({
         sendMagicLink: async ({ email, url }) => {
-          // BetterAuth HTTP handlers run as Convex actions, so ctx is always an ActionCtx
+          if (!("runAction" in ctx)) {
+            throw new Error("sendMagicLink must run in an action context");
+          }
           const actionCtx = ctx as GenericActionCtx<DataModel>;
           await actionCtx.runAction(internal.email.sendMagicLinkEmail, {
             to: email,

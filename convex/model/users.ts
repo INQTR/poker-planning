@@ -372,6 +372,15 @@ export async function linkAnonymousToPermanent(
     .first();
 
   if (existingPermanent) {
+    // Update the permanent user with account details from the OAuth provider.
+    // The permanent user was likely created by the auto-join race condition
+    // (before onLinkAccount ran) and is missing email/accountType/avatarUrl.
+    await ctx.db.patch(existingPermanent._id, {
+      email: args.email,
+      accountType: "permanent" as const,
+      avatarUrl: args.avatarUrl,
+    });
+
     // Merge: transfer memberships from anonymous user to existing permanent user
     const memberships = await ctx.db
       .query("roomMemberships")

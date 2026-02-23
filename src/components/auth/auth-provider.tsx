@@ -50,8 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAnonymous: session?.user?.isAnonymous ?? false,
       isLoading: convexAuthLoading,
       isAuthenticated,
-      email: globalUser?.email ?? null,
-      accountType: globalUser?.accountType ?? null,
+      // For permanent accounts, fall back to BetterAuth session email when app user email isn't set yet
+      // (e.g., merge case race condition where auto-join creates user before onLinkAccount).
+      // Anonymous users get a fake temp@xxx.com email from BetterAuth — never expose it.
+      email: globalUser?.email ?? (session?.user?.isAnonymous ? null : session?.user?.email ?? null),
+      accountType: globalUser?.accountType ?? (session?.user?.isAnonymous === false ? "permanent" : null),
     }),
     [session, convexAuthLoading, isAuthenticated, globalUser, authUserId],
   );

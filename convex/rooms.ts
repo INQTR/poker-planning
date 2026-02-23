@@ -44,10 +44,20 @@ export const create = mutation({
 export const get = query({
   args: {
     roomId: v.id("rooms"),
-    currentUserId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
-    return await Rooms.getRoomWithRelatedData(ctx, args.roomId, args.currentUserId);
+    // Derive currentUserId from server-side auth context (not client-supplied)
+    // to prevent vote privacy bypass
+    let currentUserId;
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity) {
+      const appUser = await ctx.db
+        .query("users")
+        .withIndex("by_auth_user", (q) => q.eq("authUserId", identity.subject))
+        .first();
+      currentUserId = appUser?._id;
+    }
+    return await Rooms.getRoomWithRelatedData(ctx, args.roomId, currentUserId);
   },
 });
 

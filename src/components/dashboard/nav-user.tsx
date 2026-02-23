@@ -29,10 +29,12 @@ import {
 } from "@/components/ui/sidebar";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons";
-import { Moon, Sun, LogOut, UserPen, Monitor } from "lucide-react";
+import { Moon, Sun, LogOut, UserPen, Monitor, LogIn } from "lucide-react";
+import Link from "next/link";
+import { toast } from "@/lib/toast";
 
 export function NavUser() {
-  const { authUserId, isAnonymous } = useAuth();
+  const { authUserId, isAnonymous, email } = useAuth();
   const { theme, setTheme } = useTheme();
   const { isMobile } = useSidebar();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -64,17 +66,28 @@ export function NavUser() {
   const userName = globalUser.name || "Guest";
 
   const handleEditName = async (name: string) => {
-    await editGlobalUser({
-      authUserId,
-      name,
-    });
+    try {
+      await editGlobalUser({
+        authUserId,
+        name,
+      });
+    } catch {
+      toast.error("Failed to update name. Please try again.");
+    }
   };
 
   const handleSignOut = async () => {
-    if (isAnonymous) {
-      await deleteUser({ authUserId });
+    try {
+      if (isAnonymous) {
+        await deleteUser({ authUserId });
+      }
+      const result = await authClient.signOut();
+      if (result.error) {
+        toast.error(result.error.message || "Failed to sign out. Please try again.");
+      }
+    } catch {
+      toast.error("Failed to sign out. Please try again.");
     }
-    await authClient.signOut();
   };
 
   return (
@@ -94,7 +107,7 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{userName}</span>
                 <span className="truncate text-xs text-muted-foreground">
-                  Guest
+                  {email || "Guest"}
                 </span>
               </div>
               <HugeiconsIcon
@@ -115,11 +128,22 @@ export function NavUser() {
                   <span className="truncate text-sm font-medium">
                     {userName}
                   </span>
-                  <span className="text-xs text-muted-foreground">Guest</span>
+                  <span className="text-xs text-muted-foreground">{email || "Guest"}</span>
                 </div>
               </div>
 
               <DropdownMenuSeparator />
+
+              {/* Sign in link - only for anonymous users, shown first */}
+              {isAnonymous && (
+                <>
+                  <DropdownMenuItem render={<Link href="/auth/signin?from=/dashboard" />}>
+                    <LogIn className="mr-2 size-4" />
+                    Sign in
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
 
               <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
                 <UserPen className="mr-2 size-4" />
