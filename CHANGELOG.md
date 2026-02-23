@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.1.2...agilekit-v2.2.0) (2026-02-23)
+
+
+### Features
+
+* early access dashboard for session insights ([#137](https://github.com/INQTR/poker-planning/issues/137)) ([e2f963e](https://github.com/INQTR/poker-planning/commit/e2f963e1914ad4401254927934f245070476fbc5))
+
+
+### Miscellaneous
+
+* **deps:** bump ajv ([#145](https://github.com/INQTR/poker-planning/issues/145)) ([a782df6](https://github.com/INQTR/poker-planning/commit/a782df646cfa577dfc7090cebe35c6a93752ba85))
+* **deps:** bump hono from 4.11.7 to 4.12.0 ([#143](https://github.com/INQTR/poker-planning/issues/143)) ([6a2f861](https://github.com/INQTR/poker-planning/commit/6a2f8611aec6b6faf92facd194d0b3c4d4e2c11b))
+
 ## [2.1.2](https://github.com/INQTR/poker-planning/compare/agilekit-v2.1.1...agilekit-v2.1.2) (2026-02-19)
 
 
