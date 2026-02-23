@@ -30,6 +30,15 @@ if (!authSecret) {
 // as well as helper methods for general use.
 export const authComponent = createClient<DataModel>(components.betterAuth);
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+if (!googleClientId || !googleClientSecret) {
+  throw new Error(
+    "Missing Google OAuth credentials. " +
+      "Set them with: npx convex env set GOOGLE_CLIENT_ID <id> && npx convex env set GOOGLE_CLIENT_SECRET <secret>"
+  );
+}
+
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
   return betterAuth({
     baseURL: siteUrl,
@@ -37,8 +46,8 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     database: authComponent.adapter(ctx),
     socialProviders: {
       google: {
-        clientId: process.env.GOOGLE_CLIENT_ID as string,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        clientId: googleClientId,
+        clientSecret: googleClientSecret,
       },
     },
     session: {

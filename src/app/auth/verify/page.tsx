@@ -9,9 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { AuthPageLayout } from "@/components/auth/auth-page-layout";
 
 function VerifyContent() {
-  const searchParams = useSearchParams();
-  const error = searchParams.get("error");
-  const token = searchParams.get("token");
+  const params = useSearchParams();
+  const error = params.get("error");
+  const token = params.get("token");
 
   useEffect(() => {
     if (token && !error) {
@@ -19,9 +19,9 @@ function VerifyContent() {
       // redirects to a BetterAuth API route, not a Next.js page route.
       // router.replace() goes through Next.js routing which may not forward
       // headers correctly for API endpoints.
-      window.location.href = `/api/auth/magic-link/verify?${searchParams.toString()}`;
+      window.location.href = `/api/auth/magic-link/verify?token=${encodeURIComponent(token)}`;
     }
-  }, [token, error, searchParams]);
+  }, [token, error]);
 
   return (
     <AuthPageLayout>

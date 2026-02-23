@@ -300,7 +300,7 @@ export const linkAnonymousAccount = internalMutation({
     avatarUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await Users.linkAnonymousToPermament(ctx, args);
+    await Users.linkAnonymousToPermanent(ctx, args);
   },
 });
 ```
@@ -308,7 +308,7 @@ export const linkAnonymousAccount = internalMutation({
 **File:** `convex/model/users.ts` — business logic:
 
 ```typescript
-export async function linkAnonymousToPermament(
+export async function linkAnonymousToPermanent(
   ctx: MutationCtx,
   args: {
     oldAuthUserId: string;

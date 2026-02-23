@@ -465,7 +465,9 @@ export async function linkAnonymousToPermanent(
     email: args.email,
     avatarUrl: args.avatarUrl,
     accountType: "permanent",
-    // Keep existing name unless user had no name set
+    // Always preserve the user's chosen display name over the OAuth provider name.
+    // Anonymous users always have a name (set on room join), so this only applies
+    // if the user record somehow has an empty name.
     ...(args.name && !user.name ? { name: args.name } : {}),
   });
 }
