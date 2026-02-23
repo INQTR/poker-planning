@@ -131,6 +131,6 @@ export const linkAnonymousAccount = internalMutation({
     avatarUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await Users.linkAnonymousToPermament(ctx, args);
+    await Users.linkAnonymousToPermanent(ctx, args);
   },
 });

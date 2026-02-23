@@ -154,6 +154,14 @@ npx convex env set GOOGLE_CLIENT_ID "your-google-client-id"
 npx convex env set GOOGLE_CLIENT_SECRET "your-google-client-secret"
 npx convex env set RESEND_API_KEY "re_..."
 npx convex env set EMAIL_FROM_ADDRESS "AgileKit <noreply@agilekit.app>"
+
+# Production
+npx convex env set SITE_URL https://your-domain.com
+npx convex env set BETTER_AUTH_SECRET <your-production-secret>
+npx convex env set GOOGLE_CLIENT_ID "your-production-client-id"
+npx convex env set GOOGLE_CLIENT_SECRET "your-production-client-secret"
+npx convex env set RESEND_API_KEY "re_production_..."
+npx convex env set EMAIL_FROM_ADDRESS "AgileKit <noreply@agilekit.app>"
 ```
 
 | Variable | Purpose |

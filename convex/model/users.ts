@@ -53,6 +53,7 @@ async function findOrCreateGlobalUser(
   return await ctx.db.insert("users", {
     authUserId: args.authUserId,
     name: args.name,
+    accountType: "anonymous",
     createdAt: Date.now(),
   });
 }
@@ -340,7 +341,7 @@ export async function deleteUserByAuthUserId(
  * Links an anonymous user account to a new permanent account.
  * Transfers all memberships, votes, and canvas node ownerships.
  */
-export async function linkAnonymousToPermament(
+export async function linkAnonymousToPermanent(
   ctx: MutationCtx,
   args: {
     oldAuthUserId: string;

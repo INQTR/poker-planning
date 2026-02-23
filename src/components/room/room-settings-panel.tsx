@@ -34,7 +34,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
 import type { UserWithPresence } from "@/hooks/useRoomPresence";
-import { getColorFromName } from "@/lib/avatar-utils";
+import { UserAvatar } from "@/components/user-menu/user-avatar";
 import { formatLastSeen } from "./user-presence-avatars";
 
 interface RoomSettingsPanelProps {
@@ -372,20 +372,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div className="relative shrink-0">
-                      {u.avatarUrl ? (
-                        <img 
-                          src={u.avatarUrl} 
-                          alt={u.name} 
-                          className="w-7 h-7 rounded-full object-cover" 
-                        />
-                      ) : (
-                        <div className={cn(
-                          "w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-white",
-                          getColorFromName(u.name)
-                        )}>
-                          {u.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      <UserAvatar name={u.name} avatarUrl={u.avatarUrl} size="sm" className="w-7 h-7" />
                       <div
                         className={cn(
                           "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-surface-1",

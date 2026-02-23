@@ -1,4 +1,5 @@
 import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import type { GenericActionCtx } from "convex/server";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { components } from "./_generated/api";
 import { DataModel } from "./_generated/dataModel";
@@ -64,20 +65,24 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),
       // Anonymous authentication plugin
+      // BetterAuth HTTP handlers run as Convex actions, so ctx is always an ActionCtx
       anonymous({
-        onLinkAccount: async ({ anonymousUser: _a, newUser: _n }) => {
-          await (ctx as any).runMutation(internal.users.linkAnonymousAccount, {
-            oldAuthUserId: _a.user.id,
-            newAuthUserId: _n.user.id,
-            email: _n.user.email,
-            name: _n.user.name ?? undefined,
-            avatarUrl: _n.user.image ?? undefined,
+        onLinkAccount: async ({ anonymousUser, newUser }) => {
+          const actionCtx = ctx as GenericActionCtx<DataModel>;
+          await actionCtx.runMutation(internal.users.linkAnonymousAccount, {
+            oldAuthUserId: anonymousUser.user.id,
+            newAuthUserId: newUser.user.id,
+            email: newUser.user.email,
+            name: newUser.user.name ?? undefined,
+            avatarUrl: newUser.user.image ?? undefined,
           });
         },
       }),
       magicLink({
         sendMagicLink: async ({ email, url }) => {
-          await (ctx as any).runAction(internal.email.sendMagicLinkEmail, {
+          // BetterAuth HTTP handlers run as Convex actions, so ctx is always an ActionCtx
+          const actionCtx = ctx as GenericActionCtx<DataModel>;
+          await actionCtx.runAction(internal.email.sendMagicLinkEmail, {
             to: email,
             url,
           });

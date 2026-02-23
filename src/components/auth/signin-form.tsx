@@ -28,7 +28,9 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
   const searchParams = useSearchParams();
   const { isAnonymous } = useAuth();
   
-  const from = searchParams.get("from") || "/dashboard";
+  const rawFrom = searchParams.get("from") || "/dashboard";
+  // Prevent open redirect: only allow relative paths, reject protocol-relative URLs
+  const from = rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/dashboard";
 
   const [email, setEmail] = useState("");
   const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -94,7 +96,7 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            Login with your Google account
+            Sign in with Google or a magic link
           </CardDescription>
         </CardHeader>
         <CardContent>

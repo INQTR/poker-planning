@@ -356,7 +356,7 @@ export async function linkAnonymousToPermament(
     }
 
     // Transfer votes
-    // Rule: If both permanent and anonymous users have voted on the same issue,
+    // Rule: If both permanent and anonymous users have voted in the same room,
     // keep the permanent user's vote and delete the anonymous vote.
     const votes = await ctx.db
       .query("votes")
@@ -366,21 +366,21 @@ export async function linkAnonymousToPermament(
     for (const vote of votes) {
       const existingVote = await ctx.db
         .query("votes")
-        .withIndex("by_user", (q) => q.eq("userId", existingPermanent._id))
-        .filter((q) => q.eq(q.field("issueId"), vote.issueId))
+        .withIndex("by_room_user", (q) =>
+          q.eq("roomId", vote.roomId).eq("userId", existingPermanent._id)
+        )
         .first();
 
       if (existingVote) {
-        // Permanent user already voted on this issue
+        // Permanent user already voted in this room
         await ctx.db.delete(vote._id);
       } else {
         await ctx.db.patch(vote._id, { userId: existingPermanent._id });
       }
     }
 
-    // Transfer canvas nodes (ownership)
+    // Transfer canvas nodes (player nodes and lastUpdatedBy references)
     // Rule: Same as above. Favor the permanent user's node on conflict.
-    // ... (implementation similar to votes)
 
     // Delete the old anonymous user record
     await ctx.db.delete(user._id);
@@ -717,7 +717,7 @@ BETTER_AUTH_SECRET     # Already set
 
 | Risk | Mitigation |
 |------|------------|
-| Account linking fails mid-transfer | `onLinkAccount` runs inside BetterAuth's transaction; application data transfer is inherently atomic because Convex mutations execute within a single ACID transaction. |
+| Account linking fails mid-transfer | The Convex mutation (`linkAnonymousAccount`) is atomic (single ACID transaction). However, `onLinkAccount` runs within BetterAuth's HTTP flow — if the Convex mutation succeeds but BetterAuth's own account table update fails, the two systems could be out of sync. Mitigation: the `linkAnonymousAccount` mutation is idempotent (safe to retry). |
 | User signs in with Google, gets new authUserId, but old anonymous data stays orphaned | `onLinkAccount` callback explicitly handles data transfer |
 | Magic link email goes to spam | Use verified domain on Resend, proper SPF/DKIM, minimal HTML template |
 | Google OAuth callback URL mismatch in production | `baseURL` in BetterAuth config uses `siteUrl` from env; document correct redirect URI setup |

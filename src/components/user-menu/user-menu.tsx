@@ -94,7 +94,7 @@ export function UserMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger data-testid="user-menu-trigger" className="flex items-center gap-2 rounded-full border bg-background px-2 py-1.5 hover:bg-muted transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <UserAvatar name={userName} size="sm" />
+          <UserAvatar name={userName} avatarUrl={globalUser.avatarUrl} size="sm" />
           <span className="text-sm font-medium max-w-24 truncate hidden sm:block">
             {userName}
           </span>
@@ -107,7 +107,7 @@ export function UserMenu() {
         <DropdownMenuContent align="end" className="w-56">
           {/* Profile header */}
           <div className="flex items-center gap-3 px-2 py-2">
-            <UserAvatar name={userName} size="lg" />
+            <UserAvatar name={userName} avatarUrl={globalUser.avatarUrl} size="lg" />
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-medium truncate">{userName}</span>
               <span className="text-xs text-muted-foreground">{email || "Guest"}</span>
