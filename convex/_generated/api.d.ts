@@ -16,6 +16,7 @@ import type * as cleanup from "../cleanup.js";
 import type * as constants from "../constants.js";
 import type * as crons from "../crons.js";
 import type * as demo from "../demo.js";
+import type * as email from "../email.js";
 import type * as http from "../http.js";
 import type * as issues from "../issues.js";
 import type * as maintenance from "../maintenance.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   constants: typeof constants;
   crons: typeof crons;
   demo: typeof demo;
+  email: typeof email;
   http: typeof http;
   issues: typeof issues;
   maintenance: typeof maintenance;

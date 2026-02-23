@@ -21,6 +21,7 @@ export interface EditUserArgs {
 export interface RoomUserData {
   _id: Id<"users">;
   name: string;
+  avatarUrl?: string;
   isSpectator: boolean;
   isBot?: boolean;
   joinedAt: number;
@@ -263,6 +264,7 @@ export async function getRoomUsers(
     return {
       _id: user._id,
       name: user.name,
+      avatarUrl: user.avatarUrl,
       isSpectator: membership.isSpectator,
       isBot: membership.isBot,
       joinedAt: membership.joinedAt,
@@ -332,4 +334,131 @@ export async function deleteUserByAuthUserId(
 
   // Delete the global user record
   await ctx.db.delete(user._id);
+}
+
+/**
+ * Links an anonymous user account to a new permanent account.
+ * Transfers all memberships, votes, and canvas node ownerships.
+ */
+export async function linkAnonymousToPermament(
+  ctx: MutationCtx,
+  args: {
+    oldAuthUserId: string;
+    newAuthUserId: string;
+    email: string;
+    name?: string;
+    avatarUrl?: string;
+  }
+): Promise<void> {
+  // Find existing user by old anonymous authUserId
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", args.oldAuthUserId))
+    .first();
+
+  if (!user) {
+    // No application user found — might be a fresh sign-in without prior room join
+    // BetterAuth will create the auth user; our app user gets created on next room join
+    return;
+  }
+
+  // Check if there's already a user with the new authUserId (shouldn't happen normally)
+  const existingPermanent = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", args.newAuthUserId))
+    .first();
+
+  if (existingPermanent) {
+    // Merge: transfer memberships from anonymous user to existing permanent user
+    const memberships = await ctx.db
+      .query("roomMemberships")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    for (const membership of memberships) {
+      // Check if permanent user already has membership in this room
+      const existingMembership = await getMembership(ctx, membership.roomId, existingPermanent._id);
+      if (existingMembership) {
+        // Already in room — delete the anonymous membership
+        await ctx.db.delete(membership._id);
+      } else {
+        // Transfer membership to permanent user
+        await ctx.db.patch(membership._id, { userId: existingPermanent._id });
+      }
+    }
+
+    // Transfer votes
+    // Rule: If both permanent and anonymous users have voted in the same room,
+    // keep the permanent user's vote and delete the anonymous vote.
+    const votes = await ctx.db
+      .query("votes")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    for (const vote of votes) {
+      const existingVote = await ctx.db
+        .query("votes")
+        .withIndex("by_room_user", (q) =>
+          q.eq("roomId", vote.roomId).eq("userId", existingPermanent._id)
+        )
+        .first();
+
+      if (existingVote) {
+        // Permanent user already voted in this room
+        await ctx.db.delete(vote._id);
+      } else {
+        await ctx.db.patch(vote._id, { userId: existingPermanent._id });
+      }
+    }
+
+    // Transfer canvas nodes (ownership & player nodes)
+    const playerNodes = await ctx.db
+      .query("canvasNodes")
+      .withIndex("by_room_node")
+      .filter((q) => q.eq(q.field("nodeId"), `player-${user._id}`))
+      .collect();
+
+    for (const node of playerNodes) {
+      const existingPlayerNode = await ctx.db
+        .query("canvasNodes")
+        .withIndex("by_room_node", (q) =>
+          q.eq("roomId", node.roomId).eq("nodeId", `player-${existingPermanent._id}`)
+        )
+        .first();
+
+      if (existingPlayerNode) {
+        // Permanent user already has a player node in this room
+        await ctx.db.delete(node._id);
+      } else {
+        // Transfer node to permanent user
+        await ctx.db.patch(node._id, {
+          nodeId: `player-${existingPermanent._id}`,
+        });
+      }
+    }
+
+    // Update lastUpdatedBy on any canvas nodes touched by the anonymous user
+    const updatedNodes = await ctx.db
+      .query("canvasNodes")
+      .filter((q) => q.eq(q.field("lastUpdatedBy"), user._id))
+      .collect();
+
+    for (const node of updatedNodes) {
+      await ctx.db.patch(node._id, { lastUpdatedBy: existingPermanent._id });
+    }
+
+    // Delete the old anonymous user record
+    await ctx.db.delete(user._id);
+    return;
+  }
+
+  // Simple case: update the user record to point to new authUserId
+  await ctx.db.patch(user._id, {
+    authUserId: args.newAuthUserId,
+    email: args.email,
+    avatarUrl: args.avatarUrl,
+    accountType: "permanent",
+    // Keep existing name unless user had no name set
+    ...(args.name && !user.name ? { name: args.name } : {}),
+  });
 }

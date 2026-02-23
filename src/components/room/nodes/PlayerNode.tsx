@@ -4,6 +4,7 @@ import { Handle, Position, NodeProps } from "@xyflow/react";
 import { ReactElement, memo } from "react";
 
 import { cn } from "@/lib/utils";
+import { UserAvatar } from "../../user-menu/user-avatar";
 import type { PlayerNodeType } from "../types";
 
 export const PlayerNode = memo(
@@ -51,13 +52,18 @@ export const PlayerNode = memo(
           {/* Card */}
           <div className={cardClasses}>{getVoteDisplay()}</div>
 
-          {/* Player Name */}
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
-            {user.name}
-            {isCurrentUser && (
-              <span className="text-gray-400 dark:text-gray-500"> (you)</span>
+          {/* Player Name & Avatar */}
+          <div className="flex items-center gap-1.5">
+            {user.avatarUrl && (
+              <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size="sm" />
             )}
-          </span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
+              {user.name}
+              {isCurrentUser && (
+                <span className="text-gray-400 dark:text-gray-500"> (you)</span>
+              )}
+            </span>
+          </div>
         </div>
       </div>
     );

@@ -1,0 +1,52 @@
+import { internalAction } from "./_generated/server";
+import { v } from "convex/values";
+
+export const sendMagicLinkEmail = internalAction({
+  args: { to: v.string(), url: v.string() },
+  handler: async (_ctx, { to, url }) => {
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (!resendApiKey) {
+      console.warn("RESEND_API_KEY not set. Magic link email would have been sent to:", to, "with url:", url);
+      return;
+    }
+    
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${resendApiKey}`,
+      },
+      body: JSON.stringify({
+        from: process.env.EMAIL_FROM_ADDRESS ?? "AgileKit <noreply@agilekit.app>",
+        to,
+        subject: "Sign in to AgileKit",
+        html: magicLinkEmailTemplate(url),
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Failed to send magic link email: ${error}`);
+    }
+  },
+});
+
+function magicLinkEmailTemplate(url: string): string {
+  return `
+    <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+      <h2 style="margin-bottom: 16px;">Sign in to AgileKit</h2>
+      <p style="color: #555; margin-bottom: 24px;">
+        Click the button below to sign in. This link expires in 10 minutes.
+      </p>
+      <a href="${url}"
+         style="display: inline-block; background: #18181b; color: #fff;
+                padding: 12px 24px; border-radius: 8px; text-decoration: none;
+                font-weight: 500;">
+        Sign in to AgileKit
+      </a>
+      <p style="color: #999; font-size: 13px; margin-top: 24px;">
+        If you didn't request this email, you can safely ignore it.
+      </p>
+    </div>
+  `;
+}

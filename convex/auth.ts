@@ -4,7 +4,8 @@ import { components } from "./_generated/api";
 import { DataModel } from "./_generated/dataModel";
 import { query } from "./_generated/server";
 import { betterAuth } from "better-auth";
-import { anonymous } from "better-auth/plugins";
+import { anonymous, magicLink } from "better-auth/plugins";
+import { internal } from "./_generated/api";
 import authConfig from "./auth.config";
 import { getSiteUrl } from "@/lib/site-config";
 
@@ -33,12 +34,24 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     baseURL: siteUrl,
     secret: authSecret,
     database: authComponent.adapter(ctx),
+    socialProviders: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      },
+    },
     session: {
       expiresIn: 60 * 60 * 24 * 365, // 1 year
       updateAge: 60 * 60 * 24 * 7,   // refresh weekly
       cookieCache: {
         enabled: true,
         maxAge: 5 * 60, // Cache duration in seconds
+      },
+    },
+    account: {
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ["google"],
       },
     },
     trustedOrigins: [
@@ -51,7 +64,26 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       // The Convex plugin is required for Convex compatibility
       convex({ authConfig }),
       // Anonymous authentication plugin
-      anonymous(),
+      anonymous({
+        onLinkAccount: async ({ anonymousUser: _a, newUser: _n }) => {
+          await (ctx as any).runMutation(internal.users.linkAnonymousAccount, {
+            oldAuthUserId: _a.user.id,
+            newAuthUserId: _n.user.id,
+            email: _n.user.email,
+            name: _n.user.name ?? undefined,
+            avatarUrl: _n.user.image ?? undefined,
+          });
+        },
+      }),
+      magicLink({
+        sendMagicLink: async ({ email, url }) => {
+          await (ctx as any).runAction(internal.email.sendMagicLinkEmail, {
+            to: email,
+            url,
+          });
+        },
+        expiresIn: 60 * 10, // 10 minutes
+      }),
     ],
   });
 };

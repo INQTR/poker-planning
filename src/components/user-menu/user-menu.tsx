@@ -25,12 +25,12 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard } from "lucide-react";
+import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard, Lock } from "lucide-react";
 import Link from "next/link";
 import type { Id } from "@/convex/_generated/dataModel";
 
 export function UserMenu() {
-  const { authUserId, isAnonymous } = useAuth();
+  const { authUserId, isAnonymous, email } = useAuth();
   const { theme, setTheme } = useTheme();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -110,7 +110,7 @@ export function UserMenu() {
             <UserAvatar name={userName} size="lg" />
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-medium truncate">{userName}</span>
-              <span className="text-xs text-muted-foreground">Guest</span>
+              <span className="text-xs text-muted-foreground">{email || "Guest"}</span>
             </div>
           </div>
 
@@ -146,6 +146,14 @@ export function UserMenu() {
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
+          )}
+
+          {/* Create account link - only for anonymous users */}
+          {isAnonymous && (
+            <DropdownMenuItem render={<Link href={roomId ? `/auth/signin?from=/room/${roomId}` : "/auth/signin"} />}>
+              <Lock className="mr-2 size-4" />
+              Create account
+            </DropdownMenuItem>
           )}
 
           {/* Appearance submenu */}
