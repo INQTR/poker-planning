@@ -3,8 +3,11 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { authClient } from "@/lib/auth-client";
 import { useAuth } from "@/components/auth/auth-provider";
+import { generateGuestName } from "@/lib/guest-names";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,10 +30,11 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAnonymous } = useAuth();
+  const ensureGlobalUser = useMutation(api.users.ensureGlobalUser);
   
-  const rawFrom = searchParams.get("from") || "/dashboard";
+  const rawFrom = searchParams.get("from") || "/";
   // Prevent open redirect: only allow relative paths, reject protocol-relative URLs
-  const from = rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/dashboard";
+  const from = rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/";
 
   const [email, setEmail] = useState("");
   const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -108,6 +112,14 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
           setError(result.error.message || `Failed to continue as guest (${result.error.statusText})`);
           setLoadingGuest(false);
           return;
+        }
+        // Create global user record so UserMenu can display
+        const newAuthUserId = result.data?.user?.id;
+        if (newAuthUserId) {
+          await ensureGlobalUser({
+            authUserId: newAuthUserId,
+            name: generateGuestName(),
+          });
         }
         router.push(from);
       }

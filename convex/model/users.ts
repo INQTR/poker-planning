@@ -31,7 +31,7 @@ export interface RoomUserData {
 /**
  * Finds or creates a global user by authUserId
  */
-async function findOrCreateGlobalUser(
+export async function findOrCreateGlobalUser(
   ctx: MutationCtx,
   args: { authUserId: string; name: string }
 ): Promise<Id<"users">> {

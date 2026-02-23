@@ -122,6 +122,20 @@ export const deleteUser = mutation({
   },
 });
 
+// Ensure a global user exists (for guest sign-in from auth page)
+export const ensureGlobalUser = mutation({
+  args: {
+    authUserId: v.string(),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Users.findOrCreateGlobalUser(ctx, {
+      authUserId: args.authUserId,
+      name: validateName(args.name),
+    });
+  },
+});
+
 export const linkAnonymousAccount = internalMutation({
   args: {
     oldAuthUserId: v.string(),
