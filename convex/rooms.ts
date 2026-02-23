@@ -42,9 +42,12 @@ export const create = mutation({
 
 // Get room with all related data
 export const get = query({
-  args: { roomId: v.id("rooms") },
+  args: {
+    roomId: v.id("rooms"),
+    currentUserId: v.optional(v.id("users")),
+  },
   handler: async (ctx, args) => {
-    return await Rooms.getRoomWithRelatedData(ctx, args.roomId);
+    return await Rooms.getRoomWithRelatedData(ctx, args.roomId, args.currentUserId);
   },
 });
 

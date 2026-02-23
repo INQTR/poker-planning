@@ -439,9 +439,10 @@ export async function linkAnonymousToPermanent(
         // Permanent user already has a player node in this room
         await ctx.db.delete(node._id);
       } else {
-        // Transfer node to permanent user
+        // Transfer node to permanent user (update both nodeId and data.userId)
         await ctx.db.patch(node._id, {
           nodeId: `player-${existingPermanent._id}`,
+          data: { ...node.data, userId: existingPermanent._id },
         });
       }
     }

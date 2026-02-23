@@ -239,20 +239,19 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
   );
   const hasVoted = userVote?.hasVoted;
   const voteLabel = userVote?.cardLabel;
-  const isGameOver = roomData?.room.isGameOver;
 
-  // Reset selected card when game is reset
-  // Narrowed dependencies to primitives to avoid unnecessary re-runs
+  // Sync local card selection with server state.
+  // The server now returns the current user's own vote label even before reveal,
+  // so we can restore the selected card after page navigations (e.g. OAuth redirect).
   useEffect(() => {
     if (!roomData || !currentUserId) return;
 
-    // Sync local selection state with server state - intentional state sync pattern
     if (!hasVoted) {
       setSelectedCardValue(null);
-    } else if (isGameOver && voteLabel) {
+    } else if (voteLabel) {
       setSelectedCardValue(voteLabel);
     }
-  }, [currentUserId, roomData, hasVoted, isGameOver, voteLabel]);
+  }, [currentUserId, roomData, hasVoted, voteLabel]);
 
   // Handle card selection
   const handleCardSelect = useCallback(
