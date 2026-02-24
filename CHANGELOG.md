@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1](https://github.com/INQTR/poker-planning/compare/agilekit-v2.3.0...agilekit-v2.3.1) (2026-02-24)
+
+
+### Bug Fixes
+
+* enforce auth and room membership on all mutations ([#148](https://github.com/INQTR/poker-planning/issues/148)) ([9a3a890](https://github.com/INQTR/poker-planning/commit/9a3a89028d13471bee1a47f12e8ee32a978a990e))
+
 ## [2.3.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.2.0...agilekit-v2.3.0) (2026-02-23)
 
 
