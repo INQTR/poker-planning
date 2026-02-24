@@ -1,6 +1,7 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 import * as Analytics from "./model/analytics";
+import { requireAuth } from "./model/auth";
 
 const dateRangeValidator = v.optional(
   v.object({
@@ -12,13 +13,13 @@ const dateRangeValidator = v.optional(
 // Get summary stats for dashboard header
 export const getSummary = query({
   args: {
-    authUserId: v.string(),
     dateRange: dateRangeValidator,
   },
   handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
     return await Analytics.getDashboardSummary(
       ctx,
-      args.authUserId,
+      identity.subject,
       args.dateRange
     );
   },
@@ -27,24 +28,28 @@ export const getSummary = query({
 // Get session history list
 export const getSessions = query({
   args: {
-    authUserId: v.string(),
     dateRange: dateRangeValidator,
   },
   handler: async (ctx, args) => {
-    return await Analytics.getUserSessions(ctx, args.authUserId, args.dateRange);
+    const identity = await requireAuth(ctx);
+    return await Analytics.getUserSessions(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
   },
 });
 
 // Get agreement trend data for line chart
 export const getAgreementTrend = query({
   args: {
-    authUserId: v.string(),
     dateRange: dateRangeValidator,
   },
   handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
     return await Analytics.getAgreementTrend(
       ctx,
-      args.authUserId,
+      identity.subject,
       args.dateRange
     );
   },
@@ -53,13 +58,13 @@ export const getAgreementTrend = query({
 // Get velocity stats for bar chart
 export const getVelocityStats = query({
   args: {
-    authUserId: v.string(),
     dateRange: dateRangeValidator,
   },
   handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
     return await Analytics.getVelocityStats(
       ctx,
-      args.authUserId,
+      identity.subject,
       args.dateRange
     );
   },
@@ -68,13 +73,13 @@ export const getVelocityStats = query({
 // Get vote distribution for histogram
 export const getVoteDistribution = query({
   args: {
-    authUserId: v.string(),
     dateRange: dateRangeValidator,
   },
   handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
     return await Analytics.getVoteDistribution(
       ctx,
-      args.authUserId,
+      identity.subject,
       args.dateRange
     );
   },
@@ -83,13 +88,13 @@ export const getVoteDistribution = query({
 // Get participation statistics
 export const getParticipationStats = query({
   args: {
-    authUserId: v.string(),
     dateRange: dateRangeValidator,
   },
   handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
     return await Analytics.getParticipationStats(
       ctx,
-      args.authUserId,
+      identity.subject,
       args.dateRange
     );
   },

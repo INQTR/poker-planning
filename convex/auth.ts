@@ -64,18 +64,29 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
       "https://*.agilekit.app",
       "https://*.vercel.app", // Vercel preview deployments
     ],
-    // Sync Google avatar to Convex users table during login
+    // Sync auth provider data to Convex users table
     databaseHooks: {
       user: {
         create: {
           after: async (user) => {
-            if (user.image && "runMutation" in ctx) {
-              const actionCtx = ctx as GenericActionCtx<DataModel>;
-              await actionCtx.runMutation(internal.users.syncAvatarFromAuth, {
+            if (!("runMutation" in ctx)) return;
+            const actionCtx = ctx as GenericActionCtx<DataModel>;
+
+            // Skip anonymous users — they get a Convex user record
+            // via ensureGlobalUser (guest sign-in) or joinRoom.
+            if ((user as Record<string, unknown>).isAnonymous) return;
+
+            // Permanent account (Google OAuth, magic link): create Convex user record
+            const name = user.name || user.email.split("@")[0];
+            await actionCtx.runMutation(
+              internal.users.ensureGlobalUserFromAuth,
+              {
                 authUserId: user.id,
-                avatarUrl: user.image,
-              });
-            }
+                name,
+                email: user.email,
+                avatarUrl: user.image ?? undefined,
+              }
+            );
           },
         },
         update: {

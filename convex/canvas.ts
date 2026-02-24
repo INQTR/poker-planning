@@ -1,11 +1,13 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import * as Canvas from "./model/canvas";
+import { requireRoomMember } from "./model/auth";
 
 // Initialize canvas nodes when a canvas room is created
 export const initializeCanvasNodes = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     await Canvas.initializeCanvasNodes(ctx, args);
   },
 });
@@ -27,6 +29,10 @@ export const updateNodePosition = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     await Canvas.updateNodePosition(ctx, args);
   },
 });
@@ -39,6 +45,10 @@ export const upsertPlayerNode = mutation({
     position: v.optional(v.object({ x: v.number(), y: v.number() })),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     return await Canvas.upsertPlayerNode(ctx, args);
   },
 });
@@ -47,6 +57,7 @@ export const upsertPlayerNode = mutation({
 export const upsertResultsNode = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     return await Canvas.upsertResultsNode(ctx, args);
   },
 });
@@ -58,6 +69,7 @@ export const removePlayerNode = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     await Canvas.removePlayerNode(ctx, args);
   },
 });
@@ -70,6 +82,7 @@ export const toggleNodeLock = mutation({
     locked: v.boolean(),
   },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     await Canvas.toggleNodeLock(ctx, args);
   },
 });
@@ -82,6 +95,10 @@ export const createNote = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     return await Canvas.createNoteNode(ctx, args);
   },
 });
@@ -95,6 +112,10 @@ export const updateNoteContent = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     await Canvas.updateNoteContent(ctx, args);
   },
 });
@@ -118,6 +139,10 @@ export const deleteNote = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     await Canvas.deleteNoteNode(ctx, args);
   },
 });

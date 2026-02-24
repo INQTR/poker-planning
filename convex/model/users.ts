@@ -309,6 +309,47 @@ export async function updateGlobalUserName(
 }
 
 /**
+ * Creates or updates a global user record from auth provider data.
+ * Called from databaseHooks when a permanent (non-anonymous) user is created in BetterAuth.
+ * Unlike findOrCreateGlobalUser (used at room-join time), this sets
+ * email, avatarUrl, and accountType="permanent".
+ */
+export async function ensureGlobalUserFromAuth(
+  ctx: MutationCtx,
+  args: {
+    authUserId: string;
+    name: string;
+    email: string;
+    avatarUrl?: string;
+  }
+): Promise<void> {
+  const existingUser = await ctx.db
+    .query("users")
+    .withIndex("by_auth_user", (q) => q.eq("authUserId", args.authUserId))
+    .first();
+
+  if (existingUser) {
+    // User already exists (e.g., created by a race with joinRoom).
+    // Patch in permanent account details that findOrCreateGlobalUser doesn't set.
+    await ctx.db.patch(existingUser._id, {
+      email: args.email,
+      accountType: "permanent" as const,
+      ...(args.avatarUrl ? { avatarUrl: args.avatarUrl } : {}),
+    });
+    return;
+  }
+
+  await ctx.db.insert("users", {
+    authUserId: args.authUserId,
+    name: args.name,
+    email: args.email,
+    avatarUrl: args.avatarUrl,
+    accountType: "permanent" as const,
+    createdAt: Date.now(),
+  });
+}
+
+/**
  * Syncs avatar URL from auth provider to the global user record
  */
 export async function syncGlobalUserAvatar(

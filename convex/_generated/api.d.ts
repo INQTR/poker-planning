@@ -21,6 +21,7 @@ import type * as http from "../http.js";
 import type * as issues from "../issues.js";
 import type * as maintenance from "../maintenance.js";
 import type * as model_analytics from "../model/analytics.js";
+import type * as model_auth from "../model/auth.js";
 import type * as model_canvas from "../model/canvas.js";
 import type * as model_cleanup from "../model/cleanup.js";
 import type * as model_demo from "../model/demo.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   issues: typeof issues;
   maintenance: typeof maintenance;
   "model/analytics": typeof model_analytics;
+  "model/auth": typeof model_auth;
   "model/canvas": typeof model_canvas;
   "model/cleanup": typeof model_cleanup;
   "model/demo": typeof model_demo;

@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import * as Timer from "./model/timer";
+import { requireRoomMember } from "./model/auth";
 
 // Start the timer
 export const startTimer = mutation({
@@ -10,6 +11,10 @@ export const startTimer = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     await Timer.updateTimerState(ctx, {
       roomId: args.roomId,
       nodeId: args.nodeId,
@@ -27,6 +32,10 @@ export const pauseTimer = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     await Timer.updateTimerState(ctx, {
       roomId: args.roomId,
       nodeId: args.nodeId,
@@ -44,6 +53,10 @@ export const resetTimer = mutation({
     userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot act as another user");
+    }
     await Timer.updateTimerState(ctx, {
       roomId: args.roomId,
       nodeId: args.nodeId,

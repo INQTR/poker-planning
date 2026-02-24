@@ -35,12 +35,13 @@ The authentication system consists of three layers:
 
 | File | Purpose |
 |------|---------|
-| `convex/auth.ts` | BetterAuth server config with anonymous, google, and magic link plugins |
+| `convex/auth.ts` | BetterAuth server config with databaseHooks, anonymous, google, and magic link plugins |
 | `convex/auth.config.ts` | Convex auth provider configuration |
 | `convex/http.ts` | HTTP routes for auth endpoints |
 | `convex/schema.ts` | Database schema with `users` and `roomMemberships` tables |
 | `convex/users.ts` | User/membership API (join, leave, edit, queries, linkAccount) |
 | `convex/model/users.ts` | User/membership business logic & account linking logic |
+| `convex/model/auth.ts` | Auth guard helpers (`requireAuth`, `requireAuthUser`, `requireRoomMember`, `getOptionalAuthUser`) |
 | `convex/email.ts` | Internal actions to send Magic Link emails via Resend |
 
 ### Frontend (Next.js)
@@ -48,6 +49,7 @@ The authentication system consists of three layers:
 | File | Purpose |
 |------|---------|
 | `src/lib/auth-client.ts` | BetterAuth client with anonymous and magic link plugins |
+| `src/lib/auth-server.ts` | Server-side auth helpers (`isAuthenticated`, `fetchAuthQuery`, etc.) for use in Server Components |
 | `src/app/auth/signin/page.tsx` | Dedicated Sign In Page for permanent account upgrade |
 | `src/app/auth/verify/page.tsx` | Magic Link Verification Page |
 | `src/app/api/auth/[...all]/route.ts` | Next.js API route handler |
@@ -86,7 +88,125 @@ Indexed by: `by_auth_user` on `authUserId` and `by_email` on `email`.
 
 Indexed by: `by_room`, `by_user`, `by_room_user`
 
+## Authorization Guards
+
+All Convex mutations must enforce authorization using helpers from `convex/model/auth.ts`. Never trust client-supplied `userId` without verifying it matches the authenticated user.
+
+### Auth Helpers (`convex/model/auth.ts`)
+
+| Helper | Returns | Use when... |
+|--------|---------|-------------|
+| `requireAuth(ctx)` | `{ subject }` (auth identity) | You only need to confirm the user is logged in |
+| `requireAuthUser(ctx)` | `{ identity, user }` | You need the app-level `users` record |
+| `requireRoomMember(ctx, roomId)` | `{ identity, user, membership }` | The mutation is scoped to a room |
+| `getOptionalAuthUser(ctx)` | `user \| null` | Queries that should degrade gracefully for unauthenticated users |
+
+### Which guard to use
+
+- **Room-scoped mutations that accept `userId`** (votes, canvas, timer): Use `requireRoomMember` + verify `user._id === args.userId`. This ensures both room membership and identity.
+- **Room-scoped mutations without `userId`** (issues, room settings): Use `requireRoomMember`.
+- **Global mutations acting on own data** (editGlobalUser, deleteUser): Use `requireAuth` or `requireAuthUser`.
+- **Admin-style mutations** (users.remove — kick another user): Use `requireRoomMember` to verify the caller is at least in the room.
+- **Queries**: Use `getOptionalAuthUser` for graceful degradation, or derive `currentUserId` from `ctx.auth.getUserIdentity()` server-side (see `rooms.get` for the pattern).
+
+### Example: room-scoped mutation with userId
+
+```typescript
+import { requireRoomMember } from "./model/auth";
+
+export const pickCard = mutation({
+  args: {
+    roomId: v.id("rooms"),
+    userId: v.id("users"),
+    cardLabel: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { user } = await requireRoomMember(ctx, args.roomId);
+    if (user._id !== args.userId) {
+      throw new Error("Cannot vote as another user");
+    }
+    await Votes.pickCard(ctx, args);
+  },
+});
+```
+
+### Example: room-scoped mutation without userId
+
+```typescript
+import { requireRoomMember } from "./model/auth";
+
+export const create = mutation({
+  args: { roomId: v.id("rooms"), title: v.string() },
+  handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
+    return await Issues.createIssue(ctx, args);
+  },
+});
+```
+
+### Example: mutation with issueId only (no roomId arg)
+
+Look up the parent record to get the roomId, then use `requireRoomMember`:
+
+```typescript
+export const updateTitle = mutation({
+  args: { issueId: v.id("issues"), title: v.string() },
+  handler: async (ctx, args) => {
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) throw new Error("Issue not found");
+    await requireRoomMember(ctx, issue.roomId);
+    await Issues.updateIssueTitle(ctx, args);
+  },
+});
+```
+
+## User Creation on Sign-In (databaseHooks)
+
+BetterAuth `databaseHooks` in `convex/auth.ts` ensure a Convex `users` record exists for every permanent account:
+
+```
+databaseHooks.user.create.after:
+  - Anonymous users → skipped (Convex user created via ensureGlobalUser or joinRoom)
+  - Permanent users (Google OAuth, magic link) → calls ensureGlobalUserFromAuth
+    to create Convex user with name, email, avatarUrl, accountType="permanent"
+
+databaseHooks.user.update.after:
+  - Syncs avatar URL changes to existing Convex user (syncAvatarFromAuth)
+```
+
+This ensures the Convex `users` record exists immediately after sign-in, before the user joins any room.
+
+## Server-Side Auth (Next.js)
+
+`src/lib/auth-server.ts` exports server-side auth utilities for use in Server Components and Route Handlers:
+
+```typescript
+import { isAuthenticated } from "@/lib/auth-server";
+import { redirect } from "next/navigation";
+
+// In a server layout or page:
+const authenticated = await isAuthenticated();
+if (!authenticated) {
+  redirect("/auth/signin?from=/dashboard");
+}
+```
+
+Use this for pages that require authentication (e.g., dashboard). Client-side redirects alone are insufficient — the page still renders briefly before redirecting.
+
 ## Auth Flow
+
+### First-Time Permanent Account (Google OAuth / Magic Link)
+
+```
+1. User visits /auth/signin (or is redirected there)
+2. Signs in with Google or receives magic link email
+3. BetterAuth creates auth user
+4. databaseHooks.user.create.after fires:
+   - Creates Convex users record (ensureGlobalUserFromAuth)
+   - Sets email, avatarUrl, accountType="permanent"
+5. Browser redirects to callbackURL
+6. User can immediately join rooms, see their profile, etc.
+```
 
 ### First-Time User Joining a Room (Guest)
 

@@ -7,12 +7,12 @@ import { DashboardHeader, SessionHistory } from "@/components/dashboard";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 
 export function SessionsContent() {
-  const { authUserId } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { dateRange } = useDateRange();
 
   const sessions = useQuery(
     api.analytics.getSessions,
-    authUserId ? { authUserId, dateRange } : "skip"
+    isAuthenticated ? { dateRange } : "skip"
   );
 
   const isLoading = sessions === undefined;

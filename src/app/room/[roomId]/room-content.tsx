@@ -18,16 +18,16 @@ export function RoomContent() {
   const [isAutoJoining, setIsAutoJoining] = useState(false);
   const autoJoinAttemptedRef = useRef(false);
 
-  // Query for existing membership by authUserId (for this room)
+  // Query for existing membership in this room (derived server-side from auth)
   const existingMembership = useQuery(
-    api.users.getByAuthUserId,
-    authUserId ? { roomId, authUserId } : "skip"
+    api.users.getMyMembership,
+    isAuthenticated ? { roomId } : "skip"
   );
 
   // Query for global user (to check if they've joined any room before)
   const globalUser = useQuery(
     api.users.getGlobalUser,
-    authUserId ? { authUserId } : "skip"
+    isAuthenticated ? {} : "skip"
   );
 
   // Room data query - currentUserId for vote unsanitization is derived server-side from auth context
