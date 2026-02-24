@@ -526,6 +526,16 @@ export async function linkAnonymousToPermanent(
       }
     }
 
+    // Transfer room ownership from anonymous user to permanent user
+    const ownedRooms = await ctx.db
+      .query("rooms")
+      .filter((q) => q.eq(q.field("ownerId"), user._id))
+      .collect();
+
+    for (const room of ownedRooms) {
+      await ctx.db.patch(room._id, { ownerId: existingPermanent._id });
+    }
+
     // Update lastUpdatedBy on any canvas nodes touched by the anonymous user
     const updatedNodes = await ctx.db
       .query("canvasNodes")

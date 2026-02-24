@@ -106,7 +106,7 @@ export async function getRoomWithRelatedData(
       .query("votes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
-    isRoomOwnerAbsent(ctx, room),
+    room.ownerId ? isRoomOwnerAbsent(ctx, room) : Promise.resolve(false),
   ]);
 
   // Sanitize votes based on game state
