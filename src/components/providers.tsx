@@ -13,7 +13,13 @@ const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
 
 const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({
+  children,
+  initialToken,
+}: {
+  children: ReactNode;
+  initialToken?: string | null;
+}) {
   if (!convex) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -28,7 +34,7 @@ export function Providers({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ConvexBetterAuthProvider client={convex} authClient={authClient}>
+    <ConvexBetterAuthProvider client={convex} authClient={authClient} initialToken={initialToken}>
       <ThemeProvider
         defaultTheme="system"
         storageKey="agilekit-theme"

@@ -34,14 +34,14 @@ import Link from "next/link";
 import { toast } from "@/lib/toast";
 
 export function NavUser() {
-  const { authUserId, isAnonymous, email } = useAuth();
+  const { authUserId, isAnonymous, isAuthenticated, email } = useAuth();
   const { theme, setTheme } = useTheme();
   const { isMobile } = useSidebar();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const globalUser = useQuery(
     api.users.getGlobalUser,
-    authUserId ? { authUserId } : "skip"
+    isAuthenticated ? {} : "skip"
   );
 
   const editGlobalUser = useMutation(api.users.editGlobalUser);
@@ -67,10 +67,7 @@ export function NavUser() {
 
   const handleEditName = async (name: string) => {
     try {
-      await editGlobalUser({
-        authUserId,
-        name,
-      });
+      await editGlobalUser({ name });
     } catch {
       toast.error("Failed to update name. Please try again.");
     }
@@ -79,7 +76,7 @@ export function NavUser() {
   const handleSignOut = async () => {
     try {
       if (isAnonymous) {
-        await deleteUser({ authUserId });
+        await deleteUser({});
       }
       const result = await authClient.signOut();
       if (result.error) {

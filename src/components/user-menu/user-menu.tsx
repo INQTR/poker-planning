@@ -31,7 +31,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { toast } from "@/lib/toast";
 
 export function UserMenu() {
-  const { authUserId, isAnonymous, email } = useAuth();
+  const { authUserId, isAnonymous, isAuthenticated, email } = useAuth();
   const { theme, setTheme } = useTheme();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -39,17 +39,17 @@ export function UserMenu() {
   const params = useParams();
   const roomId = params.roomId as Id<"rooms"> | undefined;
 
-  // Get global user data
+  // Get global user data (derived server-side from auth)
   const globalUser = useQuery(
     api.users.getGlobalUser,
-    authUserId ? { authUserId } : "skip"
+    isAuthenticated ? {} : "skip"
   );
 
   // Get room membership data (for spectator status) - only if in a room
   const roomMembership = useQuery(
-    api.users.getByAuthUserId,
-    authUserId && roomId
-      ? { authUserId, roomId }
+    api.users.getMyMembership,
+    isAuthenticated && roomId
+      ? { roomId }
       : "skip"
   );
 
@@ -67,10 +67,7 @@ export function UserMenu() {
 
   const handleEditName = async (name: string) => {
     try {
-      await editGlobalUser({
-        authUserId,
-        name,
-      });
+      await editGlobalUser({ name });
     } catch {
       toast.error("Failed to update name. Please try again.");
     }
@@ -94,7 +91,7 @@ export function UserMenu() {
       // Only delete user completely if they are anonymous
       // Non-anonymous users keep their data for when they sign back in
       if (isAnonymous) {
-        await deleteUser({ authUserId });
+        await deleteUser({});
       }
       // Sign out from auth (clears session cookie)
       const result = await authClient.signOut();

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -12,26 +14,6 @@ import {
   VoteDistribution,
 } from "@/components/dashboard";
 import { useDateRange } from "@/components/dashboard/date-range-context";
-import { LayoutDashboard } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-
-function AuthRequired() {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4">
-      <div className="text-center">
-        <LayoutDashboard className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-        <p className="mt-2 text-muted-foreground">
-          Join a planning room to start tracking your sessions
-        </p>
-        <Link href="/">
-          <Button className="mt-4">Go to Home</Button>
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 function LoadingState() {
   return (
@@ -45,40 +27,43 @@ function LoadingState() {
 }
 
 export function DashboardContent() {
-  const { authUserId, isLoading: authLoading, isAuthenticated } = useAuth();
+  const router = useRouter();
+  const { isLoading: authLoading, isAuthenticated } = useAuth();
   const { dateRange } = useDateRange();
 
   const summary = useQuery(
     api.analytics.getSummary,
-    authUserId ? { authUserId, dateRange } : "skip"
+    isAuthenticated ? { dateRange } : "skip"
   );
 
   const sessions = useQuery(
     api.analytics.getSessions,
-    authUserId ? { authUserId, dateRange } : "skip"
+    isAuthenticated ? { dateRange } : "skip"
   );
 
   const agreementTrend = useQuery(
     api.analytics.getAgreementTrend,
-    authUserId ? { authUserId, dateRange } : "skip"
+    isAuthenticated ? { dateRange } : "skip"
   );
 
   const velocityStats = useQuery(
     api.analytics.getVelocityStats,
-    authUserId ? { authUserId, dateRange } : "skip"
+    isAuthenticated ? { dateRange } : "skip"
   );
 
   const voteDistribution = useQuery(
     api.analytics.getVoteDistribution,
-    authUserId ? { authUserId, dateRange } : "skip"
+    isAuthenticated ? { dateRange } : "skip"
   );
 
-  if (authLoading) {
-    return <LoadingState />;
-  }
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace("/auth/signin?from=/dashboard");
+    }
+  }, [authLoading, isAuthenticated, router]);
 
-  if (!isAuthenticated || !authUserId) {
-    return <AuthRequired />;
+  if (authLoading || !isAuthenticated) {
+    return <LoadingState />;
   }
 
   const isLoading =

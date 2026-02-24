@@ -58,9 +58,11 @@ convex/
 │   └── rooms.ts       # Domain logic - business rules and data access
 ```
 
-**API layer** (`convex/*.ts`): Defines mutations/queries with argument validation, delegates to model layer.
+**API layer** (`convex/*.ts`): Defines mutations/queries with argument validation and auth guards, delegates to model layer.
 
 **Model layer** (`convex/model/*.ts`): Contains business logic, database operations, and helper functions.
+
+**Auth guards** (`convex/model/auth.ts`): Every mutation must enforce authorization. Use `requireRoomMember(ctx, roomId)` for room-scoped mutations (returns `{ user }` for identity checks). Use `requireAuth(ctx)` for global mutations. Never trust client-supplied `userId` without verifying `user._id === args.userId`. See [docs/authentication.md](docs/authentication.md) for full patterns.
 
 Example usage in frontend:
 

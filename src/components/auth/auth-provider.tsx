@@ -6,7 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { api } from "@/convex/_generated/api";
 
 interface AuthContextType {
-  // BetterAuth user ID (needed for mutations that require authUserId)
+  // BetterAuth user ID (needed for join/ensureGlobalUser race condition)
   authUserId: string | null;
   // Whether the user is anonymous (from BetterAuth session)
   isAnonymous: boolean;
@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const globalUser = useQuery(
     api.users.getGlobalUser,
-    authUserId ? { authUserId } : "skip"
+    isAuthenticated ? {} : "skip"
   );
 
   // Memoize context value to prevent cascading re-renders in consumers

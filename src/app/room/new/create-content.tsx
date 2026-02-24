@@ -6,6 +6,8 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { ArrowRight } from "lucide-react";
 
+import { useAuth } from "@/components/auth/auth-provider";
+import { authClient } from "@/lib/auth-client";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -54,6 +56,7 @@ export function CreateContent() {
   const [isCreating, setIsCreating] = useState(false);
 
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const createRoom = useMutation(api.rooms.create);
   const { copyRoomUrlToClipboard } = useCopyRoomUrlToClipboard();
 
@@ -96,6 +99,22 @@ export function CreateContent() {
       votingScale = { type: selectedScale };
     }
 
+    // Ensure user is authenticated before creating a room
+    if (!isAuthenticated) {
+      try {
+        const result = await authClient.signIn.anonymous();
+        if (result.error) {
+          toast.error(result.error.message || "Failed to create session. Please try again.");
+          setIsCreating(false);
+          return;
+        }
+      } catch {
+        toast.error("Failed to create session. Please try again.");
+        setIsCreating(false);
+        return;
+      }
+    }
+
     let roomId: string | undefined = undefined;
 
     try {
@@ -119,7 +138,7 @@ export function CreateContent() {
         console.error("Failed to copy room URL to clipboard:", error);
       }
     }
-  }, [roomName, selectedScale, customCards, createRoom, router, copyRoomUrlToClipboard]);
+  }, [roomName, selectedScale, customCards, createRoom, router, copyRoomUrlToClipboard, isAuthenticated]);
 
   const getPreviewCards = (type: VotingScaleType | "custom") => {
     if (type === "custom") {

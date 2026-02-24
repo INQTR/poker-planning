@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import * as Issues from "./model/issues";
+import { requireRoomMember } from "./model/auth";
 
 /**
  * List all issues for a room, ordered by their order field
@@ -41,6 +42,7 @@ export const create = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     return await Issues.createIssue(ctx, args);
   },
 });
@@ -54,6 +56,9 @@ export const updateTitle = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) throw new Error("Issue not found");
+    await requireRoomMember(ctx, issue.roomId);
     await Issues.updateIssueTitle(ctx, args);
   },
 });
@@ -67,6 +72,9 @@ export const updateEstimate = mutation({
     finalEstimate: v.string(),
   },
   handler: async (ctx, args) => {
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) throw new Error("Issue not found");
+    await requireRoomMember(ctx, issue.roomId);
     await Issues.updateIssueEstimate(ctx, args);
   },
 });
@@ -77,6 +85,9 @@ export const updateEstimate = mutation({
 export const remove = mutation({
   args: { issueId: v.id("issues") },
   handler: async (ctx, args) => {
+    const issue = await ctx.db.get(args.issueId);
+    if (!issue) throw new Error("Issue not found");
+    await requireRoomMember(ctx, issue.roomId);
     await Issues.removeIssue(ctx, args.issueId);
   },
 });
@@ -90,6 +101,7 @@ export const startVoting = mutation({
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     await Issues.startVotingOnIssue(ctx, args);
   },
 });
@@ -103,6 +115,7 @@ export const reorder = mutation({
     issueIds: v.array(v.id("issues")),
   },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     await Issues.reorderIssues(ctx, args);
   },
 });
@@ -113,6 +126,7 @@ export const reorder = mutation({
 export const clearCurrentIssue = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     await Issues.clearCurrentIssue(ctx, args.roomId);
   },
 });
