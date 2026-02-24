@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.3.1...agilekit-v2.4.0) (2026-02-24)
+
+
+### Features
+
+* add room permissions and ownership system ([#150](https://github.com/INQTR/poker-planning/issues/150)) ([b758a82](https://github.com/INQTR/poker-planning/commit/b758a8227c121ba8bf1463b722752febfa5f70e2))
+
 ## [2.3.1](https://github.com/INQTR/poker-planning/compare/agilekit-v2.3.0...agilekit-v2.3.1) (2026-02-24)
 
 
