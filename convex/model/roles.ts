@@ -101,6 +101,12 @@ export async function transferOwnership(
     throw new Error("Only the owner can transfer ownership");
   }
 
+  // Authoritative check: membership role must match room.ownerId
+  const room = await ctx.db.get(args.roomId);
+  if (!room || room.ownerId !== user._id) {
+    throw new Error("Only the room owner can transfer ownership");
+  }
+
   const targetMembership = await ctx.db
     .query("roomMemberships")
     .withIndex("by_room_user", (q) =>

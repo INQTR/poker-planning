@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import * as Rooms from "./model/rooms";
 import {
   requireAuth,
+  requireAuthUser,
   requireRoomPermission,
 } from "./model/auth";
 
@@ -40,35 +41,8 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await requireAuth(ctx);
-
-    // Best-effort fallback for guest/session races: if the authenticated user
-    // does not yet have an app-level record, create one now.
-    const existingUser = await ctx.db
-      .query("users")
-      .withIndex("by_auth_user", (q) => q.eq("authUserId", identity.subject))
-      .first();
-
-    let ownerId = existingUser?._id;
-    if (!ownerId) {
-      const identityName =
-        typeof identity.name === "string" ? identity.name.trim() : "";
-      const identityEmail =
-        typeof identity.email === "string" ? identity.email.trim() : "";
-      const fallbackName =
-        identityName ||
-        (identityEmail ? identityEmail.split("@")[0] : "") ||
-        "Guest";
-
-      ownerId = await ctx.db.insert("users", {
-        authUserId: identity.subject,
-        name: fallbackName,
-        ...(identityEmail ? { email: identityEmail } : {}),
-        createdAt: Date.now(),
-      });
-    }
-
-    return await Rooms.createRoom(ctx, { ...args, ownerId });
+    const { user } = await requireAuthUser(ctx);
+    return await Rooms.createRoom(ctx, { ...args, ownerId: user._id });
   },
 });
 
@@ -133,24 +107,21 @@ export const resetGame = mutation({
 export const toggleAutoComplete = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomPermission(ctx, args.roomId, "roomSettings");
-    const room = await ctx.db.get(args.roomId);
-    if (room) {
-      // Cancel any scheduled reveal when toggling
-      if (room.autoRevealScheduledId) {
-        try {
-          await ctx.scheduler.cancel(room.autoRevealScheduledId);
-        } catch {
-          // Job may have already executed - this is fine
-        }
+    const { room } = await requireRoomPermission(ctx, args.roomId, "roomSettings");
+    // Cancel any scheduled reveal when toggling
+    if (room.autoRevealScheduledId) {
+      try {
+        await ctx.scheduler.cancel(room.autoRevealScheduledId);
+      } catch {
+        // Job may have already executed - this is fine
       }
-      await ctx.db.patch(args.roomId, {
-        autoCompleteVoting: !room.autoCompleteVoting,
-        // Clear any active countdown when toggling
-        autoRevealCountdownStartedAt: undefined,
-        autoRevealScheduledId: undefined,
-      });
     }
+    await ctx.db.patch(args.roomId, {
+      autoCompleteVoting: !room.autoCompleteVoting,
+      // Clear any active countdown when toggling
+      autoRevealCountdownStartedAt: undefined,
+      autoRevealScheduledId: undefined,
+    });
   },
 });
 
@@ -158,9 +129,8 @@ export const toggleAutoComplete = mutation({
 export const cancelAutoRevealCountdown = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomPermission(ctx, args.roomId, "revealCards");
-    const room = await ctx.db.get(args.roomId);
-    if (room && room.autoRevealCountdownStartedAt) {
+    const { room } = await requireRoomPermission(ctx, args.roomId, "revealCards");
+    if (room.autoRevealCountdownStartedAt) {
       // Cancel the scheduled job if it exists
       if (room.autoRevealScheduledId) {
         try {
@@ -185,10 +155,6 @@ export const rename = mutation({
   },
   handler: async (ctx, args) => {
     await requireRoomPermission(ctx, args.roomId, "roomSettings");
-    const room = await ctx.db.get(args.roomId);
-    if (!room) {
-      throw new Error("Room not found");
-    }
     await ctx.db.patch(args.roomId, {
       name: args.name,
       lastActivityAt: Date.now(),

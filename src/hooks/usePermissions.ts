@@ -5,6 +5,7 @@ import {
   type MemberRole,
   type PermissionLevel,
   type RoomPermissions,
+  DEFAULT_PERMISSIONS,
   getEffectivePermissions,
 } from "@/convex/permissions";
 import {
@@ -52,12 +53,12 @@ export function usePermissions(
         canControlGameFlow: true,
         canManageIssues: true,
         canChangeRoomSettings: true,
-        canRemoveTarget: () => true,
+        canRemoveTarget: () => false,
         canPromoteTarget: () => false,
         canDemoteFacilitatorFlag: false,
         canTransferOwnershipFlag: false,
         canChangePermissionsFlag: false,
-        permissions: getEffectivePermissions({} as never),
+        permissions: DEFAULT_PERMISSIONS,
       };
     }
 

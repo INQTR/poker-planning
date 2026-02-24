@@ -98,6 +98,11 @@ export const IssueItem: FC<IssueItemProps> = ({
   const isCompleted = issue.status === "completed";
   const isVoting = issue.status === "voting";
 
+  const canStartVote = !isVoting && !isDemoMode && canControlGameFlow;
+  const titleTooltip = canStartVote
+    ? `Click to vote on: ${issue.title}`
+    : issue.title;
+
   return (
     <div
       className={cn(
@@ -122,10 +127,10 @@ export const IssueItem: FC<IssueItemProps> = ({
           <span
             className={cn(
               "text-sm font-medium text-gray-900 dark:text-gray-100 truncate block",
-              !isVoting && !isDemoMode && canControlGameFlow && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+              canStartVote && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
             )}
-            onClick={() => !isVoting && !isDemoMode && canControlGameFlow && onStartVoting(issue._id)}
-            title={isDemoMode ? issue.title : (!canControlGameFlow ? issue.title : (isVoting ? issue.title : `Click to vote on: ${issue.title}`))}
+            onClick={() => canStartVote && onStartVoting(issue._id)}
+            title={titleTooltip}
           >
             {issue.title}
           </span>

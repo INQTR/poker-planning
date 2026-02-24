@@ -96,6 +96,7 @@ export async function requireRoomPermission(
   identity: AuthIdentity;
   user: Doc<"users">;
   membership: Doc<"roomMemberships">;
+  room: Doc<"rooms">;
 }> {
   const { identity, user, membership } = await requireRoomMember(ctx, roomId);
   const room = await ctx.db.get(roomId);
@@ -103,5 +104,5 @@ export async function requireRoomPermission(
     throw new Error("Room not found");
   }
   await requirePermission(ctx, room, membership, category);
-  return { identity, user, membership };
+  return { identity, user, membership, room };
 }

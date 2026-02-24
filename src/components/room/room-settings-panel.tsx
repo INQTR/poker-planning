@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ArrowRightLeft,
   AlertTriangle,
+  Info,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useMutation } from "convex/react";
@@ -42,6 +43,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { usePermissions, getPermissionDeniedTooltip } from "@/hooks/usePermissions";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -63,11 +71,27 @@ interface RoomSettingsPanelProps {
   isDemoMode?: boolean;
 }
 
-const PERMISSION_LABELS: Record<PermissionCategory, string> = {
-  revealCards: "Reveal cards",
-  gameFlow: "Game flow",
-  issueManagement: "Issue management",
-  roomSettings: "Room settings",
+const PERMISSION_CONFIG: Record<PermissionCategory, { label: string; description: string; tooltip: string }> = {
+  revealCards: {
+    label: "Reveal cards",
+    description: "Reveal votes, cancel auto-reveal",
+    tooltip: "Controls who can reveal votes and cancel the auto-reveal countdown.",
+  },
+  gameFlow: {
+    label: "Game flow",
+    description: "Reset game, start voting on issues",
+    tooltip: "Controls who can reset the game, start voting on an issue, or clear the current issue.",
+  },
+  issueManagement: {
+    label: "Issue management",
+    description: "Create, edit, delete, reorder issues",
+    tooltip: "Controls who can create, edit, delete, and reorder issues in the backlog.",
+  },
+  roomSettings: {
+    label: "Room settings",
+    description: "Rename room, toggle auto-reveal",
+    tooltip: "Controls who can rename the room and toggle the auto-reveal setting.",
+  },
 };
 
 const LEVEL_LABELS: Record<PermissionLevel, string> = {
@@ -94,6 +118,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
   const [pendingDeleteUser, setPendingDeleteUser] = useState<{id: Id<"users">, name: string} | null>(null);
   const [pendingTransferUser, setPendingTransferUser] = useState<{id: Id<"users">, name: string} | null>(null);
+  const openSelectCountRef = useRef(0);
 
   const renameRoom = useMutation(api.rooms.rename);
   const toggleAutoComplete = useMutation(api.rooms.toggleAutoComplete);
@@ -110,11 +135,11 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
     setRoomName(roomData.room.name);
   }, [roomData.room.name]);
 
-  // Handle click outside - only when dialog is not open
+  // Handle click outside - only when dialog/select popup is not open
   useClickOutside(
     panelRef,
     () => {
-      if (!pendingDeleteUser && !pendingTransferUser) {
+      if (!pendingDeleteUser && !pendingTransferUser && openSelectCountRef.current === 0) {
         onClose();
       }
     },
@@ -292,25 +317,6 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <AlertDialog
-          open={!!pendingTransferUser}
-          onOpenChange={(open) => !open && setPendingTransferUser(null)}
-        >
-          <AlertDialogContent size="sm">
-            <AlertDialogHeader>
-              <AlertDialogTitle>Transfer ownership to {pendingTransferUser?.name}?</AlertDialogTitle>
-              <AlertDialogDescription>
-                You will become a participant. This action cannot be undone by you.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmTransfer}>
-                Transfer
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </>
     );
   }
@@ -433,33 +439,79 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
         <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
 
         {/* Permissions Section */}
-        <div className="space-y-2 shrink-0">
-          <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-            Permissions
-          </Label>
-          <div className="space-y-2">
-            {(Object.keys(PERMISSION_LABELS) as PermissionCategory[]).map((category) => (
-              <div key={category} className="flex items-center justify-between">
-                <span className="text-xs text-gray-600 dark:text-gray-400">
-                  {PERMISSION_LABELS[category]}
-                </span>
-                {perms.canChangePermissionsFlag ? (
-                  <select
-                    value={currentPermissions[category]}
-                    onChange={(e) => handlePermissionChange(category, e.target.value as PermissionLevel)}
-                    className="text-xs h-7 px-2 rounded-md border border-gray-200 dark:border-border bg-white dark:bg-surface-2 text-gray-700 dark:text-gray-300"
-                  >
-                    <option value="everyone">Everyone</option>
-                    <option value="facilitators">Facilitators</option>
-                    <option value="owner">Owner only</option>
-                  </select>
-                ) : (
-                  <span className="text-xs text-gray-500 dark:text-gray-500">
-                    {LEVEL_LABELS[currentPermissions[category]]}
+        <div className="space-y-3 shrink-0">
+          <div className="flex items-center gap-1.5">
+            <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+              Permissions
+            </Label>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <span className="inline-flex cursor-help">
+                    <Info className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                   </span>
-                )}
-              </div>
-            ))}
+                }
+              />
+              <TooltipContent side="top" className="max-w-56">
+                <p>Control who can perform actions in this room. Defaults to everyone. {perms.canChangePermissionsFlag ? "Only you (the owner) can change these." : "Only the room owner can change these."}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="space-y-1">
+            {(Object.keys(PERMISSION_CONFIG) as PermissionCategory[]).map((category) => {
+              const config = PERMISSION_CONFIG[category];
+              return (
+                <div
+                  key={category}
+                  className="flex items-center justify-between gap-3 py-1.5 px-2 -mx-2 rounded-md hover:bg-gray-50 dark:hover:bg-surface-2/50 transition-colors"
+                >
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <span className="inline-flex cursor-help text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                            <Info className="h-3 w-3" />
+                          </span>
+                        }
+                      />
+                      <TooltipContent side="left" className="max-w-52">
+                        <p>{config.tooltip}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <div className="min-w-0">
+                      <span className="text-xs text-gray-700 dark:text-gray-300">
+                        {config.label}
+                      </span>
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">
+                        {config.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="shrink-0">
+                    {perms.canChangePermissionsFlag ? (
+                      <Select
+                        value={currentPermissions[category]}
+                        onValueChange={(value) => handlePermissionChange(category, value as PermissionLevel)}
+                        onOpenChange={(open) => { openSelectCountRef.current += open ? 1 : -1; }}
+                      >
+                        <SelectTrigger size="sm" className="text-xs w-auto">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent align="end">
+                          <SelectItem value="everyone">Everyone</SelectItem>
+                          <SelectItem value="facilitators">Facilitators</SelectItem>
+                          <SelectItem value="owner">Owner only</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="text-xs text-gray-500 dark:text-gray-500 px-2 py-1 rounded-md bg-gray-100 dark:bg-surface-2">
+                        {LEVEL_LABELS[currentPermissions[category]]}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
