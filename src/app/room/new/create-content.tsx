@@ -36,6 +36,7 @@ import {
   validateCustomScale,
 } from "@/lib/voting-scales";
 import { cn } from "@/lib/utils";
+import { generateGuestName } from "@/lib/guest-names";
 
 const scaleOptions: {
   type: VotingScaleType;
@@ -58,6 +59,7 @@ export function CreateContent() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const createRoom = useMutation(api.rooms.create);
+  const ensureGlobalUser = useMutation(api.users.ensureGlobalUser);
   const { copyRoomUrlToClipboard } = useCopyRoomUrlToClipboard();
 
   const handleScaleChange = (type: VotingScaleType | "custom") => {
@@ -108,6 +110,14 @@ export function CreateContent() {
           setIsCreating(false);
           return;
         }
+
+        const newAuthUserId = result.data?.user?.id;
+        if (newAuthUserId) {
+          await ensureGlobalUser({
+            authUserId: newAuthUserId,
+            name: generateGuestName(),
+          });
+        }
       } catch {
         toast.error("Failed to create session. Please try again.");
         setIsCreating(false);
@@ -138,7 +148,7 @@ export function CreateContent() {
         console.error("Failed to copy room URL to clipboard:", error);
       }
     }
-  }, [roomName, selectedScale, customCards, createRoom, router, copyRoomUrlToClipboard, isAuthenticated]);
+  }, [roomName, selectedScale, customCards, createRoom, ensureGlobalUser, router, copyRoomUrlToClipboard, isAuthenticated]);
 
   const getPreviewCards = (type: VotingScaleType | "custom") => {
     if (type === "custom") {

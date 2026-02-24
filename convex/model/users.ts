@@ -2,6 +2,7 @@ import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
 import * as Rooms from "./rooms";
+import type { MemberRole } from "../permissions";
 
 export interface JoinRoomArgs {
   roomId: Id<"rooms">;
@@ -24,6 +25,7 @@ export interface RoomUserData {
   avatarUrl?: string;
   isSpectator: boolean;
   isBot?: boolean;
+  role: MemberRole;
   joinedAt: number;
   membershipId: Id<"roomMemberships">;
 }
@@ -129,9 +131,17 @@ export async function joinRoom(
   // Check if membership already exists for this room
   const existingMembership = await getMembership(ctx, args.roomId, userId);
   if (existingMembership) {
-    // Already in room - just return userId
+    // If this is the room owner rejoining, ensure their role is set to "owner"
+    const room = await ctx.db.get(args.roomId);
+    if (room?.ownerId === userId && existingMembership.role !== "owner") {
+      await ctx.db.patch(existingMembership._id, { role: "owner" });
+    }
     return userId;
   }
+
+  // Determine role: owner if this user is the room's owner, otherwise participant
+  const room = await ctx.db.get(args.roomId);
+  const role = room?.ownerId === userId ? ("owner" as const) : undefined;
 
   // Create membership
   await ctx.db.insert("roomMemberships", {
@@ -139,10 +149,10 @@ export async function joinRoom(
     userId,
     isSpectator: args.isSpectator ?? false,
     joinedAt: Date.now(),
+    ...(role ? { role } : {}),
   });
 
   // Check if this is a canvas room and create player node
-  const room = await ctx.db.get(args.roomId);
   if (room && room.roomType === "canvas") {
     await Canvas.upsertPlayerNode(ctx, { roomId: args.roomId, userId });
   }
@@ -270,6 +280,7 @@ export async function getRoomUsers(
       avatarUrl: user.avatarUrl,
       isSpectator: membership.isSpectator,
       isBot: membership.isBot,
+      role: membership.role ?? "participant",
       joinedAt: membership.joinedAt,
       membershipId: membership._id,
     };
@@ -513,6 +524,16 @@ export async function linkAnonymousToPermanent(
           data: { ...node.data, userId: existingPermanent._id },
         });
       }
+    }
+
+    // Transfer room ownership from anonymous user to permanent user
+    const ownedRooms = await ctx.db
+      .query("rooms")
+      .filter((q) => q.eq(q.field("ownerId"), user._id))
+      .collect();
+
+    for (const room of ownedRooms) {
+      await ctx.db.patch(room._id, { ownerId: existingPermanent._id });
     }
 
     // Update lastUpdatedBy on any canvas nodes touched by the anonymous user

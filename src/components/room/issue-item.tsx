@@ -22,6 +22,8 @@ interface IssueItemProps {
   onUpdateEstimate: (issueId: Id<"issues">, estimate: string) => void;
   onDelete: (issueId: Id<"issues">) => void;
   isDemoMode?: boolean;
+  canManageIssues?: boolean;
+  canControlGameFlow?: boolean;
 }
 
 export const IssueItem: FC<IssueItemProps> = ({
@@ -32,6 +34,8 @@ export const IssueItem: FC<IssueItemProps> = ({
   onUpdateEstimate,
   onDelete,
   isDemoMode = false,
+  canManageIssues = true,
+  canControlGameFlow = true,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingEstimate, setIsEditingEstimate] = useState(false);
@@ -94,6 +98,11 @@ export const IssueItem: FC<IssueItemProps> = ({
   const isCompleted = issue.status === "completed";
   const isVoting = issue.status === "voting";
 
+  const canStartVote = !isVoting && !isDemoMode && canControlGameFlow;
+  const titleTooltip = canStartVote
+    ? `Click to vote on: ${issue.title}`
+    : issue.title;
+
   return (
     <div
       className={cn(
@@ -118,10 +127,10 @@ export const IssueItem: FC<IssueItemProps> = ({
           <span
             className={cn(
               "text-sm font-medium text-gray-900 dark:text-gray-100 truncate block",
-              !isVoting && !isDemoMode && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+              canStartVote && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
             )}
-            onClick={() => !isVoting && !isDemoMode && onStartVoting(issue._id)}
-            title={isDemoMode ? issue.title : (isVoting ? issue.title : `Click to vote on: ${issue.title}`)}
+            onClick={() => canStartVote && onStartVoting(issue._id)}
+            title={titleTooltip}
           >
             {issue.title}
           </span>
@@ -146,8 +155,10 @@ export const IssueItem: FC<IssueItemProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onStartVoting(issue._id)}
+            onClick={canControlGameFlow ? () => onStartVoting(issue._id) : undefined}
+            disabled={!canControlGameFlow}
             className="h-7 px-2.5 text-xs"
+            title={!canControlGameFlow ? "You don't have permission to control game flow" : undefined}
           >
             Vote this issue
           </Button>
@@ -169,13 +180,13 @@ export const IssueItem: FC<IssueItemProps> = ({
           <span
             className={cn(
               "text-sm font-mono",
-              !isDemoMode && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400",
+              !isDemoMode && canManageIssues && "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400",
               issue.finalEstimate
                 ? "text-gray-900 dark:text-gray-100 font-medium"
                 : "text-gray-400 dark:text-gray-500"
             )}
-            onClick={() => !isDemoMode && setIsEditingEstimate(true)}
-            title={isDemoMode ? (issue.finalEstimate ?? "No estimate") : "Click to edit estimate"}
+            onClick={() => !isDemoMode && canManageIssues && setIsEditingEstimate(true)}
+            title={isDemoMode || !canManageIssues ? (issue.finalEstimate ?? "No estimate") : "Click to edit estimate"}
           >
             {issue.finalEstimate ?? "-"}
           </span>
@@ -183,35 +194,47 @@ export const IssueItem: FC<IssueItemProps> = ({
       </div>
 
       {/* Actions Menu (hidden in demo mode) */}
-      {!isDemoMode && (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3"
+      {!isDemoMode &&
+        (canManageIssues ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Issue actions</span>
+                </Button>
+              }
+            />
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={() => setIsEditingTitle(true)}>
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit title
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDelete(issue._id)}
+                className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
               >
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">Issue actions</span>
-              </Button>
-            }
-          />
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => setIsEditingTitle(true)}>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit title
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDelete(issue._id)}
-              className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={true}
+            className="h-7 w-7 p-0 opacity-50 cursor-not-allowed"
+            title="You don't have permission to manage issues"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">Issue actions unavailable</span>
+          </Button>
+        ))}
     </div>
   );
 };

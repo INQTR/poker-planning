@@ -2,6 +2,7 @@ import { Node } from "@xyflow/react";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { SanitizedVote } from "@/convex/model/rooms";
 import type { RoomUserData } from "@/convex/model/users";
+import type { MemberRole } from "@/convex/permissions";
 
 // Demo mode constants
 export const DEMO_VIEWER_ID = "demo-viewer" as const;
@@ -13,6 +14,8 @@ export type PlayerNodeData = {
   isCardPicked: boolean;
   card: string | null;
   isGameOver: boolean;
+  role: MemberRole;
+  canRemove: boolean;
 };
 
 export type StoryNodeData = {
@@ -37,6 +40,9 @@ export type SessionNodeData = {
     id: Id<"issues">;
     title: string;
   } | null;
+  canRevealCards: boolean;
+  canControlGameFlow: boolean;
+  canChangeRoomSettings: boolean;
   onRevealCards?: () => void;
   onResetGame?: () => void;
   onToggleAutoComplete?: () => void;

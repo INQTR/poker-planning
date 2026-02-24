@@ -24,6 +24,8 @@ interface IssuesPanelProps {
   isOpen: boolean;
   onClose: () => void;
   isDemoMode?: boolean;
+  canManageIssues?: boolean;
+  canControlGameFlow?: boolean;
 }
 
 export const IssuesPanel: FC<IssuesPanelProps> = ({
@@ -32,6 +34,8 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
   isOpen,
   onClose,
   isDemoMode = false,
+  canManageIssues = true,
+  canControlGameFlow = true,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -252,13 +256,15 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
               onKeyDown={handleKeyDown}
               placeholder="Add new issue..."
               className="h-9 text-sm"
-              disabled={isAddingIssue}
+              disabled={isAddingIssue || !canManageIssues}
+              title={!canManageIssues ? "You don't have permission to manage issues" : undefined}
             />
             <Button
               onClick={handleAddIssue}
-              disabled={!newIssueTitle.trim() || isAddingIssue}
+              disabled={!newIssueTitle.trim() || isAddingIssue || !canManageIssues}
               className="h-9 px-3"
               size="sm"
+              title={!canManageIssues ? "You don't have permission to manage issues" : undefined}
             >
               {isAddingIssue ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -325,6 +331,8 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
               onUpdateEstimate={handleUpdateEstimate}
               onDelete={handleDeleteIssue}
               isDemoMode={isDemoMode}
+              canManageIssues={canManageIssues}
+              canControlGameFlow={canControlGameFlow}
             />
           ))
         )}

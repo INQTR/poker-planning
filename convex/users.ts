@@ -7,6 +7,8 @@ import {
   requireRoomMember,
   getOptionalAuthUser,
 } from "./model/auth";
+import { getEffectiveRole } from "./permissions";
+import { canRemoveMember } from "./model/permissions";
 
 function validateName(name: string): string {
   const trimmed = name.trim();
@@ -50,6 +52,7 @@ export const getMyMembership = query({
       avatarUrl: result.user.avatarUrl,
       isSpectator: result.membership.isSpectator,
       isBot: result.membership.isBot,
+      role: result.membership.role ?? ("participant" as const),
       joinedAt: result.membership.joinedAt,
       membershipId: result.membership._id,
     };
@@ -118,15 +121,37 @@ export const leave = mutation({
   },
 });
 
-// Remove a user from a room (admin action - can remove any user in the room)
+// Remove a user from a room (role-based: owner→anyone, facilitator→participants only)
 export const remove = mutation({
   args: {
     userId: v.id("users"),
     roomId: v.id("rooms"),
   },
   handler: async (ctx, args) => {
-    // Require the caller to be a member of the room
-    await requireRoomMember(ctx, args.roomId);
+    const { membership: actorMembership } = await requireRoomMember(
+      ctx,
+      args.roomId
+    );
+    const actorRole = getEffectiveRole(actorMembership);
+
+    // Get target's membership to check their role
+    const targetMembership = await ctx.db
+      .query("roomMemberships")
+      .withIndex("by_room_user", (q) =>
+        q.eq("roomId", args.roomId).eq("userId", args.userId)
+      )
+      .first();
+
+    if (!targetMembership) {
+      throw new Error("Target user is not a member of this room");
+    }
+
+    const targetRole = getEffectiveRole(targetMembership);
+
+    if (!canRemoveMember(actorRole, targetRole)) {
+      throw new Error("You don't have permission to remove this user");
+    }
+
     await Users.leaveRoom(ctx, args.userId, args.roomId);
   },
 });

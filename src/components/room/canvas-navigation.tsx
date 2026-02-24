@@ -48,6 +48,7 @@ import type { RoomWithRelatedData } from "@/convex/model/rooms";
 import type { Id } from "@/convex/_generated/dataModel";
 import { copyTextToClipboard } from "@/utils/copy-text-to-clipboard";
 import { UserPresenceAvatars } from "./user-presence-avatars";
+import { usePermissions } from "@/hooks/usePermissions";
 
 interface CanvasNavigationProps {
   roomData: RoomWithRelatedData;
@@ -77,6 +78,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
     currentUserId,
     roomData.users,
   );
+  const perms = usePermissions(roomData, currentUserId);
   const { toast } = useToast();
   const [isFullscreenSupported] = useState(
     () => typeof document !== "undefined" && document.fullscreenEnabled,
@@ -607,6 +609,8 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
         isOpen={isIssuesPanelOpen}
         onClose={() => onIssuesPanelChange(false)}
         isDemoMode={isDemoMode}
+        canManageIssues={perms.canManageIssues}
+        canControlGameFlow={perms.canControlGameFlow}
       />
     </>
   );
