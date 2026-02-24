@@ -36,6 +36,7 @@ import {
 } from "./nodes";
 import { DEMO_VIEWER_ID, type CustomNodeType, type PlayerNodeData } from "./types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
+import { usePermissions } from "@/hooks/usePermissions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -85,6 +86,9 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
   const createNoteMutation = useMutation(api.canvas.createNote);
   const deleteNoteMutation = useMutation(api.canvas.deleteNote);
   const removeUser = useMutation(api.users.remove);
+
+  // Permission flags for the current user
+  const permissions = usePermissions(roomData, currentUserId);
 
   // Stable ref for roomId - prevents callback recreation on roomData changes
   // Based on Vercel React Best Practices: advanced-use-latest
@@ -217,9 +221,13 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
   const handleDeletePlayer = useCallback(
     (userId: Id<"users">, userName: string, isCurrentUser: boolean) => {
       if (isDemoMode || isCurrentUser) return;
+      // Find the target user's role for permission check
+      const targetUser = roomData?.users.find((u) => u._id === userId);
+      const targetRole = targetUser?.role ?? "participant";
+      if (!permissions.canRemoveTarget(targetRole)) return;
       setPendingDeleteUserId({ id: userId, name: userName });
     },
-    [isDemoMode]
+    [isDemoMode, roomData?.users, permissions]
   );
 
   // Handle confirmed player deletion
@@ -285,6 +293,10 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
     currentUserId,
     selectedCardValue,
     isDemoMode,
+    canRevealCards: permissions.canRevealCards,
+    canControlGameFlow: permissions.canControlGameFlow,
+    canChangeRoomSettings: permissions.canChangeRoomSettings,
+    canRemoveTarget: permissions.canRemoveTarget,
     onRevealCards: handleRevealCards,
     onResetGame: handleResetGame,
     onCardSelect: handleCardSelect,

@@ -27,6 +27,32 @@ export default defineSchema({
     nextIssueNumber: v.optional(v.number()), // Counter for sequential IDs (1, 2, 3...)
     createdAt: v.number(),
     lastActivityAt: v.number(),
+    // Room permissions & ownership
+    ownerId: v.optional(v.id("users")),
+    permissions: v.optional(
+      v.object({
+        revealCards: v.union(
+          v.literal("everyone"),
+          v.literal("facilitators"),
+          v.literal("owner")
+        ),
+        gameFlow: v.union(
+          v.literal("everyone"),
+          v.literal("facilitators"),
+          v.literal("owner")
+        ),
+        issueManagement: v.union(
+          v.literal("everyone"),
+          v.literal("facilitators"),
+          v.literal("owner")
+        ),
+        roomSettings: v.union(
+          v.literal("everyone"),
+          v.literal("facilitators"),
+          v.literal("owner")
+        ),
+      })
+    ),
   })
     .index("by_activity", ["lastActivityAt"])
     .index("by_created", ["createdAt"]), // For querying recent rooms
@@ -75,6 +101,13 @@ export default defineSchema({
     userId: v.id("users"), // FK to global users
     isSpectator: v.boolean(),
     isBot: v.optional(v.boolean()),
+    role: v.optional(
+      v.union(
+        v.literal("owner"),
+        v.literal("facilitator"),
+        v.literal("participant")
+      )
+    ),
     joinedAt: v.number(),
   })
     .index("by_room", ["roomId"])

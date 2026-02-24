@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import * as Issues from "./model/issues";
-import { requireRoomMember } from "./model/auth";
+import { requireRoomPermission } from "./model/auth";
 
 /**
  * List all issues for a room, ordered by their order field
@@ -42,7 +42,7 @@ export const create = mutation({
     title: v.string(),
   },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "issueManagement");
     return await Issues.createIssue(ctx, args);
   },
 });
@@ -58,7 +58,7 @@ export const updateTitle = mutation({
   handler: async (ctx, args) => {
     const issue = await ctx.db.get(args.issueId);
     if (!issue) throw new Error("Issue not found");
-    await requireRoomMember(ctx, issue.roomId);
+    await requireRoomPermission(ctx, issue.roomId, "issueManagement");
     await Issues.updateIssueTitle(ctx, args);
   },
 });
@@ -74,7 +74,7 @@ export const updateEstimate = mutation({
   handler: async (ctx, args) => {
     const issue = await ctx.db.get(args.issueId);
     if (!issue) throw new Error("Issue not found");
-    await requireRoomMember(ctx, issue.roomId);
+    await requireRoomPermission(ctx, issue.roomId, "issueManagement");
     await Issues.updateIssueEstimate(ctx, args);
   },
 });
@@ -87,7 +87,7 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     const issue = await ctx.db.get(args.issueId);
     if (!issue) throw new Error("Issue not found");
-    await requireRoomMember(ctx, issue.roomId);
+    await requireRoomPermission(ctx, issue.roomId, "issueManagement");
     await Issues.removeIssue(ctx, args.issueId);
   },
 });
@@ -101,7 +101,7 @@ export const startVoting = mutation({
     issueId: v.id("issues"),
   },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "gameFlow");
     await Issues.startVotingOnIssue(ctx, args);
   },
 });
@@ -115,7 +115,7 @@ export const reorder = mutation({
     issueIds: v.array(v.id("issues")),
   },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "issueManagement");
     await Issues.reorderIssues(ctx, args);
   },
 });
@@ -126,7 +126,7 @@ export const reorder = mutation({
 export const clearCurrentIssue = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "gameFlow");
     await Issues.clearCurrentIssue(ctx, args.roomId);
   },
 });

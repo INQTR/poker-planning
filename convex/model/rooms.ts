@@ -4,6 +4,7 @@ import * as Canvas from "./canvas";
 import * as Issues from "./issues";
 import * as Users from "./users";
 import { VOTING_SCALES, VotingScaleType } from "../scales";
+import { isRoomOwnerAbsent } from "./permissions";
 
 export interface CreateRoomArgs {
   name: string;
@@ -23,6 +24,7 @@ export interface RoomWithRelatedData {
   room: Doc<"rooms">;
   users: Users.RoomUserData[];
   votes: SanitizedVote[];
+  isOwnerAbsent: boolean;
 }
 
 /**
@@ -65,7 +67,7 @@ function resolveVotingScale(scaleConfig?: CreateRoomArgs["votingScale"]) {
  */
 export async function createRoom(
   ctx: MutationCtx,
-  args: CreateRoomArgs
+  args: CreateRoomArgs & { ownerId?: Id<"users"> }
 ): Promise<Id<"rooms">> {
   const votingScale = resolveVotingScale(args.votingScale);
 
@@ -77,6 +79,7 @@ export async function createRoom(
     votingScale,
     createdAt: Date.now(),
     lastActivityAt: Date.now(),
+    ...(args.ownerId ? { ownerId: args.ownerId } : {}),
   });
 
   // Always initialize canvas nodes
@@ -96,13 +99,14 @@ export async function getRoomWithRelatedData(
   const room = await ctx.db.get(roomId);
   if (!room) return null;
 
-  // Get users (via memberships) and votes in parallel
-  const [users, votes] = await Promise.all([
+  // Get users (via memberships), votes, and owner-absent status in parallel
+  const [users, votes, ownerAbsent] = await Promise.all([
     Users.getRoomUsers(ctx, roomId),
     ctx.db
       .query("votes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
+    isRoomOwnerAbsent(ctx, room),
   ]);
 
   // Sanitize votes based on game state
@@ -112,6 +116,7 @@ export async function getRoomWithRelatedData(
     room,
     users,
     votes: sanitizedVotes,
+    isOwnerAbsent: ownerAbsent,
   };
 }
 

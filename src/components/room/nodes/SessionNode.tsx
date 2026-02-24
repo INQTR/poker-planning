@@ -27,6 +27,9 @@ export const SessionNode = memo(
       autoCompleteVoting,
       autoRevealCountdownStartedAt,
       currentIssue,
+      canRevealCards,
+      canControlGameFlow,
+      canChangeRoomSettings,
       onRevealCards,
       onResetGame,
       onToggleAutoComplete,
@@ -174,19 +177,25 @@ export const SessionNode = memo(
 
           {/* Auto-reveal toggle */}
           <button
-            onClick={onToggleAutoComplete}
+            onClick={canChangeRoomSettings ? onToggleAutoComplete : undefined}
+            disabled={!canChangeRoomSettings}
             className={cn(
               "flex items-center gap-2 w-full px-3 py-1.5 mb-3 rounded-md text-xs font-medium transition-colors",
-              autoCompleteVoting
-                ? "bg-amber-100 dark:bg-status-warning-bg text-amber-700 dark:text-status-warning-fg hover:bg-amber-200 dark:hover:bg-status-warning-bg/80"
-                : "bg-gray-100 dark:bg-surface-1 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-surface-3",
+              !canChangeRoomSettings
+                ? "opacity-50 cursor-not-allowed bg-gray-100 dark:bg-surface-1 text-gray-500 dark:text-gray-400"
+                : autoCompleteVoting
+                  ? "bg-amber-100 dark:bg-status-warning-bg text-amber-700 dark:text-status-warning-fg hover:bg-amber-200 dark:hover:bg-status-warning-bg/80"
+                  : "bg-gray-100 dark:bg-surface-1 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-surface-3",
             )}
             aria-label={
-              autoCompleteVoting
-                ? "Disable auto-reveal when all vote"
-                : "Enable auto-reveal when all vote"
+              !canChangeRoomSettings
+                ? "You don't have permission to change auto-reveal"
+                : autoCompleteVoting
+                  ? "Disable auto-reveal when all vote"
+                  : "Enable auto-reveal when all vote"
             }
             aria-pressed={autoCompleteVoting}
+            title={!canChangeRoomSettings ? "You don't have permission to change this setting" : undefined}
           >
             <Zap
               className={cn(
@@ -246,19 +255,22 @@ export const SessionNode = memo(
             {isVotingComplete ? (
               /* STATE: Voting Complete → New Round */
               <button
-                onClick={handleResetClick}
-                disabled={resetCooldown > 0}
+                onClick={canControlGameFlow ? handleResetClick : undefined}
+                disabled={resetCooldown > 0 || !canControlGameFlow}
                 className={cn(
                   "w-full h-12 flex items-center justify-center gap-2 rounded-lg font-medium transition-all",
-                  resetCooldown > 0
+                  !canControlGameFlow || resetCooldown > 0
                     ? "bg-gray-100 dark:bg-surface-2 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                     : "bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white shadow-sm hover:shadow-md",
                 )}
                 aria-label={
-                  resetCooldown > 0
-                    ? `Please wait ${resetCooldown} seconds`
-                    : "Start a new voting round"
+                  !canControlGameFlow
+                    ? "You don't have permission to start a new round"
+                    : resetCooldown > 0
+                      ? `Please wait ${resetCooldown} seconds`
+                      : "Start a new voting round"
                 }
+                title={!canControlGameFlow ? "You don't have permission to start a new round" : undefined}
               >
                 <RotateCcw
                   className={cn("h-5 w-5", resetCooldown > 0 && "animate-spin")}
@@ -272,9 +284,19 @@ export const SessionNode = memo(
             ) : isCountdownActive ? (
               /* STATE: Countdown Active → Cancel */
               <button
-                onClick={onCancelAutoReveal}
-                className="w-full h-12 flex items-center justify-center gap-3 rounded-lg font-medium bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white shadow-sm hover:shadow-md transition-all animate-pulse"
-                aria-label={`Auto-revealing in ${countdownSeconds} seconds. Tap to cancel.`}
+                onClick={canRevealCards ? onCancelAutoReveal : undefined}
+                disabled={!canRevealCards}
+                className={cn(
+                  "w-full h-12 flex items-center justify-center gap-3 rounded-lg font-medium transition-all",
+                  canRevealCards
+                    ? "bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white shadow-sm hover:shadow-md animate-pulse"
+                    : "bg-gray-100 dark:bg-surface-2 text-gray-400 dark:text-gray-500 cursor-not-allowed",
+                )}
+                aria-label={
+                  canRevealCards
+                    ? `Auto-revealing in ${countdownSeconds} seconds. Tap to cancel.`
+                    : "You don't have permission to cancel auto-reveal"
+                }
               >
                 <span className="flex items-center gap-2">
                   <span className="font-mono text-lg font-bold tabular-nums">
@@ -287,21 +309,30 @@ export const SessionNode = memo(
             ) : (
               /* STATE: Voting In Progress → Reveal */
               <button
-                onClick={onRevealCards}
-                disabled={!hasVotes}
+                onClick={canRevealCards ? onRevealCards : undefined}
+                disabled={!hasVotes || !canRevealCards}
                 className={cn(
                   "w-full h-12 flex items-center justify-center gap-2 rounded-lg font-medium transition-all",
-                  hasVotes
-                    ? "bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white shadow-sm hover:shadow-md"
-                    : "bg-gray-100 dark:bg-surface-2 text-gray-400 dark:text-gray-500 cursor-not-allowed",
+                  !canRevealCards || !hasVotes
+                    ? "bg-gray-100 dark:bg-surface-2 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white shadow-sm hover:shadow-md",
                 )}
                 aria-label={
-                  hasVotes ? "Reveal all votes" : "Waiting for votes to reveal"
+                  !canRevealCards
+                    ? "You don't have permission to reveal votes"
+                    : hasVotes
+                      ? "Reveal all votes"
+                      : "Waiting for votes to reveal"
                 }
+                title={!canRevealCards ? "You don't have permission to reveal votes" : undefined}
               >
                 <Play className="h-5 w-5" />
                 <span>
-                  {hasVotes ? "Reveal Votes" : "Waiting for Votes..."}
+                  {!canRevealCards
+                    ? "Reveal Votes"
+                    : hasVotes
+                      ? "Reveal Votes"
+                      : "Waiting for Votes..."}
                 </span>
               </button>
             )}

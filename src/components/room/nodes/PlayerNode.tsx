@@ -2,6 +2,7 @@
 
 import { Handle, Position, NodeProps } from "@xyflow/react";
 import { ReactElement, memo } from "react";
+import { Crown, Star } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "../../user-menu/user-avatar";
@@ -9,7 +10,7 @@ import type { PlayerNodeType } from "../types";
 
 export const PlayerNode = memo(
   ({ data, selected }: NodeProps<PlayerNodeType>): ReactElement => {
-    const { user, isCurrentUser, isCardPicked, card, isGameOver } = data;
+    const { user, isCurrentUser, isCardPicked, card, isGameOver, role } = data;
 
     // Match VotingCardNode card style
     const cardClasses = cn(
@@ -47,7 +48,9 @@ export const PlayerNode = memo(
           role="article"
           aria-label={`Player ${user.name}${isCurrentUser ? " (you)" : ""}${
             user.isSpectator ? ", spectator" : isCardPicked ? ", has voted" : ", has not voted yet"
-          }${card ? `, voted ${card}` : ""}`}
+          }${card ? `, voted ${card}` : ""}${
+            role === "owner" ? ", owner" : role === "facilitator" ? ", facilitator" : ""
+          }`}
         >
           {/* Card */}
           <div className={cardClasses}>{getVoteDisplay()}</div>
@@ -63,6 +66,12 @@ export const PlayerNode = memo(
                 <span className="text-gray-400 dark:text-gray-500"> (you)</span>
               )}
             </span>
+            {role === "owner" && (
+              <Crown className="h-3.5 w-3.5 text-amber-500 shrink-0" aria-label="Owner" />
+            )}
+            {role === "facilitator" && (
+              <Star className="h-3.5 w-3.5 text-blue-500 shrink-0" aria-label="Facilitator" />
+            )}
           </div>
         </div>
       </div>

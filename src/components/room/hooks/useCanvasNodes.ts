@@ -8,6 +8,7 @@ import { useMemo, useRef, useEffect } from "react";
 import { DEMO_VIEWER_ID, type CustomNodeType } from "../types";
 import type { RoomWithRelatedData, SanitizedVote } from "@/convex/model/rooms";
 import type { RoomUserData } from "@/convex/model/users";
+import type { MemberRole } from "@/convex/permissions";
 import { DEFAULT_SCALE } from "@/convex/scales";
 
 // Layout constants for voting cards (matching backend canvas.ts)
@@ -21,6 +22,10 @@ interface UseCanvasNodesProps {
   currentUserId?: string;
   selectedCardValue: string | null;
   isDemoMode?: boolean;
+  canRevealCards?: boolean;
+  canControlGameFlow?: boolean;
+  canChangeRoomSettings?: boolean;
+  canRemoveTarget?: (targetRole: MemberRole) => boolean;
   onRevealCards?: () => void;
   onResetGame?: () => void;
   onCardSelect?: (cardValue: string) => void;
@@ -44,6 +49,10 @@ export function useCanvasNodes({
   currentUserId,
   selectedCardValue,
   isDemoMode = false,
+  canRevealCards = true,
+  canControlGameFlow = true,
+  canChangeRoomSettings = true,
+  canRemoveTarget,
   onRevealCards,
   onResetGame,
   onCardSelect,
@@ -123,6 +132,7 @@ export function useCanvasNodes({
 
         const userVote = votes.find((v: SanitizedVote) => v.userId === userId);
 
+        const userRole = user.role ?? "participant";
         const playerNode: CustomNodeType = {
           id: node.nodeId,
           type: "player",
@@ -133,6 +143,8 @@ export function useCanvasNodes({
             isCardPicked: userVote?.hasVoted || false,
             card: room.isGameOver ? userVote?.cardLabel || null : null,
             isGameOver: room.isGameOver,
+            role: userRole,
+            canRemove: canRemoveTarget ? canRemoveTarget(userRole) : true,
           },
           draggable: !node.isLocked,
         };
@@ -167,6 +179,9 @@ export function useCanvasNodes({
             currentIssue: currentIssueId
               ? { id: currentIssueId, title: currentIssueTitle ?? "" }
               : null,
+            canRevealCards,
+            canControlGameFlow,
+            canChangeRoomSettings,
             onRevealCards: callbackRefs.current.onRevealCards,
             onResetGame: callbackRefs.current.onResetGame,
             onToggleAutoComplete: callbackRefs.current.onToggleAutoComplete,
@@ -255,7 +270,7 @@ export function useCanvasNodes({
     return allNodes;
     // Callbacks are accessed via callbackRefs to avoid adding them as dependencies
     // This reduces re-computations from 15 deps to 8 deps
-  }, [canvasNodes, roomData, currentUserId, selectedCardValue, roomId, currentIssueId, currentIssueTitle, isDemoMode]);
+  }, [canvasNodes, roomData, currentUserId, selectedCardValue, roomId, currentIssueId, currentIssueTitle, isDemoMode, canRevealCards, canControlGameFlow, canChangeRoomSettings, canRemoveTarget]);
   /* eslint-enable react-hooks/refs */
 
   const edges = useMemo(() => {

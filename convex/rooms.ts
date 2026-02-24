@@ -1,7 +1,10 @@
 import { mutation, query, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import * as Rooms from "./model/rooms";
-import { requireAuth, requireRoomMember } from "./model/auth";
+import {
+  requireAuth,
+  requireRoomPermission,
+} from "./model/auth";
 
 // Internal mutation called by scheduler for auto-reveal
 export const scheduledAutoReveal = internalMutation({
@@ -37,8 +40,35 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    await requireAuth(ctx);
-    return await Rooms.createRoom(ctx, args);
+    const identity = await requireAuth(ctx);
+
+    // Best-effort fallback for guest/session races: if the authenticated user
+    // does not yet have an app-level record, create one now.
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("by_auth_user", (q) => q.eq("authUserId", identity.subject))
+      .first();
+
+    let ownerId = existingUser?._id;
+    if (!ownerId) {
+      const identityName =
+        typeof identity.name === "string" ? identity.name.trim() : "";
+      const identityEmail =
+        typeof identity.email === "string" ? identity.email.trim() : "";
+      const fallbackName =
+        identityName ||
+        (identityEmail ? identityEmail.split("@")[0] : "") ||
+        "Guest";
+
+      ownerId = await ctx.db.insert("users", {
+        authUserId: identity.subject,
+        name: fallbackName,
+        ...(identityEmail ? { email: identityEmail } : {}),
+        createdAt: Date.now(),
+      });
+    }
+
+    return await Rooms.createRoom(ctx, { ...args, ownerId });
   },
 });
 
@@ -85,7 +115,7 @@ export const updateActivity = mutation({
 export const showCards = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "revealCards");
     await Rooms.showRoomCards(ctx, args.roomId);
   },
 });
@@ -94,7 +124,7 @@ export const showCards = mutation({
 export const resetGame = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "gameFlow");
     await Rooms.resetRoomGame(ctx, args.roomId);
   },
 });
@@ -103,7 +133,7 @@ export const resetGame = mutation({
 export const toggleAutoComplete = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "roomSettings");
     const room = await ctx.db.get(args.roomId);
     if (room) {
       // Cancel any scheduled reveal when toggling
@@ -128,7 +158,7 @@ export const toggleAutoComplete = mutation({
 export const cancelAutoRevealCountdown = mutation({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "revealCards");
     const room = await ctx.db.get(args.roomId);
     if (room && room.autoRevealCountdownStartedAt) {
       // Cancel the scheduled job if it exists
@@ -154,7 +184,7 @@ export const rename = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    await requireRoomMember(ctx, args.roomId);
+    await requireRoomPermission(ctx, args.roomId, "roomSettings");
     const room = await ctx.db.get(args.roomId);
     if (!room) {
       throw new Error("Room not found");

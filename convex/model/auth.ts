@@ -1,5 +1,7 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id, Doc } from "../_generated/dataModel";
+import { PermissionCategory } from "../permissions";
+import { requirePermission } from "./permissions";
 
 /**
  * Auth identity returned by ctx.auth.getUserIdentity().
@@ -79,5 +81,27 @@ export async function requireRoomMember(
   if (!membership) {
     throw new Error("Not a member of this room");
   }
+  return { identity, user, membership };
+}
+
+/**
+ * Requires authentication, room membership, AND permission for a specific category.
+ * Combines requireRoomMember + requirePermission in one call.
+ */
+export async function requireRoomPermission(
+  ctx: QueryCtx | MutationCtx,
+  roomId: Id<"rooms">,
+  category: PermissionCategory
+): Promise<{
+  identity: AuthIdentity;
+  user: Doc<"users">;
+  membership: Doc<"roomMemberships">;
+}> {
+  const { identity, user, membership } = await requireRoomMember(ctx, roomId);
+  const room = await ctx.db.get(roomId);
+  if (!room) {
+    throw new Error("Room not found");
+  }
+  await requirePermission(ctx, room, membership, category);
   return { identity, user, membership };
 }
