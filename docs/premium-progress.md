@@ -48,14 +48,14 @@
 
 ### Epic 3: Time-to-Consensus Tracking
 
-**Status: Not started**
+**Status: Complete**
 
-- [ ] **3.1** Schema: `votingTimestamps` table
-- [ ] **3.2** Backend: Record voting start/end timestamps
-- [ ] **3.3** Backend: Time-to-consensus analytics query
-- [ ] **3.4** Frontend: Session summary metrics
-- [ ] **3.5** Frontend: Outlier issue highlights
-- [ ] **3.6** Frontend: Trend analysis chart
+- [x] **3.1** Schema: `votingTimestamps` table + `timeToConsensusMs` in `voteStats`
+- [x] **3.2** Backend: Record voting start/end timestamps (start, complete, reset, switch, New Round)
+- [x] **3.3** Backend: Time-to-consensus analytics query (`getTimeToConsensusStats`)
+- [x] **3.4** Frontend: Session summary metrics (`TimeToConsensusCard`)
+- [x] **3.5** Frontend: Outlier issue highlights (`ConsensusOutliers`)
+- [x] **3.6** Frontend: Trend analysis chart (`ConsensusTrend`)
 
 ### Epic 4: Voter Alignment Matrix
 
@@ -165,4 +165,4 @@
 
 ## Next Focus
 
-**Epic 3 (Time-to-Consensus Tracking)** — the first Pro feature to build. No gating needed yet; it will be available to all users until Phase 4.
+**Epic 4 (Voter Alignment Matrix)** — next Pro feature to build. No gating needed yet; all features available to all users until Phase 4.
