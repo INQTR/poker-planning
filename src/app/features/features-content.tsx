@@ -31,6 +31,16 @@ import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { GithubIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
+import { 
+  RealtimeVotingAnimation,
+  AnalyticsAnimation,
+  TimerAnimation,
+  CanvasAnimation,
+  ScalesAnimation,
+  PlayerManagementAnimation,
+  IssuesAnimation,
+  AutoCompleteAnimation
+} from "./feature-animations";
 
 // Features that are available now
 const coreFeatures = [
@@ -40,6 +50,7 @@ const coreFeatures = [
       "Simultaneous card selection with instant sync across all participants",
     icon: Users,
     gradient: "from-violet-500 to-purple-600",
+    visual: RealtimeVotingAnimation,
   },
   {
     name: "Multiple Voting Scales",
@@ -47,6 +58,7 @@ const coreFeatures = [
       "Fibonacci, Standard, T-Shirt sizes, or create your own custom scale",
     icon: Layers,
     gradient: "from-amber-500 to-orange-600",
+    visual: ScalesAnimation,
   },
   {
     name: "Results Analytics",
@@ -54,12 +66,14 @@ const coreFeatures = [
       "Average, median, mode, consensus strength, and outlier detection",
     icon: BarChart3,
     gradient: "from-emerald-500 to-teal-600",
+    visual: AnalyticsAnimation,
   },
   {
     name: "Whiteboard Canvas",
     description: "Drag-and-drop React Flow canvas with multiple node types",
     icon: Layout,
     gradient: "from-blue-500 to-cyan-600",
+    visual: CanvasAnimation,
   },
   {
     name: "Issues Management",
@@ -67,18 +81,21 @@ const coreFeatures = [
       "Create, edit, and track issues with CSV export and vote statistics",
     icon: FileText,
     gradient: "from-sky-500 to-blue-600",
+    visual: IssuesAnimation,
   },
   {
     name: "Auto-Complete Voting",
     description: "3-second countdown auto-reveal when all participants vote",
     icon: PlayCircle,
     gradient: "from-rose-500 to-pink-600",
+    visual: AutoCompleteAnimation,
   },
   {
     name: "Player Management",
     description: "Join and leave rooms freely, with spectator mode support",
     icon: UserPlus,
     gradient: "from-indigo-500 to-violet-600",
+    visual: PlayerManagementAnimation,
   },
   {
     name: "Synchronized Timer",
@@ -86,6 +103,7 @@ const coreFeatures = [
       "Server-synced countdown with start, pause, and reset controls",
     icon: Timer,
     gradient: "from-fuchsia-500 to-purple-600",
+    visual: TimerAnimation,
   },
 ];
 
@@ -216,59 +234,66 @@ export function FeaturesContent() {
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 grid-flow-dense">
               {coreFeatures.map((feature, index) => (
                 <div
                   key={feature.name}
                   className={cn(
-                    "group relative overflow-hidden rounded-3xl bg-gray-50/50 dark:bg-zinc-900/10 p-8 sm:p-10 border border-gray-200/50 dark:border-zinc-800/50",
+                    "group relative overflow-hidden rounded-3xl bg-gray-50/50 dark:bg-zinc-900/10 border border-gray-200/50 dark:border-zinc-800/50 flex flex-col",
                     index === 0 && "sm:col-span-2 sm:row-span-2",
-                    index === 2 && "lg:col-span-2",
+                    index === 2 && "lg:col-span-2 min-h-[300px]",
+                    index !== 0 && index !== 2 && "min-h-[320px]"
                   )}
                 >
-                  <div className="relative h-full flex flex-col">
+                  {/* Content Top */}
+                  <div className="relative z-10 p-6 sm:p-8 flex-shrink-0 pointer-events-none">
                     <div
                       className={cn(
-                        "inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 mb-8",
+                        "inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 mb-6 pointer-events-auto shadow-sm",
                       )}
                     >
-                      <feature.icon className="h-6 w-6 text-gray-900 dark:text-white" />
+                      <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-900 dark:text-white" />
                     </div>
 
                     <h3
                       className={cn(
-                        "font-bold tracking-tight text-gray-900 dark:text-white mb-3",
-                        index === 0 ? "text-3xl" : "text-xl",
+                        "font-bold tracking-tight text-gray-900 dark:text-white mb-2 pointer-events-auto",
+                        index === 0 ? "text-2xl sm:text-3xl" : "text-xl",
                       )}
                     >
                       {feature.name}
                     </h3>
                     <p
                       className={cn(
-                        "text-gray-600 dark:text-gray-400 font-light leading-relaxed",
-                        index === 0 ? "text-lg" : "text-base",
+                        "text-gray-600 dark:text-gray-400 font-light leading-relaxed pointer-events-auto",
+                        index === 0 ? "text-base sm:text-lg max-w-md" : "text-sm sm:text-base",
                       )}
                     >
                       {feature.description}
                     </p>
-
+                    
                     {index === 0 && (
-                      <div className="mt-auto pt-12 flex items-center gap-4">
+                      <div className="mt-6 pt-6 border-t border-gray-200/50 dark:border-zinc-700/50 flex items-center gap-4 pointer-events-auto">
                         <div className="flex -space-x-3">
                           {[1, 2, 3, 4].map((i) => (
                             <div
                               key={i}
-                              className="w-10 h-10 rounded-full bg-gray-200 dark:bg-zinc-800 border-2 border-white dark:border-zinc-900 flex items-center justify-center text-sm font-medium text-gray-900 dark:text-white"
+                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 dark:bg-zinc-800 border-2 border-white dark:border-zinc-900 flex items-center justify-center text-xs sm:text-sm font-medium text-gray-900 dark:text-white"
                             >
                               {i}
                             </div>
                           ))}
                         </div>
-                        <span className="text-base font-medium text-gray-500 dark:text-gray-400">
+                        <span className="text-sm sm:text-base font-medium text-gray-500 dark:text-gray-400">
                           Unlimited team members
                         </span>
                       </div>
                     )}
+                  </div>
+
+                  {/* Background animation Bottom */}
+                  <div className="relative flex-1 w-full min-h-[140px] pointer-events-none">
+                    {feature.visual && <feature.visual />}
                   </div>
                 </div>
               ))}
