@@ -161,4 +161,21 @@ export default defineSchema({
   })
     .index("by_issue", ["issueId"])
     .index("by_room", ["roomId"]),
+
+  // Individual vote snapshots for voter alignment analytics
+  individualVotes: defineTable({
+    roomId: v.id("rooms"),
+    issueId: v.id("issues"),
+    userId: v.id("users"),
+    cardLabel: v.string(),
+    cardValue: v.optional(v.number()),
+    consensusLabel: v.optional(v.string()),
+    consensusValue: v.optional(v.number()),
+    deltaSteps: v.optional(v.number()), // scale index diff from consensus
+    votedAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_user", ["userId"])
+    .index("by_room_user", ["roomId", "userId"])
+    .index("by_room", ["roomId"]),
 });

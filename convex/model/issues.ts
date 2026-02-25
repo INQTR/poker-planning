@@ -1,5 +1,6 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
 import { Id, Doc } from "../_generated/dataModel";
+import { SPECIAL_CARDS } from "../scales";
 
 export type IssueStatus = "pending" | "voting" | "completed";
 
@@ -169,6 +170,13 @@ export async function removeIssue(
     .collect();
   await Promise.all(timestamps.map((ts) => ctx.db.delete(ts._id)));
 
+  // Delete associated individual vote snapshots
+  const individualVotes = await ctx.db
+    .query("individualVotes")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  await Promise.all(individualVotes.map((iv) => ctx.db.delete(iv._id)));
+
   await ctx.db.delete(issueId);
 }
 
@@ -298,9 +306,9 @@ export async function calculateConsensus(
     .withIndex("by_room", (q) => q.eq("roomId", roomId))
     .collect();
 
-  // Filter valid votes (exclude special cards like "?" and coffee)
+  // Filter valid votes (exclude special cards)
   const validVotes = votes.filter(
-    (v) => v.cardLabel && v.cardLabel !== "?" && v.cardLabel !== "coffee"
+    (v) => v.cardLabel && !SPECIAL_CARDS.includes(v.cardLabel)
   );
 
   if (validVotes.length === 0) return null;
@@ -343,9 +351,9 @@ export async function calculateVoteStats(
     .withIndex("by_room", (q) => q.eq("roomId", roomId))
     .collect();
 
-  // Filter valid votes (exclude special cards like "?" and coffee)
+  // Filter valid votes (exclude special cards)
   const validVotes = votes.filter(
-    (v) => v.cardLabel && v.cardLabel !== "?" && v.cardLabel !== "☕"
+    (v) => v.cardLabel && !SPECIAL_CARDS.includes(v.cardLabel)
   );
 
   const voteCount = validVotes.length;

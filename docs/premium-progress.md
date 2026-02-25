@@ -59,13 +59,13 @@
 
 ### Epic 4: Voter Alignment Matrix
 
-**Status: Not started**
+**Status: Complete**
 
-- [ ] **4.1** Schema: `individualVotes` table (pre-reveal snapshots)
-- [ ] **4.2** Backend: Capture individual votes before reveal
-- [ ] **4.3** Backend: Alignment analytics queries
-- [ ] **4.4** Frontend: Alignment scatter plot / matrix
-- [ ] **4.5** Frontend: Individual voting stats
+- [x] **4.1** Schema: `individualVotes` table (pre-reveal snapshots)
+- [x] **4.2** Backend: Capture individual votes before reveal
+- [x] **4.3** Backend: Alignment analytics queries
+- [x] **4.4** Frontend: Alignment scatter plot / matrix
+- [x] **4.5** Frontend: Individual voting stats
 
 ### Epic 5: Sprint Predictability Score
 

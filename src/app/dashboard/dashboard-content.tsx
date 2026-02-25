@@ -15,6 +15,8 @@ import {
   TimeToConsensusCard,
   ConsensusOutliers,
   ConsensusTrend,
+  VoterAlignmentChart,
+  IndividualVotingStats,
 } from "@/components/dashboard";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 
@@ -64,6 +66,11 @@ export function DashboardContent() {
     isAuthenticated ? { dateRange } : "skip"
   );
 
+  const voterAlignment = useQuery(
+    api.analytics.getVoterAlignment,
+    isAuthenticated ? { dateRange } : "skip"
+  );
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.replace("/auth/signin?from=/dashboard");
@@ -80,7 +87,8 @@ export function DashboardContent() {
     agreementTrend === undefined ||
     velocityStats === undefined ||
     voteDistribution === undefined ||
-    timeToConsensus === undefined;
+    timeToConsensus === undefined ||
+    voterAlignment === undefined;
 
   return (
     <>
@@ -122,6 +130,18 @@ export function DashboardContent() {
           />
           <ConsensusTrend
             data={timeToConsensus?.trendBySession ?? []}
+            isLoading={isLoading}
+          />
+        </div>
+
+        {/* Voter Alignment */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
+          <VoterAlignmentChart
+            data={voterAlignment?.scatterPoints ?? []}
+            isLoading={isLoading}
+          />
+          <IndividualVotingStats
+            data={voterAlignment?.users ?? []}
             isLoading={isLoading}
           />
         </div>

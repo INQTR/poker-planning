@@ -1,5 +1,5 @@
 import { QueryCtx } from "../_generated/server";
-import { Doc } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 
 // Types for analytics data
 export interface SessionSummary {
@@ -534,4 +534,147 @@ export async function getDashboardSummary(
     totalStoryPoints,
     averageAgreement,
   };
+}
+
+// Types for voter alignment analytics
+export interface VoterAlignmentUser {
+  userId: string;
+  userName: string;
+  totalVotes: number;
+  agreesWithConsensus: number;
+  agreementRate: number;
+  averageDelta: number | null;
+  tendency: "under" | "over" | "aligned" | "unknown";
+}
+
+export interface VoterAlignmentScatterPoint {
+  userId: string;
+  userName: string;
+  x: number; // averageDelta
+  y: number; // stdDev (consistency)
+}
+
+export interface VoterAlignmentData {
+  users: VoterAlignmentUser[];
+  scatterPoints: VoterAlignmentScatterPoint[];
+}
+
+/**
+ * Gets voter alignment statistics across all user's sessions
+ */
+export async function getVoterAlignment(
+  ctx: QueryCtx,
+  authUserId: string,
+  dateRange?: DateRange
+): Promise<VoterAlignmentData> {
+  const membershipsWithRooms = await getUserMemberships(ctx, authUserId);
+
+  // Collect all individual votes across rooms
+  const allVotes: Doc<"individualVotes">[] = [];
+
+  for (const { room } of membershipsWithRooms) {
+    const votes = await ctx.db
+      .query("individualVotes")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    for (const vote of votes) {
+      if (dateRange) {
+        if (vote.votedAt < dateRange.from || vote.votedAt > dateRange.to) {
+          continue;
+        }
+      }
+      allVotes.push(vote);
+    }
+  }
+
+  if (allVotes.length === 0) {
+    return { users: [], scatterPoints: [] };
+  }
+
+  // Group by userId
+  const byUser = new Map<
+    Id<"users">,
+    Doc<"individualVotes">[]
+  >();
+
+  for (const vote of allVotes) {
+    const existing = byUser.get(vote.userId) ?? [];
+    existing.push(vote);
+    byUser.set(vote.userId, existing);
+  }
+
+  // Resolve user names and compute stats
+  const users: VoterAlignmentUser[] = [];
+  const scatterPoints: VoterAlignmentScatterPoint[] = [];
+
+  for (const [userId, votes] of byUser) {
+    const user = await ctx.db.get(userId);
+    const userName = user?.name ?? "Unknown";
+
+    const totalVotes = votes.length;
+    const agreesWithConsensus = votes.filter(
+      (v) => v.consensusLabel !== undefined && v.cardLabel === v.consensusLabel
+    ).length;
+    const agreementRate =
+      totalVotes > 0 ? Math.round((agreesWithConsensus / totalVotes) * 100) : 0;
+
+    // Compute average delta from deltaSteps (only votes with delta)
+    const deltas = votes
+      .map((v) => v.deltaSteps)
+      .filter((d): d is number => d !== undefined);
+
+    const hasDeltas = deltas.length > 0;
+    const averageDelta = hasDeltas
+      ? Math.round((deltas.reduce((s, d) => s + d, 0) / deltas.length) * 100) / 100
+      : null;
+
+    // Compute stdDev of deltaSteps for scatter y-axis
+    let stdDev = 0;
+    if (deltas.length > 1) {
+      const mean = deltas.reduce((s, d) => s + d, 0) / deltas.length;
+      const variance =
+        deltas.reduce((s, d) => s + (d - mean) ** 2, 0) / deltas.length;
+      stdDev = Math.round(Math.sqrt(variance) * 100) / 100;
+    }
+
+    const tendency: "under" | "over" | "aligned" | "unknown" =
+      averageDelta === null
+        ? "unknown"
+        : averageDelta < -0.5
+          ? "under"
+          : averageDelta > 0.5
+            ? "over"
+            : "aligned";
+
+    users.push({
+      userId,
+      userName,
+      totalVotes,
+      agreesWithConsensus,
+      agreementRate,
+      averageDelta,
+      tendency,
+    });
+
+    // Only include in scatter chart if we have delta data (numeric scales)
+    if (averageDelta !== null) {
+      scatterPoints.push({
+        userId,
+        userName,
+        x: averageDelta,
+        y: stdDev,
+      });
+    }
+  }
+
+  // Sort users by total votes descending
+  users.sort((a, b) => b.totalVotes - a.totalVotes);
+  scatterPoints.sort((a, b) => {
+    const userA = users.find((u) => u.userId === a.userId);
+    const userB = users.find((u) => u.userId === b.userId);
+    return (userB?.totalVotes ?? 0) - (userA?.totalVotes ?? 0);
+  });
+
+  return { users, scatterPoints };
 }

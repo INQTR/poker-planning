@@ -58,7 +58,7 @@ export async function cleanupRoom(
   roomId: Id<"rooms">
 ): Promise<Omit<CleanupResult, "roomsDeleted">> {
   // Get all related data in parallel
-  const [votes, memberships, canvasNodes] = await Promise.all([
+  const [votes, memberships, canvasNodes, votingTimestamps, individualVotes] = await Promise.all([
     ctx.db
       .query("votes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
@@ -69,6 +69,14 @@ export async function cleanupRoom(
       .collect(),
     ctx.db
       .query("canvasNodes")
+      .withIndex("by_room", (q) => q.eq("roomId", roomId))
+      .collect(),
+    ctx.db
+      .query("votingTimestamps")
+      .withIndex("by_room", (q) => q.eq("roomId", roomId))
+      .collect(),
+    ctx.db
+      .query("individualVotes")
       .withIndex("by_room", (q) => q.eq("roomId", roomId))
       .collect(),
   ]);
@@ -84,6 +92,12 @@ export async function cleanupRoom(
 
   // Delete canvas nodes
   deletePromises.push(...canvasNodes.map((node) => ctx.db.delete(node._id)));
+
+  // Delete voting timestamps
+  deletePromises.push(...votingTimestamps.map((ts) => ctx.db.delete(ts._id)));
+
+  // Delete individual vote snapshots
+  deletePromises.push(...individualVotes.map((iv) => ctx.db.delete(iv._id)));
 
   // Wait for all deletions to complete
   await Promise.all(deletePromises);
@@ -106,6 +120,8 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
   orphanedVotes: number;
   orphanedMemberships: number;
   orphanedCanvasNodes: number;
+  orphanedVotingTimestamps: number;
+  orphanedIndividualVotes: number;
 }> {
   // Get all existing room IDs once
   const allRooms = await ctx.db.query("rooms").collect();
@@ -116,6 +132,8 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
     orphanedVotes,
     orphanedMemberships,
     orphanedCanvasNodes,
+    orphanedVotingTimestamps,
+    orphanedIndividualVotes,
   ] = await Promise.all([
     // Clean orphaned votes
     cleanupOrphanedRecords(ctx, "votes", existingRoomIds),
@@ -123,12 +141,18 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
     cleanupOrphanedRecords(ctx, "roomMemberships", existingRoomIds),
     // Clean orphaned canvas nodes
     cleanupOrphanedRecords(ctx, "canvasNodes", existingRoomIds),
+    // Clean orphaned voting timestamps
+    cleanupOrphanedRecords(ctx, "votingTimestamps", existingRoomIds),
+    // Clean orphaned individual votes
+    cleanupOrphanedRecords(ctx, "individualVotes", existingRoomIds),
   ]);
 
   return {
     orphanedVotes,
     orphanedMemberships,
     orphanedCanvasNodes,
+    orphanedVotingTimestamps,
+    orphanedIndividualVotes,
   };
 }
 
@@ -138,7 +162,7 @@ export async function cleanupOrphanedData(ctx: MutationCtx): Promise<{
  */
 async function cleanupOrphanedRecords(
   ctx: MutationCtx,
-  tableName: "votes" | "roomMemberships" | "canvasNodes",
+  tableName: "votes" | "roomMemberships" | "canvasNodes" | "votingTimestamps" | "individualVotes",
   existingRoomIds: Set<Id<"rooms">>
 ): Promise<number> {
   const BATCH_SIZE = 100;

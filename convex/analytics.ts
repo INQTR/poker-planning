@@ -114,3 +114,18 @@ export const getParticipationStats = query({
     );
   },
 });
+
+// Get voter alignment data (scatter plot + stats table)
+export const getVoterAlignment = query({
+  args: {
+    dateRange: dateRangeValidator,
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
+    return await Analytics.getVoterAlignment(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
+  },
+});

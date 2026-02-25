@@ -3,6 +3,7 @@ import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
 import * as Issues from "./issues";
 import * as Users from "./users";
+import * as Votes from "./votes";
 import { VOTING_SCALES, VotingScaleType } from "../scales";
 import { isRoomOwnerAbsent } from "./permissions";
 
@@ -195,6 +196,14 @@ export async function showRoomCards(
         voteStats,
       });
     }
+
+    // Snapshot individual votes for voter alignment analytics
+    await Votes.snapshotVotesForHistory(ctx, {
+      roomId,
+      issueId: room.currentIssueId,
+      consensusLabel: consensus,
+      votingScale: room.votingScale,
+    });
   }
 }
 

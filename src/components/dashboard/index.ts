@@ -12,3 +12,5 @@ export { TimeToConsensusCard } from "./TimeToConsensusCard";
 export { ConsensusOutliers } from "./ConsensusOutliers";
 export { ConsensusTrend } from "./ConsensusTrend";
 export { DateRangeProvider, useDateRange } from "./date-range-context";
+export { VoterAlignmentChart } from "./VoterAlignmentChart";
+export { IndividualVotingStats } from "./IndividualVotingStats";
