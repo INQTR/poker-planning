@@ -12,6 +12,9 @@ import {
   AgreementChart,
   VelocityChart,
   VoteDistribution,
+  TimeToConsensusCard,
+  ConsensusOutliers,
+  ConsensusTrend,
 } from "@/components/dashboard";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 
@@ -56,6 +59,11 @@ export function DashboardContent() {
     isAuthenticated ? { dateRange } : "skip"
   );
 
+  const timeToConsensus = useQuery(
+    api.analytics.getTimeToConsensus,
+    isAuthenticated ? { dateRange } : "skip"
+  );
+
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.replace("/auth/signin?from=/dashboard");
@@ -71,7 +79,8 @@ export function DashboardContent() {
     sessions === undefined ||
     agreementTrend === undefined ||
     velocityStats === undefined ||
-    voteDistribution === undefined;
+    voteDistribution === undefined ||
+    timeToConsensus === undefined;
 
   return (
     <>
@@ -88,10 +97,33 @@ export function DashboardContent() {
           />
         </div>
 
+        {/* Time to Consensus Card */}
+        <div className="mb-8">
+          <TimeToConsensusCard
+            averageMs={timeToConsensus?.averageMs ?? null}
+            medianMs={timeToConsensus?.medianMs ?? null}
+            trendBySession={timeToConsensus?.trendBySession ?? []}
+            isLoading={isLoading}
+          />
+        </div>
+
         {/* Charts Grid */}
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
           <AgreementChart data={agreementTrend ?? []} isLoading={isLoading} />
           <VelocityChart data={velocityStats ?? []} isLoading={isLoading} />
+        </div>
+
+        {/* Consensus Charts */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
+          <ConsensusOutliers
+            data={timeToConsensus?.outliers ?? []}
+            averageMs={timeToConsensus?.averageMs ?? null}
+            isLoading={isLoading}
+          />
+          <ConsensusTrend
+            data={timeToConsensus?.trendBySession ?? []}
+            isLoading={isLoading}
+          />
         </div>
 
         {/* Vote Distribution */}

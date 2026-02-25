@@ -207,11 +207,36 @@ export async function resetRoomGame(
 ): Promise<void> {
   const room = await ctx.db.get(roomId);
 
-  // Reset current issue status to pending (if it was voting/completed)
+  // Reset current issue for a new voting round
   if (room?.currentIssueId) {
     const currentIssue = await ctx.db.get(room.currentIssueId);
-    if (currentIssue && currentIssue.status === "voting") {
-      await ctx.db.patch(room.currentIssueId, { status: "pending" });
+    if (currentIssue) {
+      if (currentIssue.status === "voting") {
+        // Mid-vote reset: close the open timestamp, revert to voting
+        await Issues.closeOpenTimestamp(ctx, room.currentIssueId);
+      }
+
+      if (
+        currentIssue.status === "voting" ||
+        currentIssue.status === "completed"
+      ) {
+        // Set back to voting and start a new timestamp round
+        await ctx.db.patch(room.currentIssueId, { status: "voting" });
+
+        const existingRounds = await ctx.db
+          .query("votingTimestamps")
+          .withIndex("by_issue", (q) =>
+            q.eq("issueId", room.currentIssueId!)
+          )
+          .collect();
+
+        await ctx.db.insert("votingTimestamps", {
+          roomId,
+          issueId: room.currentIssueId,
+          votingStartedAt: Date.now(),
+          roundNumber: existingRounds.length + 1,
+        });
+      }
     }
   }
 

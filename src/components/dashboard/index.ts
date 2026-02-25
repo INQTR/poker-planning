@@ -8,4 +8,7 @@ export { DashboardLayout } from "./dashboard-layout";
 export { DashboardHeader } from "./dashboard-header";
 export { AppSidebar } from "./app-sidebar";
 export { NavUser } from "./nav-user";
+export { TimeToConsensusCard } from "./TimeToConsensusCard";
+export { ConsensusOutliers } from "./ConsensusOutliers";
+export { ConsensusTrend } from "./ConsensusTrend";
 export { DateRangeProvider, useDateRange } from "./date-range-context";

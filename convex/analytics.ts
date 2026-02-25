@@ -85,6 +85,21 @@ export const getVoteDistribution = query({
   },
 });
 
+// Get time-to-consensus statistics
+export const getTimeToConsensus = query({
+  args: {
+    dateRange: dateRangeValidator,
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
+    return await Analytics.getTimeToConsensusStats(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
+  },
+});
+
 // Get participation statistics
 export const getParticipationStats = query({
   args: {

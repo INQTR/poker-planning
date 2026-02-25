@@ -361,6 +361,131 @@ export async function getParticipationStats(
   };
 }
 
+// Types for time-to-consensus analytics
+export interface TimeToConsensusStats {
+  averageMs: number | null;
+  medianMs: number | null;
+  outliers: Array<{
+    issueTitle: string;
+    roomName: string;
+    durationMs: number;
+    multiplierVsAverage: number;
+  }>;
+  trendBySession: Array<{
+    date: string;
+    roomName: string;
+    averageMs: number;
+  }>;
+}
+
+/**
+ * Gets time-to-consensus statistics across all user's sessions
+ */
+export async function getTimeToConsensusStats(
+  ctx: QueryCtx,
+  authUserId: string,
+  dateRange?: DateRange
+): Promise<TimeToConsensusStats> {
+  const membershipsWithRooms = await getUserMemberships(ctx, authUserId);
+
+  // Collect all completed issues with timeToConsensusMs
+  const issuesWithTime: Array<{
+    issueTitle: string;
+    roomId: string;
+    roomName: string;
+    durationMs: number;
+    votedAt: number;
+  }> = [];
+
+  for (const { room } of membershipsWithRooms) {
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    for (const issue of issues) {
+      if (
+        issue.status === "completed" &&
+        issue.voteStats?.timeToConsensusMs !== undefined &&
+        issue.votedAt
+      ) {
+        if (dateRange) {
+          if (issue.votedAt < dateRange.from || issue.votedAt > dateRange.to) {
+            continue;
+          }
+        }
+
+        issuesWithTime.push({
+          issueTitle: issue.title,
+          roomId: room._id,
+          roomName: room.name,
+          durationMs: issue.voteStats.timeToConsensusMs,
+          votedAt: issue.votedAt,
+        });
+      }
+    }
+  }
+
+  if (issuesWithTime.length === 0) {
+    return { averageMs: null, medianMs: null, outliers: [], trendBySession: [] };
+  }
+
+  // Compute average
+  const durations = issuesWithTime.map((i) => i.durationMs);
+  const averageMs = durations.reduce((sum, d) => sum + d, 0) / durations.length;
+
+  // Compute median
+  const sorted = [...durations].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const medianMs =
+    sorted.length % 2 !== 0
+      ? sorted[mid]
+      : (sorted[mid - 1] + sorted[mid]) / 2;
+
+  // Identify outliers (> 2x average)
+  const outliers = issuesWithTime
+    .filter((i) => i.durationMs > averageMs * 2)
+    .map((i) => ({
+      issueTitle: i.issueTitle,
+      roomName: i.roomName,
+      durationMs: i.durationMs,
+      multiplierVsAverage: Math.round((i.durationMs / averageMs) * 10) / 10,
+    }))
+    .sort((a, b) => b.durationMs - a.durationMs)
+    .slice(0, 10);
+
+  // Group by room+date for trend (use roomId as key to avoid name collisions)
+  const bySessionKey: Record<
+    string,
+    { date: string; roomName: string; totalMs: number; count: number }
+  > = {};
+
+  for (const item of issuesWithTime) {
+    const date = new Date(item.votedAt).toISOString().split("T")[0];
+    const key = `${date}::${item.roomId}`;
+    if (!bySessionKey[key]) {
+      bySessionKey[key] = { date, roomName: item.roomName, totalMs: 0, count: 0 };
+    }
+    bySessionKey[key].totalMs += item.durationMs;
+    bySessionKey[key].count += 1;
+  }
+
+  const trendBySession = Object.values(bySessionKey)
+    .map((s) => ({
+      date: s.date,
+      roomName: s.roomName,
+      averageMs: Math.round(s.totalMs / s.count),
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return {
+    averageMs: Math.round(averageMs),
+    medianMs: Math.round(medianMs),
+    outliers,
+    trendBySession,
+  };
+}
+
 /**
  * Gets summary statistics for the dashboard header
  */

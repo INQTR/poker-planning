@@ -8,6 +8,7 @@ export interface VoteStats {
   median: number | null;
   agreement: number;
   voteCount: number;
+  timeToConsensusMs?: number;
 }
 
 export interface ExportableIssue {
@@ -22,6 +23,29 @@ export interface ExportableIssue {
   voteCount: number | null;
   // Discussion notes
   notes: string | null;
+}
+
+/**
+ * Closes any open voting timestamp for the given issue.
+ * Called when an issue is abandoned (switched away, reset) without completing.
+ */
+export async function closeOpenTimestamp(
+  ctx: MutationCtx,
+  issueId: Id<"issues">
+): Promise<void> {
+  const timestamps = await ctx.db
+    .query("votingTimestamps")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+
+  const latest = timestamps[timestamps.length - 1];
+  if (latest && !latest.votingEndedAt) {
+    const now = Date.now();
+    await ctx.db.patch(latest._id, {
+      votingEndedAt: now,
+      durationMs: now - latest.votingStartedAt,
+    });
+  }
 }
 
 /**
@@ -138,6 +162,13 @@ export async function removeIssue(
     });
   }
 
+  // Delete associated voting timestamps
+  const timestamps = await ctx.db
+    .query("votingTimestamps")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  await Promise.all(timestamps.map((ts) => ctx.db.delete(ts._id)));
+
   await ctx.db.delete(issueId);
 }
 
@@ -158,6 +189,7 @@ export async function startVotingOnIssue(
   if (room.currentIssueId && room.currentIssueId !== args.issueId) {
     const previousIssue = await ctx.db.get(room.currentIssueId);
     if (previousIssue && previousIssue.status === "voting") {
+      await closeOpenTimestamp(ctx, room.currentIssueId);
       await ctx.db.patch(room.currentIssueId, { status: "pending" });
     }
   }
@@ -180,6 +212,19 @@ export async function startVotingOnIssue(
     .collect();
 
   await Promise.all(votes.map((vote) => ctx.db.delete(vote._id)));
+
+  // Record voting timestamp for time-to-consensus tracking
+  const existingRounds = await ctx.db
+    .query("votingTimestamps")
+    .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+    .collect();
+
+  await ctx.db.insert("votingTimestamps", {
+    roomId: args.roomId,
+    issueId: args.issueId,
+    votingStartedAt: Date.now(),
+    roundNumber: existingRounds.length + 1,
+  });
 }
 
 /**
@@ -194,15 +239,46 @@ export async function completeIssueVoting(
     voteStats: VoteStats;
   }
 ): Promise<void> {
+  const now = Date.now();
+
+  // Find and close the latest voting timestamp for this issue
+  const timestamps = await ctx.db
+    .query("votingTimestamps")
+    .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+    .collect();
+
+  let timeToConsensusMs: number | undefined;
+  const latestTimestamp = timestamps[timestamps.length - 1];
+  if (latestTimestamp && !latestTimestamp.votingEndedAt) {
+    const durationMs = now - latestTimestamp.votingStartedAt;
+    await ctx.db.patch(latestTimestamp._id, {
+      votingEndedAt: now,
+      durationMs,
+    });
+
+    // Total time = sum of all previously completed rounds + current round
+    const totalMs =
+      timestamps.reduce((sum, ts) => sum + (ts.durationMs ?? 0), 0) +
+      durationMs;
+    timeToConsensusMs = totalMs;
+  } else if (timestamps.length > 0) {
+    // All rounds already closed (e.g. issue was reset then completed) — sum existing
+    const totalMs = timestamps.reduce((sum, ts) => sum + (ts.durationMs ?? 0), 0);
+    if (totalMs > 0) {
+      timeToConsensusMs = totalMs;
+    }
+  }
+
   await ctx.db.patch(args.issueId, {
     status: "completed",
     finalEstimate: args.finalEstimate,
-    votedAt: Date.now(),
+    votedAt: now,
     voteStats: {
       average: args.voteStats.average ?? undefined,
       median: args.voteStats.median ?? undefined,
       agreement: args.voteStats.agreement,
       voteCount: args.voteStats.voteCount,
+      timeToConsensusMs,
     },
   });
 }
@@ -378,6 +454,7 @@ export async function clearCurrentIssue(
   if (room.currentIssueId) {
     const currentIssue = await ctx.db.get(room.currentIssueId);
     if (currentIssue && currentIssue.status === "voting") {
+      await closeOpenTimestamp(ctx, room.currentIssueId);
       await ctx.db.patch(room.currentIssueId, { status: "pending" });
     }
   }

@@ -75,6 +75,7 @@ export default defineSchema({
         median: v.optional(v.number()), // Median of numeric votes
         agreement: v.number(), // Percentage of votes matching consensus
         voteCount: v.number(), // Total votes cast
+        timeToConsensusMs: v.optional(v.number()), // Total voting duration across all rounds
       })
     ),
     createdAt: v.number(),
@@ -148,4 +149,16 @@ export default defineSchema({
     .index("by_room_type", ["roomId", "type"]) // For type-specific queries
     .index("by_last_updated", ["lastUpdatedAt"]) // For activity tracking
     .index("by_last_updated_by", ["lastUpdatedBy"]), // For account linking transfers
+
+  // Voting round timestamps for time-to-consensus tracking
+  votingTimestamps: defineTable({
+    roomId: v.id("rooms"),
+    issueId: v.id("issues"),
+    votingStartedAt: v.number(),
+    votingEndedAt: v.optional(v.number()),
+    durationMs: v.optional(v.number()),
+    roundNumber: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_room", ["roomId"]),
 });
