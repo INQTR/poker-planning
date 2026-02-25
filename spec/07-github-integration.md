@@ -4,8 +4,10 @@
 
 ## Dependencies
 
-- Epic 2 (Premium Gating)
+- Epic 0 (Permanent Accounts)
 - Epic 6 (shares `integrationConnections`, `integrationMappings`, `issueLinks` tables and encryption utilities)
+
+> During Phase 2 this integration is implemented without Pro gating. Room-owner Pro enforcement is applied later in Epic 2.
 
 ## Tasks
 
@@ -82,8 +84,19 @@ export async function GET(request: Request) {
   const tokens = await tokenResponse.json();
   // tokens.access_token, tokens.refresh_token, tokens.expires_in
 
-  // Store encrypted tokens in Convex via action
-  // Redirect to settings page
+  // Store tokens in Convex via the Convex HTTP client (server-side).
+  // Same approach as Jira (see Epic 6, task 6.3): use CONVEX_ADMIN_KEY
+  // to call the internal storeConnection action from the Next.js route.
+  const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+  convex.setAdminAuth(process.env.CONVEX_ADMIN_KEY!);
+  await convex.action(internal.integrations.github.storeConnection, {
+    userId,   // resolved from session/auth context
+    accessToken: tokens.access_token,
+    refreshToken: tokens.refresh_token,
+    expiresIn: tokens.expires_in,
+  });
+
+  return Response.redirect("/settings/integrations?connected=github");
 }
 ```
 
@@ -297,7 +310,20 @@ http.route({
     if (!isValid) return new Response("Invalid signature", { status: 401 });
 
     const event = request.headers.get("x-github-event");
+    const deliveryId = request.headers.get("x-github-delivery");
     const payload = JSON.parse(rawBody);
+
+    // Idempotency: GitHub sends x-github-delivery as a unique ID per delivery.
+    // Use the shared webhookEvents table to deduplicate.
+    if (deliveryId) {
+      const alreadyProcessed = await ctx.runQuery(
+        internal.webhooks.hasProcessedEvent, { eventId: `github:${deliveryId}` }
+      );
+      if (alreadyProcessed) return new Response(null, { status: 200 });
+      await ctx.runMutation(internal.webhooks.recordEvent, {
+        eventId: `github:${deliveryId}`, eventType: `github:${event}`,
+      });
+    }
 
     switch (event) {
       case "issues":
@@ -381,9 +407,9 @@ Extend existing integration settings to support GitHub:
 
 ---
 
-### 7.10 Shared: Import modal base component
+### 7.10 Shared: Import modal base component (deferred)
 
-Since Jira and GitHub import modals share similar UX patterns, create a shared base:
+> Out of scope for initial implementation. Build Jira/GitHub modals independently first; extract shared base only if duplication becomes costly.
 
 **File:** `src/components/room/import-issues-modal.tsx`
 

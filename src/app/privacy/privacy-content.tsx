@@ -42,7 +42,7 @@ const sections = [
     id: "data-storage",
     title: "5. Data Storage and Security",
     content:
-      "Your data is stored securely using industry-standard practices. Session data is temporary and automatically deleted after sessions end. We implement appropriate technical and organizational measures to protect your information against unauthorized access, alteration, disclosure, or destruction.",
+      "Your data is stored securely using industry-standard practices. We implement appropriate technical and organizational measures to protect your information against unauthorized access, alteration, disclosure, or destruction. When our Pro tier launches, free-tier data retention policies may apply — we will notify users in advance of any changes to data retention.",
   },
   {
     id: "third-party",
@@ -60,7 +60,7 @@ const sections = [
     id: "data-retention",
     title: "8. Data Retention",
     content:
-      "We retain your information only for as long as necessary to provide our services. Session data is automatically deleted after the planning session ends. Analytics data is retained according to Google Analytics' data retention policies. You can request deletion of your data at any time.",
+      "We retain your information only for as long as necessary to provide our services. In the future, free-tier accounts may be subject to a rolling data retention window; we will provide advance notice before any retention limits take effect. Analytics data is also retained according to Google Analytics' data retention policies. You can request deletion of your data at any time.",
   },
   {
     id: "children",

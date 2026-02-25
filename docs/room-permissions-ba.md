@@ -171,8 +171,9 @@ The `[···]` menu contains contextual actions:
 **Transfer ownership flow:**
 1. Owner clicks "Transfer ownership" on target user
 2. Confirmation dialog: _"Transfer room ownership to Bob? You will become a Participant."_
-3. On confirm: owner becomes Participant, target becomes Owner
-4. Toast notification to all: _"Bob is now the room owner"_
+3. Dialog warning (monetization): _"After transfer, this room's Pro analytics will be excluded from your personal analytics dashboard unless you participate in another Pro room."_
+4. On confirm: owner becomes Participant, target becomes Owner
+5. Toast notification to all: _"Bob is now the room owner"_
 
 ### 5. Denied action feedback
 
@@ -200,6 +201,8 @@ When owner explicitly leaves without transferring:
 | Scenario | Behavior |
 |----------|----------|
 | Owner is also a spectator | Owner retains all control powers but doesn't vote |
+| Owner is offline | Ownership and Pro entitlement remain tied to owner account until ownership changes |
+| Owner subscription lapses | Room keeps Pro access during grace period; then free retention rules apply unless owner re-subscribes |
 | All facilitators leave, permissions set to "facilitators" | Only owner can perform those actions. No auto-demotion of settings. |
 | Owner removes themselves | Not allowed. Owner must transfer ownership first, or simply leave the room. |
 | Room has only 1 member (owner) | Full control, no restrictions apply |

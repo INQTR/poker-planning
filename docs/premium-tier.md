@@ -1,28 +1,30 @@
-# Premium Tier Strategy
+# Pro Tier Strategy
 
-> **Status: Planning Phase**
->
-> This document outlines the strategy for AgileKit's monetization through a single Premium Tier.
+> This document outlines the strategy for AgileKit's monetization through a single Pro Tier.
+> For implementation progress, see [Pro-progress.md](./Pro-progress.md).
+> For technical specs, see [spec/00-overview.md](../spec/00-overview.md).
 
 ## Monetization Strategy
 
-AgileKit uses a simple Freemium model to drive adoption, while offering high-value workflow and analytics features in a single Premium subscription.
+AgileKit uses a simple Freemium model to drive adoption, while offering high-value workflow and analytics features in a single Pro subscription.
 
 ### 1. Free Tier (Current Functionality)
 - **Unlimited Usage:** No time limits or usage limits on planning poker sessions.
 - **Full Core Features:** All current functionality remains free. Users can participate, vote, and manage rooms.
 - **Basic Analytics:** Recent session history, total points, and average agreement.
+- **Retention:** Free rooms and non-Pro owners keep a rolling 5-day history.
 
-### 2. Premium Tier (Paid)
-A single paid tier that unlocks all advanced features for the subscribing user.
-- **No Complex Roles:** There is no need for dedicated "Scrum Master" or "Admin" roles. Any user who subscribes to the Premium tier can access and use all advanced features (whether they are a player or spectator).
-- **All-in-One Package:** All of the premium features below are included in this single subscription tier.
+### 2. Pro Tier (Paid)
+A single paid tier that unlocks all advanced features for rooms owned by the subscriber.
+- **Owner-Based Access:** The room owner's subscription controls Pro access for that room.
+- **Participant Access (initial policy):** Participants can view Pro analytics for Pro rooms they belong to.
+- **All-in-One Package:** All of the Pro features below are included in this single subscription tier.
 
 ---
 
-## Premium Features Business Analysis
+## Pro Features Business Analysis
 
-This section details the functional requirements and business value of each Premium feature to guide the implementation.
+This section details the functional requirements and business value of each Pro feature to guide the implementation.
 
 ### Actionable Insights
 
@@ -71,7 +73,7 @@ Integrations are the core driver for B2B monetization as they directly eliminate
 #### 2. One-Click Import
 - **Business Value:** Drastically reduces meeting preparation time from 10+ minutes to 10 seconds.
 - **How it Works:**
-  - Inside a room, the Premium user clicks "Import Issues".
+  - Inside a room, the Pro room owner clicks "Import Issues".
   - A modal opens showing their active Sprints or Backlog from the connected integration.
   - User selects issues, and they are instantly populated in the room's issue queue with titles, descriptions, and direct links back to the original tracker.
 
@@ -87,7 +89,7 @@ Integrations are the core driver for B2B monetization as they directly eliminate
 #### 1. Data Exports
 - **Business Value:** Allows organizations to keep compliance records, build custom reports, or import data into internal BI tools (Tableau, PowerBI).
 - **How it Works:**
-  - Premium users see an "Export" button on past sessions.
+  - Pro rooms expose enhanced export options on past sessions.
   - Generates a CSV containing: Issue Name, Description, Final Estimate, Time to Consensus, and Individual Votes.
 
 #### 2. Automated Summaries
@@ -102,7 +104,11 @@ Integrations are the core driver for B2B monetization as they directly eliminate
 ## Architecture & Implementation Notes
 
 - Add `subscriptionTier` to the `users` table in Convex.
-- Premium features in the UI will check the current user's subscription status.
+- Add `proGraceUntil` to support a 14-day grace window after Pro ends.
+- Pro features in the UI will check **room owner entitlement**, not only the current user's tier.
 - Integrations will require storing OAuth tokens securely for Jira and GitHub.
-- The existing analytics dashboard will be revamped to include the new Actionable Insights (Time-to-Consensus, Alignment Matrix), which will be gated behind the Premium tier.
+- The existing analytics dashboard will be revamped to include the new Actionable Insights (Time-to-Consensus, Alignment Matrix), which will be gated behind the Pro tier.
 - Use **Paddle** (paddle.com) as the Merchant of Record and subscription management platform.
+- Ownership transfer must warn that transferred rooms are excluded from the previous owner's analytics going forward.
+- Track warning and conversion telemetry to tune messaging before full enforcement.
+- Use a staged rollout runbook and safety-buffer cleanup process during monetization launch.

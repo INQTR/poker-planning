@@ -4,7 +4,9 @@
 
 ## Dependencies
 
-- Epic 2 (Premium Gating) - feature is gated behind premium
+- Epic 0 (Permanent Accounts)
+
+> During Phase 1 this feature is implemented **without Pro gating**. Room-owner Pro filtering is applied later in Epic 2.
 
 ## Tasks
 
@@ -125,7 +127,7 @@ Add new analytics functions:
 // Average time per issue across a user's sessions
 export async function getTimeToConsensusStats(
   ctx: QueryCtx,
-  args: { authUserId: string; dateRange?: DateRange }
+  args: { userId: Id<"users">; dateRange?: DateRange }
 ): Promise<{
   averageMs: number | null;
   medianMs: number | null;
@@ -141,7 +143,7 @@ export async function getTimeToConsensusStats(
     averageMs: number;
   }>;
 }> {
-  // 1. Get all rooms the user participated in
+  // 1. Get all rooms for args.userId
   // 2. Get all votingTimestamps for those rooms
   // 3. Compute average, median
   // 4. Identify outliers (> 2x average)
@@ -151,19 +153,25 @@ export async function getTimeToConsensusStats(
 
 **File:** `convex/analytics.ts`
 
-Expose as a premium-gated query:
+Expose as a standard analytics query in this phase (no Pro checks yet):
 
 ```typescript
 export const getTimeToConsensus = query({
-  args: { authUserId: v.string(), dateRange: v.optional(dateRangeValidator) },
+  args: { dateRange: v.optional(dateRangeValidator) },
   handler: async (ctx, args) => {
-    const user = await Users.getUserByAuthId(ctx, args.authUserId);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await Users.getUserByAuthId(ctx, identity.subject);
     if (!user) return null;
-    await Subscriptions.requirePremium(ctx, user._id);
-    return await Analytics.getTimeToConsensusStats(ctx, args);
+    return await Analytics.getTimeToConsensusStats(ctx, {
+      userId: user._id,
+      dateRange: args.dateRange,
+    });
   },
 });
 ```
+
+Epic 2 later applies room-owner Pro filtering.
 
 ---
 
@@ -203,13 +211,13 @@ A line chart showing average time-per-issue over multiple sessions:
 
 ---
 
-### 3.8 Room UX: Live timer display (optional enhancement)
+### 3.8 Room UX: Live timer display (deferred)
 
-Consider showing a subtle timer on the `SessionNode` or `StoryNode` while voting is in progress. This provides real-time awareness without being disruptive.
+> Out of scope for initial implementation. Keep this as a follow-up item after core analytics ship.
 
 **Acceptance criteria for the entire epic:**
 - Voting start/end times are recorded per issue
 - Re-votes (reset + re-vote) accumulate into total time
 - Dashboard shows average, median, outliers, and trend
-- All new analytics queries are premium-gated
 - No regression to existing voting flow
+- No Pro gating added in this phase

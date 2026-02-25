@@ -16,27 +16,27 @@ const comparisonFeatures = [
   { name: "Team members", free: "Unlimited", pro: "Unlimited" },
   { name: "Planning sessions", free: "Unlimited", pro: "Unlimited" },
   { name: "Real-time collaboration", free: true, pro: true },
-  { name: "Session history", free: "5 days", pro: "Forever" },
+  { name: "Session history", free: "Unlimited (for now)", pro: "Full history" },
   { name: "Analytics dashboard", free: false, pro: true },
-  { name: "Export reports", free: "CSV only", pro: "CSV + Analytics" },
-  { name: "Priority support", free: false, pro: true },
+  { name: "Export reports", free: "CSV only", pro: "CSV + JSON + Analytics" },
+  { name: "Jira & GitHub integrations", free: false, pro: true },
 ];
 
 const faqs = [
   {
     question: "Do all team members need a Pro account?",
     answer:
-      "No, only the facilitator needs Pro. Everyone else joins free.",
+      "No. Only the room owner needs Pro to enable advanced features for that room. Other participants can join and use those features for free.",
   },
   {
-    question: "What happens to my sessions after 5 days on Free?",
+    question: "What happens when Pro launches?",
     answer:
-      "On the Free tier, session data is automatically deleted after 5 days. With Pro, all data created during your subscription is permanently saved. If you cancel Pro, your existing Pro data stays forever—only new sessions follow the 5-day retention.",
+      "Right now everything is free with no limits. When Pro launches, free rooms will keep a rolling 5-day history. If your Pro subscription ends, you get a 14-day grace period before the free retention policy kicks in.",
   },
   {
     question: "Can I cancel my Pro subscription anytime?",
     answer:
-      "Yes, cancel anytime from your dashboard. No questions asked, no hidden fees.",
+      "Yes. You can cancel anytime from your dashboard. If you cancel, your rooms enter a 14-day grace period before free retention rules apply.",
   },
   {
     question: "What payment methods do you accept?",
@@ -44,9 +44,9 @@ const faqs = [
       "All major credit cards, PayPal, and local payment methods via Paddle. Paddle handles secure payments in 29 currencies.",
   },
   {
-    question: "Is there a free trial for Pro?",
+    question: "Is there a free trial?",
     answer:
-      "The Free tier is unlimited—use it as long as you want. Upgrade only when you need Pro features like permanent history and analytics.",
+      "The Free tier has unlimited usage. When Pro launches, existing accounts will receive 6 months of free Pro access to evaluate the new features.",
   },
   {
     question: "How does billing work?",
@@ -109,15 +109,15 @@ export function PricingContent() {
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
                 AgileKit is 100% free for teams of any size. Upgrade to Pro to
-                unlock permanent history, analytics, and support the project you
-                love.
+                unlock full history, analytics, integrations, and support the
+                project you love.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
                 <span>No credit card required</span>
                 <span className="hidden sm:inline">•</span>
                 <span>Cancel anytime</span>
                 <span className="hidden sm:inline">•</span>
-                <span>Trusted by 1000+ teams</span>
+                <span>Open source</span>
               </div>
             </div>
           </div>
@@ -275,8 +275,8 @@ export function PricingContent() {
                 Ready to plan better?
               </h2>
               <p className="mt-6 text-lg text-gray-300">
-                Join thousands of teams using AgileKit for faster, more accurate
-                sprint estimation.
+                Start using AgileKit for faster, more accurate sprint
+                estimation — completely free.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link

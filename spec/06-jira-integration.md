@@ -4,7 +4,9 @@
 
 ## Dependencies
 
-- Epic 2 (Premium Gating) - feature is gated behind premium
+- Epic 0 (Permanent Accounts)
+
+> During Phase 2 this integration is implemented without Pro gating. Room-owner Pro enforcement is applied later in Epic 2.
 
 ## Tasks
 
@@ -18,9 +20,11 @@ integrationConnections: defineTable({
   provider: v.union(v.literal("jira"), v.literal("github")),
   // Encrypted OAuth tokens
   encryptedAccessToken: v.string(),
+  accessTokenIv: v.string(),              // AES-256-GCM IV for access token
+  accessTokenAuthTag: v.string(),         // AES-256-GCM auth tag for access token
   encryptedRefreshToken: v.optional(v.string()),
-  tokenIv: v.string(),              // AES-256-GCM initialization vector
-  tokenAuthTag: v.string(),         // AES-256-GCM auth tag
+  refreshTokenIv: v.optional(v.string()),        // AES-256-GCM IV for refresh token
+  refreshTokenAuthTag: v.optional(v.string()),   // AES-256-GCM auth tag for refresh token
   expiresAt: v.number(),            // Token expiry timestamp
   // Provider-specific metadata
   providerUserId: v.optional(v.string()),
@@ -211,9 +215,21 @@ export async function GET(request: Request) {
   const cloudId = resources[0]?.id;
   const siteUrl = resources[0]?.url;
 
-  // Store tokens in Convex (encrypted) via a server-side mutation call
-  // The Next.js route needs to call a Convex action to store the tokens
-  // Option: Use Convex HTTP client or redirect with a one-time token
+  // Store tokens in Convex via the Convex HTTP client (server-side).
+  // The Next.js route calls the Convex `storeConnection` internal action
+  // using the Convex Node.js client with an admin key (CONVEX_ADMIN_KEY).
+  // This avoids exposing tokens to the browser.
+  const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+  convex.setAdminAuth(process.env.CONVEX_ADMIN_KEY!);
+  await convex.action(internal.integrations.jira.storeConnection, {
+    userId,   // resolved from session/auth context
+    accessToken: tokens.access_token,
+    refreshToken: tokens.refresh_token,
+    expiresIn: tokens.expires_in,
+    cloudId,
+    siteUrl,
+    scopes: tokens.scope.split(" "),
+  });
 
   return Response.redirect("/settings/integrations?connected=jira");
 }
@@ -243,9 +259,11 @@ export const storeConnection = internalAction({
       userId: args.userId,
       provider: "jira",
       encryptedAccessToken: encAccess.ciphertext,
+      accessTokenIv: encAccess.iv,
+      accessTokenAuthTag: encAccess.authTag,
       encryptedRefreshToken: encRefresh.ciphertext,
-      tokenIv: encAccess.iv,
-      tokenAuthTag: encAccess.authTag,
+      refreshTokenIv: encRefresh.iv,
+      refreshTokenAuthTag: encRefresh.authTag,
       expiresAt: Date.now() + args.expiresIn * 1000,
       cloudId: args.cloudId,
       siteUrl: args.siteUrl,
@@ -269,8 +287,8 @@ export async function refreshJiraToken(
   const encKey = process.env.TOKEN_ENCRYPTION_KEY!;
   const refreshToken = await decryptToken(
     connection.encryptedRefreshToken!,
-    connection.tokenIv,
-    connection.tokenAuthTag,
+    connection.refreshTokenIv!,
+    connection.refreshTokenAuthTag!,
     encKey
   );
 
@@ -294,9 +312,11 @@ export async function refreshJiraToken(
   await ctx.runMutation(internal.integrations.updateTokens, {
     connectionId: connection._id,
     encryptedAccessToken: encAccess.ciphertext,
+    accessTokenIv: encAccess.iv,
+    accessTokenAuthTag: encAccess.authTag,
     encryptedRefreshToken: encRefresh.ciphertext,
-    tokenIv: encAccess.iv,
-    tokenAuthTag: encAccess.authTag,
+    refreshTokenIv: encRefresh.iv,
+    refreshTokenAuthTag: encRefresh.authTag,
     expiresAt: Date.now() + tokens.expires_in * 1000,
   });
 
@@ -501,6 +521,12 @@ In room settings, allow mapping the room to a Jira project:
 - Toggle: Auto-import new sprint issues
 - Toggle: Auto-push estimates back to Jira
 - Show story points field auto-detection status
+
+---
+
+### 6.12 Jira webhook registration
+
+**Idempotency:** Use the `webhookEvents` table (shared with Paddle) to deduplicate Jira webhook deliveries. Extract a stable event key from the payload (e.g., `jira:${issue.id}:${issue.updated}`) and skip processing if the key already exists.
 
 ---
 

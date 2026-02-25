@@ -1,17 +1,17 @@
 # Epic 0: Permanent Accounts (Google OAuth + Email Magic Link)
 
-> **Prerequisite for all premium features.** Extends the existing BetterAuth anonymous auth with Google OAuth and email magic link sign-in, enabling account persistence, data ownership, and subscription billing.
+> **Prerequisite for all Pro features.** Extends the existing BetterAuth anonymous auth with Google OAuth and email magic link sign-in, enabling account persistence, data ownership, and subscription billing.
 
 ## Why This Comes First
 
-The entire premium roadmap (Epics 1-9) depends on permanent accounts:
+The entire Pro roadmap (Epics 1-9) depends on permanent accounts:
 
 - **Subscription billing** (Epic 1) requires an email address for receipts and a stable user identity for the Paddle customer record.
-- **Premium gating** (Epic 2) needs a reliable `subscriptionTier` tied to a persistent account, not a disposable anonymous session.
+- **Pro gating** (Epic 2) needs a reliable `subscriptionTier` tied to a persistent account, not a disposable anonymous session.
 - **Integrations** (Epics 6-7) require OAuth token storage linked to a permanent user.
 - **Email notifications** (Epic 9) need a verified email address.
 
-Anonymous sessions remain the default for the core planning poker experience (no friction). Permanent accounts are opt-in when users want premium features.
+Anonymous sessions remain the default for the core planning poker experience (no friction). Permanent accounts are opt-in when users want Pro features.
 
 ## Current State
 

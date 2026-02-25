@@ -4,8 +4,10 @@
 
 ## Dependencies
 
-- Epic 2 (Premium Gating)
+- Epic 0 (Permanent Accounts)
 - Epic 8 (Data Exports) - reuses enriched issue data
+
+> During Phase 3 this feature is implemented without Pro gating. Room-owner Pro enforcement is applied later in Epic 2.
 
 ## Tasks
 
@@ -96,9 +98,14 @@ export const generateAndSend = internalAction({
       ? completedIssues.reduce((sum, i) => sum + (i.agreement ?? 0), 0) / completedIssues.length
       : null;
 
+    // Compute average time to consensus (requires Epic 3 data)
+    const issuesWithTime = completedIssues.filter((i) => i.timeToConsensusMs);
+    const avgTimeToConsensus = issuesWithTime.length > 0
+      ? issuesWithTime.reduce((sum, i) => sum + (i.timeToConsensusMs ?? 0), 0) / issuesWithTime.length
+      : null;
+
     // Find longest discussed issue (requires Epic 3 data)
-    const longestIssue = completedIssues
-      .filter((i) => i.timeToConsensusMs)
+    const longestIssue = issuesWithTime
       .sort((a, b) => (b.timeToConsensusMs ?? 0) - (a.timeToConsensusMs ?? 0))[0];
 
     // 3. Store summary
@@ -108,6 +115,7 @@ export const generateAndSend = internalAction({
       completedIssues: completedIssues.length,
       totalStoryPoints: totalPoints || undefined,
       averageAgreement: avgAgreement ?? undefined,
+      averageTimeToConsensus: avgTimeToConsensus ?? undefined,
       longestDiscussedIssue: longestIssue
         ? { title: longestIssue.title, durationMs: longestIssue.timeToConsensusMs! }
         : undefined,
@@ -166,7 +174,7 @@ export const generateAndSend = internalAction({
 
 **File:** `convex/lib/email.ts`
 
-Use SendGrid or Resend for transactional email:
+Use Resend for transactional email:
 
 ```typescript
 export async function sendEmail(args: {
@@ -174,22 +182,19 @@ export async function sendEmail(args: {
   subject: string;
   html: string;
 }): Promise<void> {
-  const apiKey = process.env.SENDGRID_API_KEY!;
+  const apiKey = process.env.RESEND_API_KEY!;
 
-  const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+  const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      personalizations: [{ to: [{ email: args.to }] }],
-      from: {
-        email: process.env.EMAIL_FROM_ADDRESS ?? "noreply@agilekit.app",
-        name: "AgileKit",
-      },
+      to: [args.to],
+      from: process.env.EMAIL_FROM_ADDRESS ?? "AgileKit <noreply@agilekit.app>",
       subject: args.subject,
-      content: [{ type: "text/html", value: args.html }],
+      html: args.html,
     }),
   });
 
@@ -208,6 +213,15 @@ export async function sendEmail(args: {
 Build a clean, responsive HTML email template:
 
 ```typescript
+// HTML-escape user-supplied strings to prevent XSS in email clients
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export function buildSummaryEmailHtml(data: {
   roomName: string;
   totalIssues: number;
@@ -217,12 +231,17 @@ export function buildSummaryEmailHtml(data: {
   longestIssue: { title: string; durationMs: number } | undefined;
   reportUrl: string;
 }): string {
+  const safeRoomName = escapeHtml(data.roomName);
+  const safeLongestTitle = data.longestIssue
+    ? escapeHtml(data.longestIssue.title)
+    : "";
+
   return `
     <!DOCTYPE html>
     <html>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="padding: 32px;">
-        <h1 style="font-size: 20px;">Session Summary: ${data.roomName}</h1>
+        <h1 style="font-size: 20px;">Session Summary: ${safeRoomName}</h1>
 
         <table style="width: 100%; border-collapse: collapse; margin: 24px 0;">
           <tr>
@@ -249,7 +268,7 @@ export function buildSummaryEmailHtml(data: {
           <tr>
             <td style="padding: 12px; border-bottom: 1px solid #eee;">Longest Discussion</td>
             <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">
-              ${data.longestIssue.title} (${formatDuration(data.longestIssue.durationMs)})
+              ${safeLongestTitle} (${formatDuration(data.longestIssue.durationMs)})
             </td>
           </tr>
           ` : ""}
@@ -307,9 +326,11 @@ View generated summaries for past sessions:
 
 ---
 
-### 9.9 Cron: Pending summaries check
+### 9.9 Cron: Pending summaries check (deferred)
 
-For cases where a room is abandoned (no explicit "close"), add a cron that checks for rooms with no activity for 24+ hours and generates summaries:
+> Out of scope for initial implementation. Ship explicit close flow first; add abandoned-room auto-close later if needed.
+
+For future cases where a room is abandoned (no explicit "close"), add a cron that checks for rooms with no activity for 24+ hours and generates summaries:
 
 ```typescript
 // convex/crons.ts
@@ -329,5 +350,5 @@ Logic:
 - Email contains: issue count, points, agreement, longest discussion, report link
 - Users can opt out of summary emails
 - Summary is viewable in the dashboard for historical reference
-- Abandoned rooms get auto-summarized after 24h inactivity
 - Email sending failures are logged but don't block summary storage
+- User-supplied content (room names, issue titles) is HTML-escaped in email templates

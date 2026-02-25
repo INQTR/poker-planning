@@ -1,16 +1,18 @@
 # Epic 8: Data Exports (Enhanced)
 
-> Enhances the existing CSV export with premium-only analytics data and additional formats.
+> Enhances the existing CSV export with richer analytics data and additional formats.
 
 ## Dependencies
 
-- Epic 2 (Premium Gating) - enhanced export is premium-only
+- Epic 0 (Permanent Accounts)
+
+> During Phase 1 this export enhancement is shipped to all users. Pro packaging is enforced later in Epic 2.
 
 ## Context
 
 The project already has a basic export query (`convex/issues.ts` -> `getForExport`) that returns `ExportableIssue[]` with: title, finalEstimate, status, votedAt, average, median, agreement, voteCount, and notes.
 
-This epic enhances exports for premium users.
+This epic adds richer export fields. Gating by room Pro is deferred to Epic 2.
 
 ## Tasks
 
@@ -18,23 +20,23 @@ This epic enhances exports for premium users.
 
 **File:** `convex/model/issues.ts`
 
-Extend `getIssuesForExport` to include premium data when available:
+Extend `getIssuesForExport` to include Pro data when available:
 
 ```typescript
 export interface EnhancedExportableIssue extends ExportableIssue {
-  // Premium fields (Epic 3)
+  // Pro fields (Epic 3)
   timeToConsensusMs: number | null;
   timeToConsensusFormatted: string | null;  // "2m 34s"
   votingRounds: number | null;
 
-  // Premium fields (Epic 4) - individual votes
+  // Pro fields (Epic 4) - individual votes
   individualVotes: Array<{
     userName: string;
     vote: string;
     deltaFromConsensus: number | null;
   }> | null;
 
-  // Premium fields (Epic 6/7) - integration link
+  // Pro fields (Epic 6/7) - integration link
   externalUrl: string | null;
   externalId: string | null;
 }
@@ -49,15 +51,10 @@ export const getForEnhancedExport = query({
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return null;
 
-    const user = await Users.getUserByAuthId(ctx, identity.subject);
-    const isPremium = user?.subscriptionTier === "premium";
-
     const basicExport = await Issues.getIssuesForExport(ctx, args.roomId);
-
-    if (!isPremium) return basicExport;
-
-    // Enrich with premium data
-    return await Issues.enrichExportWithPremiumData(ctx, args.roomId, basicExport);
+    // In Phase 1 this is available to all users.
+    // Epic 2 later applies room-owner Pro packaging.
+    return await Issues.enrichExportWithProData(ctx, args.roomId, basicExport);
   },
 });
 ```
@@ -68,26 +65,26 @@ export const getForEnhancedExport = query({
 
 **File:** `src/lib/export-csv.ts`
 
-Update CSV generation to include new columns for premium users:
+Update CSV generation to include richer columns (tier packaging applied later in Epic 2):
 
 ```typescript
 export function generateCSV(
   issues: EnhancedExportableIssue[],
-  isPremium: boolean
+  includeEnhancedColumns: boolean
 ): string {
   const baseHeaders = [
     "Issue", "Final Estimate", "Status", "Voted At",
     "Average", "Median", "Agreement %", "Vote Count", "Notes"
   ];
 
-  const premiumHeaders = isPremium
+  const proHeaders = includeEnhancedColumns
     ? [
         "Time to Consensus", "Voting Rounds",
         "Individual Votes", "External Link"
       ]
     : [];
 
-  const headers = [...baseHeaders, ...premiumHeaders];
+  const headers = [...baseHeaders, ...proHeaders];
 
   const rows = issues.map((issue) => {
     const baseRow = [
@@ -102,7 +99,7 @@ export function generateCSV(
       issue.notes ?? "",
     ];
 
-    const premiumRow = isPremium
+    const proRow = includeEnhancedColumns
       ? [
           issue.timeToConsensusFormatted ?? "",
           issue.votingRounds?.toString() ?? "",
@@ -113,7 +110,7 @@ export function generateCSV(
         ]
       : [];
 
-    return [...baseRow, ...premiumRow];
+    return [...baseRow, ...proRow];
   });
 
   return [headers, ...rows]
@@ -129,18 +126,18 @@ export function generateCSV(
 **File:** `src/components/room/issues-panel.tsx` (or wherever export is triggered)
 
 Update the existing export button:
-- Free users: Basic CSV (current behavior)
-- Premium users: Enhanced CSV with all analytics data
+- In Phase 1: show enhanced export for all users
+- In Phase 4 (Epic 2): apply room-owner Pro packaging
 
-Add a visual indicator showing premium columns are included.
+Add a visual indicator showing Pro columns are included.
 
 ---
 
-### 8.4 Frontend: JSON export option (premium)
+### 8.4 Frontend: JSON export option
 
 **File:** `src/lib/export-json.ts`
 
-Premium users get an additional JSON export format:
+Add a JSON export format (packaging by tier is applied in Epic 2):
 
 ```typescript
 export function generateJSON(issues: EnhancedExportableIssue[]): string {
@@ -155,8 +152,8 @@ export function generateJSON(issues: EnhancedExportableIssue[]): string {
 Add a dropdown or toggle to the export button: "Export as CSV" / "Export as JSON".
 
 **Acceptance criteria for the entire epic:**
-- Free users can still export basic CSV (no regression)
-- Premium users get enhanced CSV with time-to-consensus, individual votes, and external links
-- Premium users can choose between CSV and JSON formats
+- Enhanced CSV includes time-to-consensus, individual votes, and external links
+- JSON export works for enhanced issue payloads
 - Export correctly handles missing data (empty fields, not errors)
 - Individual votes column formats cleanly in CSV
+- No Pro gating added in this phase

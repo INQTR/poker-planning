@@ -55,7 +55,7 @@ const sections = [
     id: "content-ownership",
     title: "7. Content Ownership",
     content:
-      "You retain ownership of any content you create or share through the service. By using the service, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, and distribute your content solely for the purpose of providing and improving the service. Session data is temporary and automatically deleted after use.",
+      "You retain ownership of any content you create or share through the service. By using the service, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, and distribute your content solely for the purpose of providing and improving the service. In the future, free-tier accounts may be subject to data retention limits; we will notify users before any such limits take effect.",
   },
   {
     id: "disclaimers",
