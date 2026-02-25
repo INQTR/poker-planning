@@ -115,6 +115,21 @@ export const getParticipationStats = query({
   },
 });
 
+// Get predictability score and session breakdown
+export const getPredictability = query({
+  args: {
+    dateRange: dateRangeValidator,
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
+    return await Analytics.getPredictabilityScore(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
+  },
+});
+
 // Get voter alignment data (scatter plot + stats table)
 export const getVoterAlignment = query({
   args: {

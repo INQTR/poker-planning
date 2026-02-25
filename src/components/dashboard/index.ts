@@ -14,3 +14,5 @@ export { ConsensusTrend } from "./ConsensusTrend";
 export { DateRangeProvider, useDateRange } from "./date-range-context";
 export { VoterAlignmentChart } from "./VoterAlignmentChart";
 export { IndividualVotingStats } from "./IndividualVotingStats";
+export { PredictabilityGauge } from "./PredictabilityGauge";
+export { VelocityTrend } from "./VelocityTrend";

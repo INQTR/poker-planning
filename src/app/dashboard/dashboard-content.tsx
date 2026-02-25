@@ -10,13 +10,14 @@ import {
   StatsSummary,
   SessionHistory,
   AgreementChart,
-  VelocityChart,
   VoteDistribution,
   TimeToConsensusCard,
   ConsensusOutliers,
   ConsensusTrend,
   VoterAlignmentChart,
   IndividualVotingStats,
+  PredictabilityGauge,
+  VelocityTrend,
 } from "@/components/dashboard";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 
@@ -51,11 +52,6 @@ export function DashboardContent() {
     isAuthenticated ? { dateRange } : "skip"
   );
 
-  const velocityStats = useQuery(
-    api.analytics.getVelocityStats,
-    isAuthenticated ? { dateRange } : "skip"
-  );
-
   const voteDistribution = useQuery(
     api.analytics.getVoteDistribution,
     isAuthenticated ? { dateRange } : "skip"
@@ -68,6 +64,11 @@ export function DashboardContent() {
 
   const voterAlignment = useQuery(
     api.analytics.getVoterAlignment,
+    isAuthenticated ? { dateRange } : "skip"
+  );
+
+  const predictability = useQuery(
+    api.analytics.getPredictability,
     isAuthenticated ? { dateRange } : "skip"
   );
 
@@ -85,10 +86,10 @@ export function DashboardContent() {
     summary === undefined ||
     sessions === undefined ||
     agreementTrend === undefined ||
-    velocityStats === undefined ||
     voteDistribution === undefined ||
     timeToConsensus === undefined ||
-    voterAlignment === undefined;
+    voterAlignment === undefined ||
+    predictability === undefined;
 
   return (
     <>
@@ -115,31 +116,49 @@ export function DashboardContent() {
           />
         </div>
 
-        {/* Charts Grid */}
+        {/* Predictability + Velocity Trend */}
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
-          <AgreementChart data={agreementTrend ?? []} isLoading={isLoading} />
-          <VelocityChart data={velocityStats ?? []} isLoading={isLoading} />
+          <PredictabilityGauge
+            score={predictability?.predictabilityScore ?? null}
+            averageVelocityPerSession={
+              predictability?.averageVelocityPerSession ?? 0
+            }
+            velocityTrend={predictability?.velocityTrend ?? "stable"}
+            averageAgreement={predictability?.averageAgreement ?? 0}
+            agreementTrend={predictability?.agreementTrend ?? "stable"}
+            isLoading={isLoading}
+          />
+          <VelocityTrend
+            sessions={predictability?.sessions ?? []}
+            velocityTrend={predictability?.velocityTrend ?? "stable"}
+            isLoading={isLoading}
+          />
         </div>
 
-        {/* Consensus Charts */}
+        {/* Agreement + Consensus Charts */}
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
+          <AgreementChart data={agreementTrend ?? []} isLoading={isLoading} />
           <ConsensusOutliers
             data={timeToConsensus?.outliers ?? []}
             averageMs={timeToConsensus?.averageMs ?? null}
             isLoading={isLoading}
           />
+        </div>
+
+        {/* Consensus Trend + Voter Alignment */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-2">
           <ConsensusTrend
             data={timeToConsensus?.trendBySession ?? []}
             isLoading={isLoading}
           />
-        </div>
-
-        {/* Voter Alignment */}
-        <div className="mb-8 grid gap-6 lg:grid-cols-2">
           <VoterAlignmentChart
             data={voterAlignment?.scatterPoints ?? []}
             isLoading={isLoading}
           />
+        </div>
+
+        {/* Individual Voting Stats */}
+        <div className="mb-8">
           <IndividualVotingStats
             data={voterAlignment?.users ?? []}
             isLoading={isLoading}

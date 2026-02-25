@@ -69,11 +69,11 @@
 
 ### Epic 5: Sprint Predictability Score
 
-**Status: Not started**
+**Status: Complete**
 
-- [ ] **5.1** Backend: Predictability score computation
-- [ ] **5.2** Frontend: Predictability health gauge
-- [ ] **5.3** Frontend: Velocity trend charts
+- [x] **5.1** Backend: Predictability score computation
+- [x] **5.2** Frontend: Predictability health gauge
+- [x] **5.3** Frontend: Velocity trend charts
 
 ### Epic 8: Data Exports (Enhanced)
 
@@ -165,4 +165,4 @@
 
 ## Next Focus
 
-**Epic 4 (Voter Alignment Matrix)** — next Pro feature to build. No gating needed yet; all features available to all users until Phase 4.
+**Epic 8 (Data Exports)** — next Pro feature to build. No gating needed yet; all features available to all users until Phase 4.
