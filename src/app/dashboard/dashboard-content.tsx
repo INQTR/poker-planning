@@ -82,14 +82,15 @@ export function DashboardContent() {
     return <LoadingState />;
   }
 
-  const isLoading =
-    summary === undefined ||
-    sessions === undefined ||
-    agreementTrend === undefined ||
-    voteDistribution === undefined ||
-    timeToConsensus === undefined ||
-    voterAlignment === undefined ||
-    predictability === undefined;
+  // Per-section loading states — each section shows its own skeleton
+  // instead of blocking the entire dashboard on the slowest query.
+  const summaryLoading = summary === undefined;
+  const consensusLoading = timeToConsensus === undefined;
+  const predictabilityLoading = predictability === undefined;
+  const agreementLoading = agreementTrend === undefined;
+  const alignmentLoading = voterAlignment === undefined;
+  const distributionLoading = voteDistribution === undefined;
+  const sessionsLoading = sessions === undefined;
 
   return (
     <>
@@ -102,7 +103,7 @@ export function DashboardContent() {
             totalIssuesEstimated={summary?.totalIssuesEstimated ?? 0}
             totalStoryPoints={summary?.totalStoryPoints ?? null}
             averageAgreement={summary?.averageAgreement ?? null}
-            isLoading={isLoading}
+            isLoading={summaryLoading}
           />
         </div>
 
@@ -112,7 +113,7 @@ export function DashboardContent() {
             averageMs={timeToConsensus?.averageMs ?? null}
             medianMs={timeToConsensus?.medianMs ?? null}
             trendBySession={timeToConsensus?.trendBySession ?? []}
-            isLoading={isLoading}
+            isLoading={consensusLoading}
           />
         </div>
 
@@ -126,22 +127,25 @@ export function DashboardContent() {
             velocityTrend={predictability?.velocityTrend ?? "stable"}
             averageAgreement={predictability?.averageAgreement ?? 0}
             agreementTrend={predictability?.agreementTrend ?? "stable"}
-            isLoading={isLoading}
+            isLoading={predictabilityLoading}
           />
           <VelocityTrend
             sessions={predictability?.sessions ?? []}
             velocityTrend={predictability?.velocityTrend ?? "stable"}
-            isLoading={isLoading}
+            isLoading={predictabilityLoading}
           />
         </div>
 
         {/* Agreement + Consensus Charts */}
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
-          <AgreementChart data={agreementTrend ?? []} isLoading={isLoading} />
+          <AgreementChart
+            data={agreementTrend ?? []}
+            isLoading={agreementLoading}
+          />
           <ConsensusOutliers
             data={timeToConsensus?.outliers ?? []}
             averageMs={timeToConsensus?.averageMs ?? null}
-            isLoading={isLoading}
+            isLoading={consensusLoading}
           />
         </div>
 
@@ -149,11 +153,11 @@ export function DashboardContent() {
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
           <ConsensusTrend
             data={timeToConsensus?.trendBySession ?? []}
-            isLoading={isLoading}
+            isLoading={consensusLoading}
           />
           <VoterAlignmentChart
             data={voterAlignment?.scatterPoints ?? []}
-            isLoading={isLoading}
+            isLoading={alignmentLoading}
           />
         </div>
 
@@ -161,7 +165,7 @@ export function DashboardContent() {
         <div className="mb-8">
           <IndividualVotingStats
             data={voterAlignment?.users ?? []}
-            isLoading={isLoading}
+            isLoading={alignmentLoading}
           />
         </div>
 
@@ -170,11 +174,14 @@ export function DashboardContent() {
           <div className="lg:col-span-1">
             <VoteDistribution
               data={voteDistribution ?? []}
-              isLoading={isLoading}
+              isLoading={distributionLoading}
             />
           </div>
           <div className="lg:col-span-2">
-            <SessionHistory sessions={sessions ?? []} isLoading={isLoading} />
+            <SessionHistory
+              sessions={sessions ?? []}
+              isLoading={sessionsLoading}
+            />
           </div>
         </div>
       </main>

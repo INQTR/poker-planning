@@ -670,11 +670,10 @@ export async function getVoterAlignment(
 
   // Sort users by total votes descending
   users.sort((a, b) => b.totalVotes - a.totalVotes);
-  scatterPoints.sort((a, b) => {
-    const userA = users.find((u) => u.userId === a.userId);
-    const userB = users.find((u) => u.userId === b.userId);
-    return (userB?.totalVotes ?? 0) - (userA?.totalVotes ?? 0);
-  });
+  const votesMap = new Map(users.map((u) => [u.userId, u.totalVotes]));
+  scatterPoints.sort(
+    (a, b) => (votesMap.get(b.userId) ?? 0) - (votesMap.get(a.userId) ?? 0)
+  );
 
   return { users, scatterPoints };
 }
