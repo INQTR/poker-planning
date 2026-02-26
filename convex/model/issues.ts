@@ -26,6 +26,19 @@ export interface ExportableIssue {
   notes: string | null;
 }
 
+export interface EnhancedExportableIssue extends ExportableIssue {
+  timeToConsensusMs: number | null;
+  timeToConsensusFormatted: string | null; // "2m 34s"
+  votingRounds: number | null;
+  individualVotes: Array<{
+    userName: string;
+    vote: string;
+    deltaFromConsensus: number | null;
+  }> | null;
+  externalUrl: string | null; // placeholder for Epics 6-7
+  externalId: string | null; // placeholder for Epics 6-7
+}
+
 /**
  * Closes any open voting timestamp for the given issue.
  * Called when an issue is abandoned (switched away, reset) without completing.
@@ -482,4 +495,104 @@ export async function clearCurrentIssue(
     .collect();
 
   await Promise.all(votes.map((vote) => ctx.db.delete(vote._id)));
+}
+
+/**
+ * Formats milliseconds into a human-readable duration string (e.g., "2m 34s")
+ */
+function formatDurationMs(ms: number): string {
+  const totalSeconds = Math.round(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) return `${seconds}s`;
+  return `${minutes}m ${seconds}s`;
+}
+
+/**
+ * Gets issues with enhanced data for export (time-to-consensus, individual votes, voting rounds)
+ */
+export async function getEnhancedIssuesForExport(
+  ctx: QueryCtx,
+  roomId: Id<"rooms">
+): Promise<EnhancedExportableIssue[]> {
+  // Get base export data
+  const baseIssues = await getIssuesForExport(ctx, roomId);
+  const issues = await listIssues(ctx, roomId);
+
+  // Batch-query votingTimestamps by room (single query, group by issueId)
+  const allTimestamps = await ctx.db
+    .query("votingTimestamps")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .collect();
+
+  const timestampsByIssue = new Map<string, typeof allTimestamps>();
+  for (const ts of allTimestamps) {
+    const key = ts.issueId as string;
+    const existing = timestampsByIssue.get(key) ?? [];
+    existing.push(ts);
+    timestampsByIssue.set(key, existing);
+  }
+
+  // Batch-query individualVotes by room (single query, group by issueId)
+  const allIndividualVotes = await ctx.db
+    .query("individualVotes")
+    .withIndex("by_room", (q) => q.eq("roomId", roomId))
+    .collect();
+
+  const votesByIssue = new Map<string, typeof allIndividualVotes>();
+  for (const iv of allIndividualVotes) {
+    const key = iv.issueId as string;
+    const existing = votesByIssue.get(key) ?? [];
+    existing.push(iv);
+    votesByIssue.set(key, existing);
+  }
+
+  // Collect unique userIds and batch-resolve names
+  const uniqueUserIds = new Set<Id<"users">>();
+  for (const iv of allIndividualVotes) {
+    uniqueUserIds.add(iv.userId);
+  }
+  const userDocs = await Promise.all(
+    [...uniqueUserIds].map((uid) => ctx.db.get(uid))
+  );
+  const userNames = new Map<string, string>();
+  for (const doc of userDocs) {
+    if (doc) userNames.set(doc._id as string, doc.name);
+  }
+
+  // Build enhanced issues
+  return issues.map((issue, index) => {
+    const base = baseIssues[index];
+    const issueId = issue._id as string;
+
+    // Time-to-consensus from voteStats (already computed during completeIssueVoting)
+    const timeToConsensusMs = issue.voteStats?.timeToConsensusMs ?? null;
+    const timeToConsensusFormatted =
+      timeToConsensusMs !== null ? formatDurationMs(timeToConsensusMs) : null;
+
+    // Voting rounds count
+    const timestamps = timestampsByIssue.get(issueId) ?? [];
+    const votingRounds = timestamps.length > 0 ? timestamps.length : null;
+
+    // Individual votes
+    const issueVotes = votesByIssue.get(issueId) ?? [];
+    const individualVotes =
+      issueVotes.length > 0
+        ? issueVotes.map((iv) => ({
+            userName: userNames.get(iv.userId as string) ?? "Unknown",
+            vote: iv.cardLabel,
+            deltaFromConsensus: iv.deltaSteps ?? null,
+          }))
+        : null;
+
+    return {
+      ...base,
+      timeToConsensusMs,
+      timeToConsensusFormatted,
+      votingRounds,
+      individualVotes,
+      externalUrl: null,
+      externalId: null,
+    };
+  });
 }

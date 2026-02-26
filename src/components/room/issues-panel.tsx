@@ -2,7 +2,7 @@
 
 import { FC, useRef, useState } from "react";
 import Link from "next/link";
-import { X, Download, Plus, ListTodo, Loader2, Zap, ArrowRight } from "lucide-react";
+import { X, Download, FileSpreadsheet, FileJson, Plus, ListTodo, Loader2, Zap, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useIssues } from "./hooks/useIssues";
 import { IssueItem } from "./issue-item";
 import { exportIssuesToCSV } from "@/utils/export-issues-csv";
+import { exportIssuesToJSON } from "@/utils/export-issues-json";
 import type { Id } from "@/convex/_generated/dataModel";
 
 interface IssuesPanelProps {
@@ -161,7 +168,7 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
     }
   };
 
-  const handleExport = () => {
+  const handleExport = (format: "csv" | "json") => {
     if (!exportData || exportData.length === 0) {
       toast({
         title: "No issues to export",
@@ -171,10 +178,14 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
       return;
     }
 
-    exportIssuesToCSV(exportData, roomName);
+    if (format === "csv") {
+      exportIssuesToCSV(exportData, roomName);
+    } else {
+      exportIssuesToJSON(exportData, roomName);
+    }
     toast({
       title: "Export successful",
-      description: `Exported ${exportData.length} issues to CSV.`,
+      description: `Exported ${exportData.length} issues to ${format.toUpperCase()}.`,
     });
   };
 
@@ -206,25 +217,34 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleExport}
-                  disabled={issues.length === 0}
-                  className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3 rounded-md"
-                  aria-label="Export to CSV"
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              }
-            />
-            <TooltipContent>
-              <p>Export to CSV</p>
-            </TooltipContent>
-          </Tooltip>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <DropdownMenuTrigger
+                    disabled={issues.length === 0}
+                    className="inline-flex items-center justify-center h-7 w-7 p-0 rounded-md text-sm font-medium hover:bg-gray-100 dark:hover:bg-surface-3 disabled:pointer-events-none disabled:opacity-50"
+                    aria-label="Export issues"
+                  >
+                    <Download className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                }
+              />
+              <TooltipContent>
+                <p>Export issues</p>
+              </TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleExport("csv")}>
+                <FileSpreadsheet className="mr-2 size-4" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("json")}>
+                <FileJson className="mr-2 size-4" />
+                Export as JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Tooltip>
             <TooltipTrigger
               render={

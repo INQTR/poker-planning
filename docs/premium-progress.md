@@ -77,10 +77,10 @@
 
 ### Epic 8: Data Exports (Enhanced)
 
-**Status: Not started**
+**Status: Complete**
 
-- [ ] **8.1** Backend: Pro export with extended data (time-to-consensus, individual votes)
-- [ ] **8.2** Frontend: Export format options (CSV + JSON)
+- [x] **8.1** Backend: Pro export with extended data (time-to-consensus, individual votes)
+- [x] **8.2** Frontend: Export format options (CSV + JSON)
 
 ---
 
@@ -165,4 +165,4 @@
 
 ## Next Focus
 
-**Epic 8 (Data Exports)** — next Pro feature to build. No gating needed yet; all features available to all users until Phase 4.
+**Epic 6 (Jira Integration)** — next integration to build. No gating needed yet; all features available to all users until Phase 4.
