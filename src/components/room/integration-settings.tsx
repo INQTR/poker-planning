@@ -95,18 +95,32 @@ export function IntegrationSettingsSection({
     }
   }, [jiraConnection, projects.length, loadProjects]);
 
-  const handleProjectChange = async (key: string) => {
+  // Load boards when project key is set (from mapping or user selection)
+  useEffect(() => {
+    if (!projectKey || !jiraConnection) return;
+    let cancelled = false;
+
+    async function loadBoards() {
+      setLoadingBoards(true);
+      try {
+        const result = await getBoards({ projectKey });
+        if (!cancelled) setBoards(result);
+      } catch {
+        // Silently fail — boards will be empty
+      } finally {
+        if (!cancelled) setLoadingBoards(false);
+      }
+    }
+
+    loadBoards();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectKey, jiraConnection]);
+
+  const handleProjectChange = (key: string) => {
     setProjectKey(key);
     setBoardId(null);
-    setLoadingBoards(true);
-    try {
-      const result = await getBoards({ projectKey: key });
-      setBoards(result);
-    } catch {
-      toast({ title: "Failed to load boards", variant: "destructive" });
-    } finally {
-      setLoadingBoards(false);
-    }
+    // Boards will load via the useEffect above
   };
 
   const handleDetectField = async () => {

@@ -512,7 +512,7 @@ export const getJiraSprints = action({
 
 export const getJiraIssues = action({
   args: {
-    boardId: v.number(),
+    projectKey: v.string(),
     sprintId: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -525,7 +525,7 @@ export const getJiraIssues = action({
     if (args.sprintId) {
       return await client.getSprintIssues(args.sprintId);
     }
-    return await client.getBacklogIssues(args.boardId);
+    return await client.getBacklogIssues(args.projectKey);
   },
 });
 

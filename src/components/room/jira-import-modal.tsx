@@ -80,7 +80,7 @@ export function JiraImportModal({
 
   // Selections
   const [selectedProject, setSelectedProject] = useState<string>("");
-  const [selectedBoard, setSelectedBoard] = useState<number | null>(null);
+  const [, setSelectedBoard] = useState<number | null>(null);
   const [, setSelectedSprint] = useState<number | null>(null);
   const [selectedIssues, setSelectedIssues] = useState<Set<string>>(new Set());
 
@@ -128,7 +128,8 @@ export function JiraImportModal({
 
     load();
     return () => { cancelled = true; };
-  }, [open, getProjects, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const handleProjectSelect = async (projectKey: string) => {
     setSelectedProject(projectKey);
@@ -166,11 +167,10 @@ export function JiraImportModal({
 
   const handleSprintSelect = async (sprintId: number | null) => {
     setSelectedSprint(sprintId);
-    if (selectedBoard === null) return;
     setLoading(true);
     try {
       const result = await getIssues({
-        boardId: selectedBoard,
+        projectKey: selectedProject,
         sprintId: sprintId ?? undefined,
       });
       setIssues(result);

@@ -29,7 +29,7 @@ export async function GET() {
     audience: "api.atlassian.com",
     client_id: clientId,
     scope:
-      "read:jira-work write:jira-work read:sprint:jira-software write:issue:jira-software offline_access",
+      "read:jira-work write:jira-work read:project:jira read:board-scope:jira-software read:sprint:jira-software read:issue:jira-software write:issue:jira-software offline_access",
     redirect_uri: `${appUrl}/api/integrations/jira/callback`,
     state,
     response_type: "code",

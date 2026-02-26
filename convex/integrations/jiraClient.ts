@@ -73,15 +73,17 @@ export class JiraClient {
   }
 
   async getSprintIssues(sprintId: number): Promise<JiraIssue[]> {
+    const jql = `sprint = ${sprintId} ORDER BY rank ASC`;
     const data = await this.get<{ issues: JiraIssue[] }>(
-      `/rest/agile/1.0/sprint/${sprintId}/issue?fields=summary,issuetype,status,priority`
+      `/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&fields=summary,issuetype,status,priority&maxResults=100`
     );
     return data.issues;
   }
 
-  async getBacklogIssues(boardId: number): Promise<JiraIssue[]> {
+  async getBacklogIssues(projectKey: string): Promise<JiraIssue[]> {
+    const jql = `project = ${projectKey} AND sprint not in openSprints() AND sprint not in futureSprints() ORDER BY rank ASC`;
     const data = await this.get<{ issues: JiraIssue[] }>(
-      `/rest/agile/1.0/board/${boardId}/backlog?fields=summary,issuetype,status,priority`
+      `/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&fields=summary,issuetype,status,priority&maxResults=100`
     );
     return data.issues;
   }
