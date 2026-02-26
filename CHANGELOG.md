@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.5.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.4.0...agilekit-v2.5.0) (2026-02-26)
+
+
+### Features
+
+* add animated feature cards to features page ([b2e4b3f](https://github.com/INQTR/poker-planning/commit/b2e4b3f9a967c444e0dc36e27305b33dcce1c49c))
+
+
+### Documentation
+
+* Pro tier implementation plan and specs ([#155](https://github.com/INQTR/poker-planning/issues/155)) ([621b65d](https://github.com/INQTR/poker-planning/commit/621b65dd776e46451136187251ac4fcda7ba3201))
+
+
+### Miscellaneous
+
+* **deps:** bump hono from 4.12.0 to 4.12.2 ([#154](https://github.com/INQTR/poker-planning/issues/154)) ([eb0719b](https://github.com/INQTR/poker-planning/commit/eb0719b7866876ebc79623ffa75ac4f0e4cf2f84))
+* **deps:** bump minimatch ([#152](https://github.com/INQTR/poker-planning/issues/152)) ([b57fc11](https://github.com/INQTR/poker-planning/commit/b57fc118bd65c07dfc10c27499f000c2f7af00a0))
+
 ## [2.4.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.3.1...agilekit-v2.4.0) (2026-02-24)
 
 
