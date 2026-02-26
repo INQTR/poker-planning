@@ -85,6 +85,21 @@ export const getVoteDistribution = query({
   },
 });
 
+// Get time-to-consensus statistics
+export const getTimeToConsensus = query({
+  args: {
+    dateRange: dateRangeValidator,
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
+    return await Analytics.getTimeToConsensusStats(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
+  },
+});
+
 // Get participation statistics
 export const getParticipationStats = query({
   args: {
@@ -93,6 +108,36 @@ export const getParticipationStats = query({
   handler: async (ctx, args) => {
     const identity = await requireAuth(ctx);
     return await Analytics.getParticipationStats(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
+  },
+});
+
+// Get predictability score and session breakdown
+export const getPredictability = query({
+  args: {
+    dateRange: dateRangeValidator,
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
+    return await Analytics.getPredictabilityScore(
+      ctx,
+      identity.subject,
+      args.dateRange
+    );
+  },
+});
+
+// Get voter alignment data (scatter plot + stats table)
+export const getVoterAlignment = query({
+  args: {
+    dateRange: dateRangeValidator,
+  },
+  handler: async (ctx, args) => {
+    const identity = await requireAuth(ctx);
+    return await Analytics.getVoterAlignment(
       ctx,
       identity.subject,
       args.dateRange

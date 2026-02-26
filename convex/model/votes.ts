@@ -3,6 +3,7 @@ import { Id } from "../_generated/dataModel";
 import { internal } from "../_generated/api";
 import * as Rooms from "./rooms";
 import { COUNTDOWN_DURATION_MS } from "../constants";
+import { SPECIAL_CARDS, VotingScale } from "../scales";
 
 export interface PickCardArgs {
   roomId: Id<"rooms">;
@@ -141,4 +142,78 @@ export async function areAllVotesIn(
   const votedUserIds = new Set(votes.map((vote) => vote.userId));
 
   return nonSpectatorMembers.every((m) => votedUserIds.has(m.userId));
+}
+
+/**
+ * Snapshots individual votes for voter alignment analytics.
+ * Called when cards are revealed. Idempotent — deletes previous snapshots for the issue first.
+ */
+export async function snapshotVotesForHistory(
+  ctx: MutationCtx,
+  args: {
+    roomId: Id<"rooms">;
+    issueId: Id<"issues">;
+    consensusLabel: string | null;
+    votingScale: VotingScale | undefined;
+  }
+): Promise<void> {
+  const { roomId, issueId, consensusLabel, votingScale } = args;
+
+  // Idempotency: delete any existing snapshots for this issue
+  const existing = await ctx.db
+    .query("individualVotes")
+    .withIndex("by_issue", (q) => q.eq("issueId", issueId))
+    .collect();
+  await Promise.all(existing.map((row) => ctx.db.delete(row._id)));
+
+  // Get current votes
+  const votes = await getRoomVotes(ctx, roomId);
+
+  // Build scale index map for deltaSteps computation
+  const scaleCards = votingScale?.cards ?? [];
+  const numericScale = votingScale?.isNumeric ?? false;
+  const scaleIndexMap = new Map<string, number>();
+  scaleCards.forEach((card, idx) => {
+    if (!SPECIAL_CARDS.includes(card)) {
+      scaleIndexMap.set(card, idx);
+    }
+  });
+
+  const consensusIndex = consensusLabel
+    ? scaleIndexMap.get(consensusLabel)
+    : undefined;
+  const consensusValue =
+    consensusLabel !== null ? parseFloat(consensusLabel) : undefined;
+
+  const now = Date.now();
+
+  await Promise.all(
+    votes
+      .filter((vote) => vote.cardLabel && !SPECIAL_CARDS.includes(vote.cardLabel))
+      .map((vote) => {
+        const label = vote.cardLabel!;
+        const voteIndex = scaleIndexMap.get(label);
+        const deltaSteps =
+          numericScale && voteIndex !== undefined && consensusIndex !== undefined
+            ? voteIndex - consensusIndex
+            : undefined;
+
+        const cardValue = parseFloat(label);
+
+        return ctx.db.insert("individualVotes", {
+          roomId,
+          issueId,
+          userId: vote.userId,
+          cardLabel: label,
+          cardValue: isNaN(cardValue) ? undefined : cardValue,
+          consensusLabel: consensusLabel ?? undefined,
+          consensusValue:
+            consensusValue !== undefined && !isNaN(consensusValue)
+              ? consensusValue
+              : undefined,
+          deltaSteps,
+          votedAt: now,
+        });
+      })
+  );
 }

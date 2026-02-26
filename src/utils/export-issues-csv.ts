@@ -1,4 +1,5 @@
-import type { ExportableIssue } from "@/convex/model/issues";
+import type { EnhancedExportableIssue } from "@/convex/model/issues";
+import { downloadFile } from "./download-file";
 
 /**
  * Escapes a CSV field value (handles commas, quotes, newlines)
@@ -26,9 +27,19 @@ function formatNumber(value: number | null): string {
 }
 
 /**
+ * Formats individual votes as a semicolon-separated string
+ */
+function formatIndividualVotes(
+  votes: EnhancedExportableIssue["individualVotes"]
+): string {
+  if (!votes || votes.length === 0) return "";
+  return votes.map((v) => `${v.userName}: ${v.vote}`).join("; ");
+}
+
+/**
  * Converts issues data to CSV format
  */
-export function issuesToCSV(issues: ExportableIssue[]): string {
+export function issuesToCSV(issues: EnhancedExportableIssue[]): string {
   const headers = [
     "Title",
     "Final Estimate",
@@ -38,6 +49,11 @@ export function issuesToCSV(issues: ExportableIssue[]): string {
     "Average",
     "Median",
     "Agreement %",
+    "Time to Consensus",
+    "Voting Rounds",
+    "Individual Votes",
+    "External URL",
+    "External ID",
     "Notes",
   ];
   const headerRow = headers.join(",");
@@ -52,6 +68,11 @@ export function issuesToCSV(issues: ExportableIssue[]): string {
       escapeCSVField(formatNumber(issue.average)),
       escapeCSVField(formatNumber(issue.median)),
       escapeCSVField(issue.agreement !== null ? `${issue.agreement}%` : null),
+      escapeCSVField(issue.timeToConsensusFormatted),
+      escapeCSVField(issue.votingRounds),
+      escapeCSVField(formatIndividualVotes(issue.individualVotes)),
+      escapeCSVField(issue.externalUrl),
+      escapeCSVField(issue.externalId),
       escapeCSVField(issue.notes),
     ].join(",")
   );
@@ -60,31 +81,15 @@ export function issuesToCSV(issues: ExportableIssue[]): string {
 }
 
 /**
- * Triggers a browser download of the CSV file
- */
-export function downloadCSV(csvContent: string, filename: string): void {
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", filename);
-  link.style.visibility = "hidden";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-/**
  * Exports issues to a CSV file and triggers download
  */
 export function exportIssuesToCSV(
-  issues: ExportableIssue[],
+  issues: EnhancedExportableIssue[],
   roomName: string
 ): void {
   const csvContent = issuesToCSV(issues);
   const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
   const sanitizedRoomName = roomName.replace(/[^a-zA-Z0-9-_]/g, "_");
   const filename = `${sanitizedRoomName}_issues_${timestamp}.csv`;
-  downloadCSV(csvContent, filename);
+  downloadFile(csvContent, filename, "text/csv;charset=utf-8;");
 }

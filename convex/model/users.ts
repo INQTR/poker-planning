@@ -405,6 +405,13 @@ export async function deleteUserByAuthUserId(
     memberships.map((membership) => leaveRoom(ctx, user._id, membership.roomId))
   );
 
+  // Delete individual vote snapshots for this user
+  const individualVotes = await ctx.db
+    .query("individualVotes")
+    .withIndex("by_user", (q) => q.eq("userId", user._id))
+    .collect();
+  await Promise.all(individualVotes.map((iv) => ctx.db.delete(iv._id)));
+
   // Delete the global user record
   await ctx.db.delete(user._id);
 }
@@ -490,6 +497,30 @@ export async function linkAnonymousToPermanent(
         await ctx.db.delete(vote._id);
       } else {
         await ctx.db.patch(vote._id, { userId: existingPermanent._id });
+      }
+    }
+
+    // Transfer individual vote snapshots
+    // Rule: If both users have snapshots for the same issue,
+    // keep the permanent user's and delete the anonymous one.
+    const anonIndividualVotes = await ctx.db
+      .query("individualVotes")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .collect();
+
+    for (const iv of anonIndividualVotes) {
+      const existingIv = await ctx.db
+        .query("individualVotes")
+        .withIndex("by_room_user", (q) =>
+          q.eq("roomId", iv.roomId).eq("userId", existingPermanent._id)
+        )
+        .filter((q) => q.eq(q.field("issueId"), iv.issueId))
+        .first();
+
+      if (existingIv) {
+        await ctx.db.delete(iv._id);
+      } else {
+        await ctx.db.patch(iv._id, { userId: existingPermanent._id });
       }
     }
 

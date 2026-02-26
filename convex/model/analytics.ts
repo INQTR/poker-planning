@@ -1,5 +1,5 @@
 import { QueryCtx } from "../_generated/server";
-import { Doc } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 
 // Types for analytics data
 export interface SessionSummary {
@@ -361,6 +361,131 @@ export async function getParticipationStats(
   };
 }
 
+// Types for time-to-consensus analytics
+export interface TimeToConsensusStats {
+  averageMs: number | null;
+  medianMs: number | null;
+  outliers: Array<{
+    issueTitle: string;
+    roomName: string;
+    durationMs: number;
+    multiplierVsAverage: number;
+  }>;
+  trendBySession: Array<{
+    date: string;
+    roomName: string;
+    averageMs: number;
+  }>;
+}
+
+/**
+ * Gets time-to-consensus statistics across all user's sessions
+ */
+export async function getTimeToConsensusStats(
+  ctx: QueryCtx,
+  authUserId: string,
+  dateRange?: DateRange
+): Promise<TimeToConsensusStats> {
+  const membershipsWithRooms = await getUserMemberships(ctx, authUserId);
+
+  // Collect all completed issues with timeToConsensusMs
+  const issuesWithTime: Array<{
+    issueTitle: string;
+    roomId: string;
+    roomName: string;
+    durationMs: number;
+    votedAt: number;
+  }> = [];
+
+  for (const { room } of membershipsWithRooms) {
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    for (const issue of issues) {
+      if (
+        issue.status === "completed" &&
+        issue.voteStats?.timeToConsensusMs !== undefined &&
+        issue.votedAt
+      ) {
+        if (dateRange) {
+          if (issue.votedAt < dateRange.from || issue.votedAt > dateRange.to) {
+            continue;
+          }
+        }
+
+        issuesWithTime.push({
+          issueTitle: issue.title,
+          roomId: room._id,
+          roomName: room.name,
+          durationMs: issue.voteStats.timeToConsensusMs,
+          votedAt: issue.votedAt,
+        });
+      }
+    }
+  }
+
+  if (issuesWithTime.length === 0) {
+    return { averageMs: null, medianMs: null, outliers: [], trendBySession: [] };
+  }
+
+  // Compute average
+  const durations = issuesWithTime.map((i) => i.durationMs);
+  const averageMs = durations.reduce((sum, d) => sum + d, 0) / durations.length;
+
+  // Compute median
+  const sorted = [...durations].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const medianMs =
+    sorted.length % 2 !== 0
+      ? sorted[mid]
+      : (sorted[mid - 1] + sorted[mid]) / 2;
+
+  // Identify outliers (> 2x average)
+  const outliers = issuesWithTime
+    .filter((i) => i.durationMs > averageMs * 2)
+    .map((i) => ({
+      issueTitle: i.issueTitle,
+      roomName: i.roomName,
+      durationMs: i.durationMs,
+      multiplierVsAverage: Math.round((i.durationMs / averageMs) * 10) / 10,
+    }))
+    .sort((a, b) => b.durationMs - a.durationMs)
+    .slice(0, 10);
+
+  // Group by room+date for trend (use roomId as key to avoid name collisions)
+  const bySessionKey: Record<
+    string,
+    { date: string; roomName: string; totalMs: number; count: number }
+  > = {};
+
+  for (const item of issuesWithTime) {
+    const date = new Date(item.votedAt).toISOString().split("T")[0];
+    const key = `${date}::${item.roomId}`;
+    if (!bySessionKey[key]) {
+      bySessionKey[key] = { date, roomName: item.roomName, totalMs: 0, count: 0 };
+    }
+    bySessionKey[key].totalMs += item.durationMs;
+    bySessionKey[key].count += 1;
+  }
+
+  const trendBySession = Object.values(bySessionKey)
+    .map((s) => ({
+      date: s.date,
+      roomName: s.roomName,
+      averageMs: Math.round(s.totalMs / s.count),
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return {
+    averageMs: Math.round(averageMs),
+    medianMs: Math.round(medianMs),
+    outliers,
+    trendBySession,
+  };
+}
+
 /**
  * Gets summary statistics for the dashboard header
  */
@@ -409,4 +534,355 @@ export async function getDashboardSummary(
     totalStoryPoints,
     averageAgreement,
   };
+}
+
+// Types for voter alignment analytics
+export interface VoterAlignmentUser {
+  userId: string;
+  userName: string;
+  totalVotes: number;
+  agreesWithConsensus: number;
+  agreementRate: number;
+  averageDelta: number | null;
+  tendency: "under" | "over" | "aligned" | "unknown";
+}
+
+export interface VoterAlignmentScatterPoint {
+  userId: string;
+  userName: string;
+  x: number; // averageDelta
+  y: number; // stdDev (consistency)
+}
+
+export interface VoterAlignmentData {
+  users: VoterAlignmentUser[];
+  scatterPoints: VoterAlignmentScatterPoint[];
+}
+
+/**
+ * Gets voter alignment statistics across all user's sessions
+ */
+export async function getVoterAlignment(
+  ctx: QueryCtx,
+  authUserId: string,
+  dateRange?: DateRange
+): Promise<VoterAlignmentData> {
+  const membershipsWithRooms = await getUserMemberships(ctx, authUserId);
+
+  // Collect all individual votes across rooms
+  const allVotes: Doc<"individualVotes">[] = [];
+
+  for (const { room } of membershipsWithRooms) {
+    const votes = await ctx.db
+      .query("individualVotes")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    for (const vote of votes) {
+      if (dateRange) {
+        if (vote.votedAt < dateRange.from || vote.votedAt > dateRange.to) {
+          continue;
+        }
+      }
+      allVotes.push(vote);
+    }
+  }
+
+  if (allVotes.length === 0) {
+    return { users: [], scatterPoints: [] };
+  }
+
+  // Group by userId
+  const byUser = new Map<
+    Id<"users">,
+    Doc<"individualVotes">[]
+  >();
+
+  for (const vote of allVotes) {
+    const existing = byUser.get(vote.userId) ?? [];
+    existing.push(vote);
+    byUser.set(vote.userId, existing);
+  }
+
+  // Batch-resolve user names
+  const userIds = [...byUser.keys()];
+  const resolvedUsers = await Promise.all(userIds.map((id) => ctx.db.get(id)));
+  const userNameMap = new Map(
+    userIds.map((id, i) => [id, resolvedUsers[i]?.name ?? "Unknown"])
+  );
+
+  // Compute stats per user
+  const users: VoterAlignmentUser[] = [];
+  const scatterPoints: VoterAlignmentScatterPoint[] = [];
+
+  for (const [userId, votes] of byUser) {
+    const userName = userNameMap.get(userId) ?? "Unknown";
+
+    const totalVotes = votes.length;
+    const agreesWithConsensus = votes.filter(
+      (v) => v.consensusLabel !== undefined && v.cardLabel === v.consensusLabel
+    ).length;
+    const agreementRate =
+      totalVotes > 0 ? Math.round((agreesWithConsensus / totalVotes) * 100) : 0;
+
+    // Compute average delta from deltaSteps (only votes with delta)
+    const deltas = votes
+      .map((v) => v.deltaSteps)
+      .filter((d): d is number => d !== undefined);
+
+    const hasDeltas = deltas.length > 0;
+    const averageDelta = hasDeltas
+      ? Math.round((deltas.reduce((s, d) => s + d, 0) / deltas.length) * 100) / 100
+      : null;
+
+    // Compute stdDev of deltaSteps for scatter y-axis
+    let stdDev = 0;
+    if (deltas.length > 1) {
+      const mean = deltas.reduce((s, d) => s + d, 0) / deltas.length;
+      const variance =
+        deltas.reduce((s, d) => s + (d - mean) ** 2, 0) / deltas.length;
+      stdDev = Math.round(Math.sqrt(variance) * 100) / 100;
+    }
+
+    const tendency: "under" | "over" | "aligned" | "unknown" =
+      averageDelta === null
+        ? "unknown"
+        : averageDelta < -0.5
+          ? "under"
+          : averageDelta > 0.5
+            ? "over"
+            : "aligned";
+
+    users.push({
+      userId,
+      userName,
+      totalVotes,
+      agreesWithConsensus,
+      agreementRate,
+      averageDelta,
+      tendency,
+    });
+
+    // Only include in scatter chart if we have delta data (numeric scales)
+    if (averageDelta !== null) {
+      scatterPoints.push({
+        userId,
+        userName,
+        x: averageDelta,
+        y: stdDev,
+      });
+    }
+  }
+
+  // Sort users by total votes descending
+  users.sort((a, b) => b.totalVotes - a.totalVotes);
+  const votesMap = new Map(users.map((u) => [u.userId, u.totalVotes]));
+  scatterPoints.sort(
+    (a, b) => (votesMap.get(b.userId) ?? 0) - (votesMap.get(a.userId) ?? 0)
+  );
+
+  return { users, scatterPoints };
+}
+
+// Types for predictability analytics
+export interface PredictabilitySession {
+  roomName: string;
+  date: string;
+  estimatedPoints: number;
+  issueCount: number;
+  averageAgreement: number;
+  averageTimeToConsensus: number;
+}
+
+export interface PredictabilityData {
+  predictabilityScore: number | null;
+  sessions: PredictabilitySession[];
+  averageVelocityPerSession: number;
+  velocityTrend: "increasing" | "stable" | "decreasing";
+  averageAgreement: number;
+  agreementTrend: "improving" | "stable" | "declining";
+}
+
+/**
+ * Computes sprint predictability score and related metrics.
+ *
+ * Score formula:
+ *   velocityConsistency = 1 - (stdDev(points) / mean(points))
+ *   score = avgAgreement * 0.6 + velocityConsistency * 100 * 0.4
+ *   clamped to 0-100
+ *
+ * Returns null score when < 3 sessions have story points.
+ */
+export async function getPredictabilityScore(
+  ctx: QueryCtx,
+  authUserId: string,
+  dateRange?: DateRange
+): Promise<PredictabilityData> {
+  const membershipsWithRooms = await getUserMemberships(ctx, authUserId);
+
+  // Build per-session data — date range filters at issue level (by votedAt),
+  // not at membership level, matching the pattern in getVelocityStats et al.
+  const sessions: PredictabilitySession[] = [];
+
+  for (const { room } of membershipsWithRooms) {
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    // Filter completed issues, applying date range to votedAt
+    const completedIssues = issues.filter((i) => {
+      if (i.status !== "completed" || !i.votedAt) return false;
+      if (dateRange) {
+        return i.votedAt >= dateRange.from && i.votedAt <= dateRange.to;
+      }
+      return true;
+    });
+
+    if (completedIssues.length === 0) continue;
+
+    // Story points
+    const numericEstimates = completedIssues
+      .map((i) => (i.finalEstimate ? parseFloat(i.finalEstimate) : NaN))
+      .filter((v) => !isNaN(v));
+    const estimatedPoints =
+      numericEstimates.length > 0
+        ? numericEstimates.reduce((sum, v) => sum + v, 0)
+        : 0;
+
+    // Agreement
+    const agreements = completedIssues
+      .map((i) => i.voteStats?.agreement)
+      .filter((a): a is number => a !== undefined);
+    const averageAgreement =
+      agreements.length > 0
+        ? Math.round(
+            agreements.reduce((sum, a) => sum + a, 0) / agreements.length
+          )
+        : 0;
+
+    // Time to consensus
+    const consensusTimes = completedIssues
+      .map((i) => i.voteStats?.timeToConsensusMs)
+      .filter((t): t is number => t !== undefined);
+    const averageTimeToConsensus =
+      consensusTimes.length > 0
+        ? Math.round(
+            consensusTimes.reduce((sum, t) => sum + t, 0) /
+              consensusTimes.length
+          )
+        : 0;
+
+    // Session date = latest votedAt among completed issues in this room
+    const latestVotedAt = Math.max(...completedIssues.map((i) => i.votedAt!));
+    const date = new Date(latestVotedAt).toISOString().split("T")[0];
+
+    sessions.push({
+      roomName: room.name,
+      date,
+      estimatedPoints,
+      issueCount: completedIssues.length,
+      averageAgreement,
+      averageTimeToConsensus,
+    });
+  }
+
+  // Sort sessions by date
+  sessions.sort((a, b) => a.date.localeCompare(b.date));
+
+  // Sessions with story points (for velocity metrics)
+  const sessionsWithPoints = sessions.filter((s) => s.estimatedPoints > 0);
+
+  // Velocity stats
+  const velocities = sessionsWithPoints.map((s) => s.estimatedPoints);
+  const averageVelocityPerSession =
+    velocities.length > 0
+      ? Math.round(
+          (velocities.reduce((sum, v) => sum + v, 0) / velocities.length) * 10
+        ) / 10
+      : 0;
+
+  // Velocity trend (first half vs second half)
+  const velocityTrend = computeTrend(velocities, 10);
+
+  // Agreement stats
+  const allAgreements = sessions
+    .map((s) => s.averageAgreement)
+    .filter((a) => a > 0);
+  const overallAgreement =
+    allAgreements.length > 0
+      ? Math.round(
+          allAgreements.reduce((sum, a) => sum + a, 0) / allAgreements.length
+        )
+      : 0;
+
+  // Agreement trend
+  const agreementTrendDir = computeTrend(allAgreements, 5);
+  const agreementTrend: "improving" | "stable" | "declining" =
+    agreementTrendDir === "increasing"
+      ? "improving"
+      : agreementTrendDir === "decreasing"
+        ? "declining"
+        : "stable";
+
+  // Predictability score (need at least 3 sessions with points)
+  let predictabilityScore: number | null = null;
+
+  if (sessionsWithPoints.length >= 3) {
+    const mean =
+      velocities.reduce((sum, v) => sum + v, 0) / velocities.length;
+    const variance =
+      velocities.reduce((sum, v) => sum + (v - mean) ** 2, 0) /
+      velocities.length;
+    const stdDev = Math.sqrt(variance);
+
+    const velocityConsistency = mean > 0 ? 1 - stdDev / mean : 0;
+    const rawScore =
+      overallAgreement * 0.6 + velocityConsistency * 100 * 0.4;
+
+    predictabilityScore = Math.round(Math.min(100, Math.max(0, rawScore)));
+  }
+
+  return {
+    predictabilityScore,
+    sessions,
+    averageVelocityPerSession,
+    velocityTrend:
+      velocityTrend === "increasing"
+        ? "increasing"
+        : velocityTrend === "decreasing"
+          ? "decreasing"
+          : "stable",
+    averageAgreement: overallAgreement,
+    agreementTrend,
+  };
+}
+
+/**
+ * Compares the first half vs second half of a numeric series.
+ * Returns "increasing" if second half is >threshold% higher,
+ * "decreasing" if lower, "stable" otherwise.
+ */
+function computeTrend(
+  values: number[],
+  thresholdPct: number
+): "increasing" | "stable" | "decreasing" {
+  if (values.length < 2) return "stable";
+
+  const mid = Math.floor(values.length / 2);
+  const firstHalf = values.slice(0, mid);
+  const secondHalf = values.slice(mid);
+
+  const firstAvg =
+    firstHalf.reduce((s, v) => s + v, 0) / firstHalf.length;
+  const secondAvg =
+    secondHalf.reduce((s, v) => s + v, 0) / secondHalf.length;
+
+  if (firstAvg === 0) return secondAvg > 0 ? "increasing" : "stable";
+
+  const diffPct = ((secondAvg - firstAvg) / firstAvg) * 100;
+
+  if (diffPct > thresholdPct) return "increasing";
+  if (diffPct < -thresholdPct) return "decreasing";
+  return "stable";
 }

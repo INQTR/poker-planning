@@ -14,7 +14,7 @@ const tiers = [
       "No account required",
       "Unlimited participants",
       "Core voting tools",
-      "Session auto-deletes in 5 days",
+      "No account required to start",
     ],
     cta: "Try it now for free",
     href: "/room/new",
@@ -24,12 +24,12 @@ const tiers = [
     id: "pro",
     price: "Coming Soon",
     period: "",
-    description: "For teams needing history, insights, and permanent accounts. We're working hard to bring you these features.",
+    description: "For teams needing history, insights, and integrations. We're working hard to bring you these features.",
     features: [
       "Permanent account",
       "Full session archive",
       "Analytics & velocity insights",
-      "Priority support",
+      "Jira & GitHub integrations",
     ],
     cta: "Coming Soon",
     href: "#",
@@ -49,7 +49,7 @@ export function PricingSection() {
             Transparent pricing.
           </h3>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light max-w-xl">
-            Start using AgileKit completely free today. Our Pro tier with advanced team features is actively in development.
+            Start using AgileKit completely free today. Our Pro tier with analytics, integrations, and more is actively in development.
           </p>
         </div>
 

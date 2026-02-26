@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "convex/react";
 import { useCallback } from "react";
 import { api } from "@/convex/_generated/api";
 import type { Id, Doc } from "@/convex/_generated/dataModel";
-import type { ExportableIssue } from "@/convex/model/issues";
+import type { EnhancedExportableIssue } from "@/convex/model/issues";
 
 interface UseIssuesProps {
   roomId: Id<"rooms">;
@@ -22,14 +22,14 @@ interface UseIssuesReturn {
   updateEstimate: (issueId: Id<"issues">, estimate: string) => Promise<void>;
   deleteIssue: (issueId: Id<"issues">) => Promise<void>;
   reorderIssues: (issueIds: Id<"issues">[]) => Promise<void>;
-  exportData: ExportableIssue[] | undefined;
+  exportData: EnhancedExportableIssue[] | undefined;
 }
 
 export function useIssues({ roomId }: UseIssuesProps): UseIssuesReturn {
   // Queries
   const issues = useQuery(api.issues.list, { roomId });
   const currentIssue = useQuery(api.issues.getCurrent, { roomId });
-  const exportData = useQuery(api.issues.getForExport, { roomId });
+  const exportData = useQuery(api.issues.getForEnhancedExport, { roomId });
 
   // Mutations
   const createMutation = useMutation(api.issues.create);

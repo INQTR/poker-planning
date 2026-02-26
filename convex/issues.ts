@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { query, mutation } from "./_generated/server";
 import * as Issues from "./model/issues";
-import { requireRoomPermission } from "./model/auth";
+import { requireRoomMember, requireRoomPermission } from "./model/auth";
 
 /**
  * List all issues for a room, ordered by their order field
@@ -30,6 +30,18 @@ export const getForExport = query({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
     return await Issues.getIssuesForExport(ctx, args.roomId);
+  },
+});
+
+/**
+ * Get issues with enhanced data for export (time-to-consensus, individual votes, voting rounds).
+ * Requires room membership since it exposes per-user voting data.
+ */
+export const getForEnhancedExport = query({
+  args: { roomId: v.id("rooms") },
+  handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
+    return await Issues.getEnhancedIssuesForExport(ctx, args.roomId);
   },
 });
 

@@ -4,7 +4,9 @@
 
 ## Dependencies
 
-- Epic 2 (Premium Gating) - feature is gated behind premium
+- Epic 0 (Permanent Accounts)
+
+> During Phase 1 this feature is implemented without Pro gating. Room-owner Pro filtering is applied later in Epic 2.
 
 ## Tasks
 
@@ -92,7 +94,9 @@ export async function snapshotVotesForHistory(
 }
 ```
 
-Call this from `showRoomCards()` after consensus is calculated.
+**When to call:** Call this from `completeIssueVoting()`, **not** from `showRoomCards()`. The reveal step shows votes but doesn't establish consensus — the facilitator sets the final estimate afterward via `completeIssueVoting()`. Snapshotting at completion ensures `consensusLabel`/`consensusValue` are always populated.
+
+If the team uses auto-complete (consensus is calculated at reveal time), the snapshot still happens at the same logical point since `completeIssueVoting()` is called immediately after reveal in that flow.
 
 ---
 
@@ -122,9 +126,9 @@ export interface VoterAlignmentData {
 
 export async function getVoterAlignment(
   ctx: QueryCtx,
-  args: { authUserId: string; dateRange?: DateRange }
+  args: { userId: Id<"users">; dateRange?: DateRange }
 ): Promise<VoterAlignmentData> {
-  // 1. Get all rooms the user participated in
+  // 1. Get all rooms for args.userId
   // 2. Get all individualVotes for those rooms
   // 3. Group by userId
   // 4. For each user: compute agreement rate, average delta, tendency
@@ -190,7 +194,10 @@ The alignment matrix shows relative performance across team members. Add a discl
 
 > "Alignment data is intended for coaching and self-improvement, not performance evaluation."
 
-Consider making this feature opt-in at the room level, or only showing data for the current user unless they're the room creator.
+Scope decision for initial release:
+- No room-level opt-in toggle yet (deferred)
+- Data is visible to room participants per current analytics policy
+- If abuse concerns appear, add room-level privacy controls in a future epic
 
 **Acceptance criteria for the entire epic:**
 - Every vote is persisted in `individualVotes` when cards are revealed
@@ -198,4 +205,4 @@ Consider making this feature opt-in at the room level, or only showing data for 
 - Individual stats accurately reflect agreement rate and delta
 - Pass/coffee votes are excluded from calculations
 - Non-numeric scales show agreement rate but skip delta calculations
-- All queries are premium-gated
+- No Pro gating added in this phase

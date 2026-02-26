@@ -1,0 +1,210 @@
+"use client";
+
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import {
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
+interface SessionDataPoint {
+  roomName: string;
+  date: string;
+  estimatedPoints: number;
+  issueCount: number;
+  averageAgreement: number;
+  averageTimeToConsensus: number;
+}
+
+interface VelocityTrendProps {
+  sessions: SessionDataPoint[];
+  velocityTrend: "increasing" | "stable" | "decreasing";
+  isLoading?: boolean;
+}
+
+const chartConfig = {
+  estimatedPoints: {
+    label: "Story Points",
+    color: "var(--chart-3)",
+  },
+  rollingAvg: {
+    label: "Rolling Avg (3)",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig;
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function computeRollingAverage(
+  data: SessionDataPoint[],
+  window: number
+): Array<SessionDataPoint & { rollingAvg: number | null }> {
+  return data.map((point, i) => {
+    if (i < window - 1) {
+      return { ...point, rollingAvg: null };
+    }
+    const windowSlice = data.slice(i - window + 1, i + 1);
+    const avg =
+      windowSlice.reduce((sum, p) => sum + p.estimatedPoints, 0) / window;
+    return { ...point, rollingAvg: Math.round(avg * 10) / 10 };
+  });
+}
+
+const trendConfig = {
+  increasing: {
+    icon: TrendingUp,
+    label: "Velocity increasing",
+    className: "text-green-600 dark:text-green-400",
+  },
+  stable: {
+    icon: Minus,
+    label: "Velocity stable",
+    className: "text-muted-foreground",
+  },
+  decreasing: {
+    icon: TrendingDown,
+    label: "Velocity decreasing",
+    className: "text-amber-600 dark:text-amber-400",
+  },
+} as const;
+
+export function VelocityTrend({
+  sessions,
+  velocityTrend,
+  isLoading,
+}: VelocityTrendProps) {
+  const sessionsWithPoints = sessions.filter((s) => s.estimatedPoints > 0);
+  const hasData = sessionsWithPoints.length > 0;
+
+  const totalPoints = sessionsWithPoints.reduce(
+    (sum, s) => sum + s.estimatedPoints,
+    0
+  );
+  const totalIssues = sessionsWithPoints.reduce(
+    (sum, s) => sum + s.issueCount,
+    0
+  );
+
+  const trend = trendConfig[velocityTrend];
+  const TrendIcon = trend.icon;
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Velocity Trend
+          </CardTitle>
+          <CardDescription>
+            Story points per session with rolling average
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[200px] animate-pulse rounded bg-muted" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!hasData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            Velocity Trend
+          </CardTitle>
+          <CardDescription>
+            Story points per session with rolling average
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+            No estimation data yet
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const chartData = computeRollingAverage(sessionsWithPoints, 3);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Velocity Trend
+        </CardTitle>
+        <CardDescription className="flex items-center gap-2">
+          <span>
+            {totalPoints} points across {totalIssues} issues
+          </span>
+          <span className={`flex items-center gap-1 ${trend.className}`}>
+            <TrendIcon className="h-3 w-3" />
+            {trend.label}
+          </span>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+          <ComposedChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={formatDate}
+              tickMargin={8}
+            />
+            <YAxis tickLine={false} axisLine={false} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(label) => formatDate(label as string)}
+                />
+              }
+            />
+            <Bar
+              dataKey="estimatedPoints"
+              fill="var(--color-estimatedPoints)"
+              radius={[4, 4, 0, 0]}
+            />
+            <Line
+              type="monotone"
+              dataKey="rollingAvg"
+              stroke="var(--color-rollingAvg)"
+              strokeWidth={2}
+              dot={false}
+              connectNulls={false}
+            />
+          </ComposedChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}

@@ -41,9 +41,9 @@ export interface PredictabilityData {
 
 export async function getPredictabilityScore(
   ctx: QueryCtx,
-  args: { authUserId: string; dateRange?: DateRange }
+  args: { userId: Id<"users">; dateRange?: DateRange }
 ): Promise<PredictabilityData> {
-  // 1. Get all rooms user participated in (within date range)
+  // 1. Get all rooms for args.userId (within date range)
   // 2. For each room, aggregate: total points, issue count, avg agreement
   // 3. Compute velocity trend (linear regression or simple comparison)
   // 4. Compute agreement trend
@@ -70,15 +70,21 @@ Clamped to 0-100.
 
 ```typescript
 export const getPredictability = query({
-  args: { authUserId: v.string(), dateRange: v.optional(dateRangeValidator) },
+  args: { dateRange: v.optional(dateRangeValidator) },
   handler: async (ctx, args) => {
-    const user = await Users.getUserByAuthId(ctx, args.authUserId);
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return null;
+    const user = await Users.getUserByAuthId(ctx, identity.subject);
     if (!user) return null;
-    await Subscriptions.requirePremium(ctx, user._id);
-    return await Analytics.getPredictabilityScore(ctx, args);
+    return await Analytics.getPredictabilityScore(ctx, {
+      userId: user._id,
+      dateRange: args.dateRange,
+    });
   },
 });
 ```
+
+Room-owner Pro filtering is applied later in Epic 2.
 
 ---
 
@@ -120,5 +126,5 @@ This would make the score a true measure of estimation accuracy rather than just
 - Predictability score computes correctly from session data
 - Score reflects both agreement quality and velocity consistency
 - Dashboard displays gauge, trend chart, and session breakdown
-- All queries are premium-gated
+- No Pro gating added in this phase
 - Score degrades gracefully with limited data (< 3 sessions shows "Not enough data")
