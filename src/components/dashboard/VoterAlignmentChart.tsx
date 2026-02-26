@@ -148,8 +148,8 @@ export function VoterAlignmentChart({
               }
             />
             <Scatter data={data} name="alignment">
-              {data.map((point, index) => (
-                <Cell key={index} fill={getDotColor(point.x)} />
+              {data.map((point) => (
+                <Cell key={point.userId} fill={getDotColor(point.x)} />
               ))}
             </Scatter>
           </ScatterChart>

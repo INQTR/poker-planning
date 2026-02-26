@@ -604,13 +604,19 @@ export async function getVoterAlignment(
     byUser.set(vote.userId, existing);
   }
 
-  // Resolve user names and compute stats
+  // Batch-resolve user names
+  const userIds = [...byUser.keys()];
+  const resolvedUsers = await Promise.all(userIds.map((id) => ctx.db.get(id)));
+  const userNameMap = new Map(
+    userIds.map((id, i) => [id, resolvedUsers[i]?.name ?? "Unknown"])
+  );
+
+  // Compute stats per user
   const users: VoterAlignmentUser[] = [];
   const scatterPoints: VoterAlignmentScatterPoint[] = [];
 
   for (const [userId, votes] of byUser) {
-    const user = await ctx.db.get(userId);
-    const userName = user?.name ?? "Unknown";
+    const userName = userNameMap.get(userId) ?? "Unknown";
 
     const totalVotes = votes.length;
     const agreesWithConsensus = votes.filter(

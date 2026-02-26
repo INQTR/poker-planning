@@ -187,31 +187,33 @@ export async function snapshotVotesForHistory(
 
   const now = Date.now();
 
-  for (const vote of votes) {
-    const label = vote.cardLabel;
-    if (!label || SPECIAL_CARDS.includes(label)) continue;
+  await Promise.all(
+    votes
+      .filter((vote) => vote.cardLabel && !SPECIAL_CARDS.includes(vote.cardLabel))
+      .map((vote) => {
+        const label = vote.cardLabel!;
+        const voteIndex = scaleIndexMap.get(label);
+        const deltaSteps =
+          numericScale && voteIndex !== undefined && consensusIndex !== undefined
+            ? voteIndex - consensusIndex
+            : undefined;
 
-    const voteIndex = scaleIndexMap.get(label);
-    const deltaSteps =
-      numericScale && voteIndex !== undefined && consensusIndex !== undefined
-        ? voteIndex - consensusIndex
-        : undefined;
+        const cardValue = parseFloat(label);
 
-    const cardValue = parseFloat(label);
-
-    await ctx.db.insert("individualVotes", {
-      roomId,
-      issueId,
-      userId: vote.userId,
-      cardLabel: label,
-      cardValue: isNaN(cardValue) ? undefined : cardValue,
-      consensusLabel: consensusLabel ?? undefined,
-      consensusValue:
-        consensusValue !== undefined && !isNaN(consensusValue)
-          ? consensusValue
-          : undefined,
-      deltaSteps,
-      votedAt: now,
-    });
-  }
+        return ctx.db.insert("individualVotes", {
+          roomId,
+          issueId,
+          userId: vote.userId,
+          cardLabel: label,
+          cardValue: isNaN(cardValue) ? undefined : cardValue,
+          consensusLabel: consensusLabel ?? undefined,
+          consensusValue:
+            consensusValue !== undefined && !isNaN(consensusValue)
+              ? consensusValue
+              : undefined,
+          deltaSteps,
+          votedAt: now,
+        });
+      })
+  );
 }
