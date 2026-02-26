@@ -17,6 +17,21 @@ import { encryptToken, decryptToken } from "../lib/encryption";
 import { requirePermission } from "../model/permissions";
 import { JiraClient } from "./jiraClient";
 
+function getTokenEncryptionKey(): string {
+  const key = process.env.TOKEN_ENCRYPTION_KEY;
+  if (!key) {
+    throw new Error(
+      "Missing TOKEN_ENCRYPTION_KEY environment variable. Set a 32-byte hex key."
+    );
+  }
+  if (!/^[0-9a-fA-F]{64}$/.test(key)) {
+    throw new Error(
+      "Invalid TOKEN_ENCRYPTION_KEY. Expected 64 hex characters (32 bytes)."
+    );
+  }
+  return key;
+}
+
 // ---------------------------------------------------------------------------
 // Token helpers (used within actions)
 // ---------------------------------------------------------------------------
@@ -25,7 +40,7 @@ export async function getValidAccessToken(
   ctx: ActionCtx,
   connection: Doc<"integrationConnections">
 ): Promise<string> {
-  const encKey = process.env.TOKEN_ENCRYPTION_KEY!;
+  const encKey = getTokenEncryptionKey();
 
   // If token is valid for >1 minute, decrypt and return
   if (connection.expiresAt > Date.now() + 60_000) {
@@ -45,7 +60,7 @@ export async function refreshJiraToken(
   ctx: ActionCtx,
   connection: Doc<"integrationConnections">
 ): Promise<string> {
-  const encKey = process.env.TOKEN_ENCRYPTION_KEY!;
+  const encKey = getTokenEncryptionKey();
 
   if (
     !connection.encryptedRefreshToken ||
@@ -275,6 +290,19 @@ export const createIssueWithLink = internalMutation({
   },
 });
 
+export const setMappingWebhook = internalMutation({
+  args: {
+    mappingId: v.id("integrationMappings"),
+    jiraWebhookId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.mappingId, {
+      jiraWebhookId: args.jiraWebhookId,
+      jiraWebhookRegisteredAt: args.jiraWebhookId ? Date.now() : undefined,
+    });
+  },
+});
+
 // ---------------------------------------------------------------------------
 // Internal queries
 // ---------------------------------------------------------------------------
@@ -295,6 +323,13 @@ export const getConnectionById = internalQuery({
   args: { connectionId: v.id("integrationConnections") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.connectionId);
+  },
+});
+
+export const getMappingById = internalQuery({
+  args: { mappingId: v.id("integrationMappings") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.mappingId);
   },
 });
 
@@ -347,7 +382,7 @@ export const storeConnection = internalAction({
     providerUserEmail: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const encKey = process.env.TOKEN_ENCRYPTION_KEY!;
+    const encKey = getTokenEncryptionKey();
 
     const encAccess = await encryptToken(args.accessToken, encKey);
     const encRefresh = await encryptToken(args.refreshToken, encKey);
@@ -697,23 +732,44 @@ export const cleanupOldWebhookEvents = internalMutation({
 
 export const registerWebhook = internalAction({
   args: {
-    connectionId: v.id("integrationConnections"),
-    jqlFilter: v.string(),
+    mappingId: v.id("integrationMappings"),
   },
   handler: async (ctx, args) => {
+    const mapping = await ctx.runQuery(
+      internal.integrations.jira.getMappingById,
+      { mappingId: args.mappingId }
+    );
+    if (!mapping || mapping.provider !== "jira" || !mapping.jiraProjectKey) {
+      return null;
+    }
+
     const connection = await ctx.runQuery(
       internal.integrations.jira.getConnectionById,
-      { connectionId: args.connectionId }
+      { connectionId: mapping.connectionId }
     );
     if (!connection) throw new Error("Connection not found");
 
     const client = await buildJiraClient(ctx, connection);
-    const secret = process.env.JIRA_WEBHOOK_SECRET;
-    const baseUrl = `${process.env.CONVEX_SITE_URL}/webhooks/jira`;
-    const webhookUrl = secret ? `${baseUrl}?secret=${encodeURIComponent(secret)}` : baseUrl;
+    const webhookUrl = `${process.env.CONVEX_SITE_URL}/webhooks/jira`;
 
     try {
-      const webhookId = await client.registerWebhook(args.jqlFilter, webhookUrl);
+      if (mapping.jiraWebhookId) {
+        try {
+          await client.deleteWebhooks([mapping.jiraWebhookId]);
+        } catch (error) {
+          console.warn(
+            `Failed to delete old Jira webhook ${mapping.jiraWebhookId} for mapping ${mapping._id}:`,
+            error
+          );
+        }
+      }
+
+      const jqlFilter = `project = ${mapping.jiraProjectKey}`;
+      const webhookId = await client.registerWebhook(jqlFilter, webhookUrl);
+      await ctx.runMutation(internal.integrations.jira.setMappingWebhook, {
+        mappingId: mapping._id,
+        jiraWebhookId: webhookId,
+      });
       console.log(`Registered Jira webhook ${webhookId}`);
       return webhookId;
     } catch (error) {
@@ -726,19 +782,16 @@ export const registerWebhook = internalAction({
 export const refreshJiraWebhooks = internalAction({
   args: {},
   handler: async (ctx) => {
-    // Get all Jira connections with active mappings
+    // Get all Jira mappings and refresh their webhook registration
     const allMappings = await ctx.runQuery(
       internal.integrations.jira.getAllJiraMappings,
       {}
     );
 
     for (const mapping of allMappings) {
-      if (!mapping.jiraProjectKey) continue;
-
       try {
         await ctx.runAction(internal.integrations.jira.registerWebhook, {
-          connectionId: mapping.connectionId,
-          jqlFilter: `project = ${mapping.jiraProjectKey}`,
+          mappingId: mapping._id,
         });
       } catch (error) {
         console.error(
@@ -755,7 +808,12 @@ export const getAllJiraMappings = internalQuery({
   handler: async (ctx) => {
     return await ctx.db
       .query("integrationMappings")
-      .filter((q) => q.eq(q.field("provider"), "jira"))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("provider"), "jira"),
+          q.eq(q.field("autoPushEstimates"), true)
+        )
+      )
       .collect();
   },
 });

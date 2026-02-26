@@ -13,14 +13,12 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, request) => {
     try {
-      // Verify webhook authenticity via shared secret header.
-      // Jira sends the secret as a query parameter or header when registered.
+      // Optional shared-secret check via header.
+      // We intentionally avoid query-param secrets because URLs are commonly logged.
       const webhookSecret = process.env.JIRA_WEBHOOK_SECRET;
       if (webhookSecret) {
-        const url = new URL(request.url);
-        const token = url.searchParams.get("secret")
-          ?? request.headers.get("x-hub-secret");
-        if (token !== webhookSecret) {
+        const token = request.headers.get("x-hub-secret");
+        if (!token || token !== webhookSecret) {
           console.warn("Jira webhook rejected: invalid secret");
           return new Response("Forbidden", { status: 403 });
         }

@@ -6,7 +6,7 @@
 import { mutation, query } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v } from "convex/values";
-import { requireAuthUser, requireRoomPermission } from "./model/auth";
+import { requireAuthUser, requireRoomMember, requireRoomPermission } from "./model/auth";
 
 // ---------------------------------------------------------------------------
 // Connection queries & mutations
@@ -62,6 +62,7 @@ export const disconnect = mutation({
 export const getRoomMapping = query({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
     return await ctx.db
       .query("integrationMappings")
       .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
@@ -72,6 +73,8 @@ export const getRoomMapping = query({
 export const getIssueLinks = query({
   args: { roomId: v.id("rooms") },
   handler: async (ctx, args) => {
+    await requireRoomMember(ctx, args.roomId);
+
     const issues = await ctx.db
       .query("issues")
       .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
@@ -159,8 +162,7 @@ export const saveRoomMapping = mutation({
           0,
           internal.integrations.jira.registerWebhook,
           {
-            connectionId: args.connectionId,
-            jqlFilter: `project = ${args.jiraProjectKey}`,
+            mappingId: existing._id,
           }
         );
       }
@@ -187,8 +189,7 @@ export const saveRoomMapping = mutation({
         0,
         internal.integrations.jira.registerWebhook,
         {
-          connectionId: args.connectionId,
-          jqlFilter: `project = ${args.jiraProjectKey}`,
+          mappingId,
         }
       );
     }

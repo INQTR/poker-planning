@@ -149,6 +149,14 @@ export class JiraClient {
     return result.webhookRegistrationResult[0].createdWebhookId;
   }
 
+  async deleteWebhooks(webhookIds: string[]): Promise<void> {
+    if (webhookIds.length === 0) return;
+    const query = webhookIds
+      .map((id) => `webhookIds=${encodeURIComponent(id)}`)
+      .join("&");
+    await this.delete(`/rest/api/3/webhook?${query}`);
+  }
+
   // -------------------------------------------------------------------------
   // HTTP helpers
   // -------------------------------------------------------------------------
@@ -163,6 +171,10 @@ export class JiraClient {
 
   private async post<T>(path: string, body: unknown): Promise<T> {
     return this.request<T>("POST", path, body);
+  }
+
+  private async delete(path: string): Promise<void> {
+    await this.request<void>("DELETE", path);
   }
 
   private async request<T>(
@@ -203,11 +215,12 @@ export class JiraClient {
       );
     }
 
-    // PUT/DELETE may return 204 No Content
+    // PUT/DELETE may return 204/202 with empty body
     if (response.status === 204) {
       return undefined as T;
     }
-
-    return response.json() as Promise<T>;
+    const text = await response.text();
+    if (!text) return undefined as T;
+    return JSON.parse(text) as T;
   }
 }

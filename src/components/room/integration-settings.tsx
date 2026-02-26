@@ -59,7 +59,6 @@ export function IntegrationSettingsSection({
   const [boardId, setBoardId] = useState<number | null>(
     mapping?.jiraBoardId ?? null
   );
-  const [autoImport, setAutoImport] = useState(mapping?.autoImport ?? false);
   const [autoPush, setAutoPush] = useState(
     mapping?.autoPushEstimates ?? false
   );
@@ -72,7 +71,6 @@ export function IntegrationSettingsSection({
     if (mapping) {
       setProjectKey(mapping.jiraProjectKey ?? "");
       setBoardId(mapping.jiraBoardId ?? null);
-      setAutoImport(mapping.autoImport);
       setAutoPush(mapping.autoPushEstimates);
       setStoryPointsFieldId(mapping.storyPointsFieldId ?? "");
     }
@@ -145,7 +143,7 @@ export function IntegrationSettingsSection({
         provider: "jira",
         jiraProjectKey: projectKey,
         jiraBoardId: boardId ?? undefined,
-        autoImport,
+        autoImport: false, // Coming soon; keep disabled until implemented.
         autoPushEstimates: autoPush,
         storyPointsFieldId: storyPointsFieldId || undefined,
       });
@@ -162,7 +160,6 @@ export function IntegrationSettingsSection({
       await removeMapping({ roomId });
       setProjectKey("");
       setBoardId(null);
-      setAutoImport(false);
       setAutoPush(false);
       setStoryPointsFieldId("");
       toast({ title: "Jira mapping removed" });
@@ -279,16 +276,16 @@ export function IntegrationSettingsSection({
         </div>
       )}
 
-      {/* Toggle: auto-import */}
+      {/* Toggle: auto-import (not implemented yet) */}
       <div className="flex items-center justify-between">
         <Label htmlFor="auto-import" className="text-xs">
-          Auto-import new sprint issues
+          Auto-import new sprint issues (coming soon)
         </Label>
         <Switch
           id="auto-import"
           size="sm"
-          checked={autoImport}
-          onCheckedChange={setAutoImport}
+          checked={false}
+          disabled
         />
       </div>
 

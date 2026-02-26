@@ -214,6 +214,8 @@ export default defineSchema({
     jiraBoardId: v.optional(v.number()),
     jiraSprintId: v.optional(v.number()),
     storyPointsFieldId: v.optional(v.string()), // e.g., "customfield_10016"
+    jiraWebhookId: v.optional(v.string()), // Registered Jira webhook ID
+    jiraWebhookRegisteredAt: v.optional(v.number()),
     // GitHub mapping (Epic 7)
     githubRepo: v.optional(v.string()),
     githubProjectId: v.optional(v.string()),
