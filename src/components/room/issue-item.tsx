@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useState, useRef, useEffect } from "react";
-import { MoreHorizontal, Trash2, Pencil } from "lucide-react";
+import { MoreHorizontal, Trash2, Pencil, ExternalLink } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,13 @@ import {
 import { cn } from "@/lib/utils";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
 
+interface IssueLink {
+  _id: string;
+  provider: string;
+  externalId: string;
+  externalUrl: string;
+}
+
 interface IssueItemProps {
   issue: Doc<"issues">;
   isCurrent: boolean;
@@ -24,6 +31,7 @@ interface IssueItemProps {
   isDemoMode?: boolean;
   canManageIssues?: boolean;
   canControlGameFlow?: boolean;
+  issueLink?: IssueLink;
 }
 
 export const IssueItem: FC<IssueItemProps> = ({
@@ -36,6 +44,7 @@ export const IssueItem: FC<IssueItemProps> = ({
   isDemoMode = false,
   canManageIssues = true,
   canControlGameFlow = true,
+  issueLink,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isEditingEstimate, setIsEditingEstimate] = useState(false);
@@ -134,6 +143,18 @@ export const IssueItem: FC<IssueItemProps> = ({
           >
             {issue.title}
           </span>
+        )}
+        {issueLink && (
+          <a
+            href={issueLink.externalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+            title={`View ${issueLink.externalId} in Jira`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ExternalLink className="h-3 w-3" />
+          </a>
         )}
       </div>
 

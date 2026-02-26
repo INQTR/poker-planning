@@ -2,7 +2,9 @@
 
 import { FC, useRef, useState } from "react";
 import Link from "next/link";
-import { X, Download, FileSpreadsheet, FileJson, Plus, ListTodo, Loader2, Zap, ArrowRight } from "lucide-react";
+import { useQuery } from "convex/react";
+import { X, Download, FileSpreadsheet, FileJson, Plus, ListTodo, Loader2, Zap, ArrowRight, CloudDownload } from "lucide-react";
+import { api } from "@/convex/_generated/api";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useIssues } from "./hooks/useIssues";
 import { IssueItem } from "./issue-item";
+import { JiraImportModal } from "./jira-import-modal";
 import { exportIssuesToCSV } from "@/utils/export-issues-csv";
 import { exportIssuesToJSON } from "@/utils/export-issues-json";
 import type { Id } from "@/convex/_generated/dataModel";
@@ -49,6 +52,11 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
 
   const [newIssueTitle, setNewIssueTitle] = useState("");
   const [isAddingIssue, setIsAddingIssue] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+
+  const roomMapping = useQuery(api.integrations.getRoomMapping, { roomId });
+  const issueLinksMap = useQuery(api.integrations.getIssueLinks, { roomId });
+  const hasJiraMapping = !!roomMapping && roomMapping.provider === "jira";
 
   const {
     issues,
@@ -192,6 +200,7 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
   if (!isOpen) return null;
 
   return (
+    <>
     <div
       ref={panelRef}
       className={cn(
@@ -217,6 +226,26 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
           </span>
         </div>
         <div className="flex items-center gap-1">
+          {hasJiraMapping && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setImportOpen(true)}
+                    className="h-7 w-7 p-0"
+                    aria-label="Import from Jira"
+                  >
+                    <CloudDownload className="h-4 w-4" />
+                  </Button>
+                }
+              />
+              <TooltipContent>
+                <p>Import from Jira</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger
@@ -353,6 +382,7 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
               isDemoMode={isDemoMode}
               canManageIssues={canManageIssues}
               canControlGameFlow={canControlGameFlow}
+              issueLink={issueLinksMap?.[issue._id] ?? undefined}
             />
           ))
         )}
@@ -370,5 +400,14 @@ export const IssuesPanel: FC<IssuesPanelProps> = ({
         </div>
       )}
     </div>
+
+    {hasJiraMapping && (
+      <JiraImportModal
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        roomId={roomId}
+      />
+    )}
+    </>
   );
 };

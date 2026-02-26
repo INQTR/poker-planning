@@ -178,4 +178,70 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_room_user", ["roomId", "userId"])
     .index("by_room", ["roomId"]),
+
+  // Integration connections (user-level OAuth tokens, encrypted)
+  integrationConnections: defineTable({
+    userId: v.id("users"),
+    provider: v.union(v.literal("jira"), v.literal("github")),
+    // Encrypted OAuth tokens (AES-256-GCM)
+    encryptedAccessToken: v.string(),
+    accessTokenIv: v.string(),
+    accessTokenAuthTag: v.string(),
+    encryptedRefreshToken: v.optional(v.string()),
+    refreshTokenIv: v.optional(v.string()),
+    refreshTokenAuthTag: v.optional(v.string()),
+    expiresAt: v.number(), // Token expiry timestamp
+    // Provider-specific metadata
+    providerUserId: v.optional(v.string()),
+    providerUserEmail: v.optional(v.string()),
+    // Jira-specific
+    cloudId: v.optional(v.string()), // Jira Cloud ID
+    siteUrl: v.optional(v.string()), // e.g., "https://yourteam.atlassian.net"
+    scopes: v.array(v.string()),
+    connectedAt: v.number(),
+    lastRefreshedAt: v.number(),
+  })
+    .index("by_user_provider", ["userId", "provider"])
+    .index("by_provider", ["provider"]),
+
+  // Room-to-provider project/board mapping
+  integrationMappings: defineTable({
+    roomId: v.id("rooms"),
+    connectionId: v.id("integrationConnections"),
+    provider: v.union(v.literal("jira"), v.literal("github")),
+    // Jira mapping
+    jiraProjectKey: v.optional(v.string()),
+    jiraBoardId: v.optional(v.number()),
+    jiraSprintId: v.optional(v.number()),
+    storyPointsFieldId: v.optional(v.string()), // e.g., "customfield_10016"
+    // GitHub mapping (Epic 7)
+    githubRepo: v.optional(v.string()),
+    githubProjectId: v.optional(v.string()),
+    // Sync settings
+    autoImport: v.boolean(),
+    autoPushEstimates: v.boolean(),
+    createdAt: v.number(),
+  })
+    .index("by_room", ["roomId"])
+    .index("by_connection", ["connectionId"]),
+
+  // Bidirectional links between AgileKit issues and external issues
+  issueLinks: defineTable({
+    issueId: v.id("issues"),
+    provider: v.union(v.literal("jira"), v.literal("github")),
+    externalId: v.string(), // Jira issue key (e.g., "PROJ-123") or GitHub issue number
+    externalUrl: v.string(), // Direct link to the issue
+    lastSyncedAt: v.number(),
+  })
+    .index("by_issue", ["issueId"])
+    .index("by_external", ["provider", "externalId"]),
+
+  // Shared webhook dedup table (Jira, GitHub, Paddle)
+  webhookEvents: defineTable({
+    eventKey: v.string(), // Stable dedup key
+    provider: v.string(), // "jira" | "github" | "paddle"
+    processedAt: v.number(),
+  })
+    .index("by_event_key", ["eventKey"])
+    .index("by_processed", ["processedAt"]),
 });

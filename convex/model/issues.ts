@@ -547,6 +547,26 @@ export async function getEnhancedIssuesForExport(
     votesByIssue.set(key, existing);
   }
 
+  // Batch-query issueLinks for all issues in this room
+  const allIssueLinks = await Promise.all(
+    issues.map((issue) =>
+      ctx.db
+        .query("issueLinks")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .first()
+    )
+  );
+  const issueLinkMap = new Map<string, { externalUrl: string; externalId: string }>();
+  for (let i = 0; i < issues.length; i++) {
+    const link = allIssueLinks[i];
+    if (link) {
+      issueLinkMap.set(issues[i]._id as string, {
+        externalUrl: link.externalUrl,
+        externalId: link.externalId,
+      });
+    }
+  }
+
   // Collect unique userIds and batch-resolve names
   const uniqueUserIds = new Set<Id<"users">>();
   for (const iv of allIndividualVotes) {
@@ -591,8 +611,8 @@ export async function getEnhancedIssuesForExport(
       timeToConsensusFormatted,
       votingRounds,
       individualVotes,
-      externalUrl: null,
-      externalId: null,
+      externalUrl: issueLinkMap.get(issueId)?.externalUrl ?? null,
+      externalId: issueLinkMap.get(issueId)?.externalId ?? null,
     };
   });
 }

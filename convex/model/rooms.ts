@@ -1,4 +1,5 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
+import { internal } from "../_generated/api";
 import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
 import * as Issues from "./issues";
@@ -204,6 +205,32 @@ export async function showRoomCards(
       consensusLabel: consensus,
       votingScale: room.votingScale,
     });
+
+    // Auto-push estimate to Jira if linked and enabled
+    if (consensus) {
+      const issueLink = await ctx.db
+        .query("issueLinks")
+        .withIndex("by_issue", (q) => q.eq("issueId", room.currentIssueId!))
+        .first();
+
+      if (issueLink?.provider === "jira") {
+        const mapping = await ctx.db
+          .query("integrationMappings")
+          .withIndex("by_room", (q) => q.eq("roomId", roomId))
+          .first();
+
+        if (mapping?.autoPushEstimates) {
+          await ctx.scheduler.runAfter(
+            0,
+            internal.integrations.jira.pushEstimateToJira,
+            {
+              issueId: room.currentIssueId!,
+              finalEstimate: consensus,
+            }
+          );
+        }
+      }
+    }
   }
 }
 

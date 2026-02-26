@@ -51,6 +51,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePermissions, getPermissionDeniedTooltip } from "@/hooks/usePermissions";
+import { IntegrationSettingsSection } from "./integration-settings";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
@@ -513,6 +514,13 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
               );
             })}
           </div>
+        </div>
+
+        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
+
+        {/* Jira Integration Section */}
+        <div className="shrink-0">
+          <IntegrationSettingsSection roomId={roomData.room._id} />
         </div>
 
         <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
