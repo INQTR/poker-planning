@@ -69,7 +69,7 @@ const sections = [
     id: "billing",
     title: "10. Paid Features and Billing",
     content:
-      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases include a 30 calendar day money-back guarantee for the initial charge of a new paid plan. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. To request a refund or resolve a billing issue, contact us at the email in Section 2 and we will process it via Paddle.",
+      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases include a 30 calendar day money-back guarantee for the initial charge of a new paid plan. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Refund requests are handled by Paddle directly — see your order confirmation for the Paddle support link. For general billing questions, contact us at the email in Section 2.",
   },
   {
     id: "disclaimers",
