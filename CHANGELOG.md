@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.7.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.6.0...agilekit-v2.7.0) (2026-02-27)
+
+
+### Features
+
+* add info tooltip icons to dashboard widget headers ([fc96af9](https://github.com/INQTR/poker-planning/commit/fc96af9926fe9d5e4d693867ea375a07011d0070))
+* enhance analytics and dashboard components ([276f7d1](https://github.com/INQTR/poker-planning/commit/276f7d17cb4ef2ebb645a2dcfe48a0c1ba83945e))
+* prepare site for Paddle domain approval ([#161](https://github.com/INQTR/poker-planning/issues/161)) ([c9ec303](https://github.com/INQTR/poker-planning/commit/c9ec303577054150a56d47f2d62cdc22a0fe5fe9))
+
+
+### Bug Fixes
+
+* redirect Jira authorize errors to dashboard settings with toast ([c926d6e](https://github.com/INQTR/poker-planning/commit/c926d6e0c4e01d730e12c5fef46d224ae4c5862c))
+* remove unused import and escape apostrophe in SessionHistory ([b104184](https://github.com/INQTR/poker-planning/commit/b104184df680cb137713e86b1a2df291eebd10ad))
+* update dashboard dark theme to match shadcn v4 ([98a3735](https://github.com/INQTR/poker-planning/commit/98a3735371f01e0f474bdfcab7879cd502b270a4))
+
 ## [2.6.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.5.0...agilekit-v2.6.0) (2026-02-27)
 
 
