@@ -88,7 +88,7 @@ const sections = [
     id: "contact",
     title: "13. Contact Information",
     content:
-      "For privacy questions or requests, contact Bohdan Ivanchenko at ivanchenko.b@gmail.com. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
+      "For privacy questions or requests, contact Bohdan Ivanchenko at support@agilekit.app. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
   },
 ];
 
@@ -159,7 +159,7 @@ export function PrivacyContent() {
                     We&apos;re committed to transparency. If you have any questions about how we handle your data, please reach out.
                   </p>
                   <a
-                    href="mailto:ivanchenko.b@gmail.com"
+                    href="mailto:support@agilekit.app"
                     className="inline-flex items-center text-sm font-bold tracking-wide text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
                     Email privacy contact <ArrowRight className="ml-2 h-4 w-4" />

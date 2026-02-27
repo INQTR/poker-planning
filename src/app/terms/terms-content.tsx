@@ -15,13 +15,13 @@ const sections = [
     id: "scope",
     title: "1. Scope and Acceptance",
     content:
-      "These Terms of Service govern your access to and use of the hosted AgileKit website, application, and related services. By accessing or using the service, you agree to these terms. If you use the service on behalf of an organization, you represent that you have authority to bind that organization to these terms.",
+      "These Terms of Service govern your access to and use of the hosted AgileKit website, application, and related services. AgileKit is operated by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine, doing business as AgileKit. These terms form a legal agreement between you and AgileKit. By accessing or using the service, you agree to these terms. If you use the service on behalf of an organization, you represent that you have authority to bind that organization to these terms.",
   },
   {
     id: "operator",
     title: "2. Service Operator and Contact",
     content:
-      "AgileKit is operated by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine ('Operator'). Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to the Operator.",
+      "AgileKit is the business name for this service and the contracting party referenced in these terms. The service is operated by Bohdan Ivanchenko (the 'Operator'), as further described in Section 1. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: support@agilekit.app. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to the Operator doing business as AgileKit.",
   },
   {
     id: "eligibility",
@@ -69,7 +69,7 @@ const sections = [
     id: "billing",
     title: "10. Paid Features and Billing",
     content:
-      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and any refund rights at checkout or in a separate order form. Payments may be processed by Paddle or another disclosed merchant of record, reseller, or payment provider. The provider shown at checkout will control payment processing terms for that transaction.",
+      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases include a 30 calendar day money-back guarantee for the initial charge of a new paid plan. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Refund requests are handled by Paddle directly — see your order confirmation for the Paddle support link. For general billing questions, contact us at the email in Section 2.",
   },
   {
     id: "disclaimers",
@@ -111,7 +111,7 @@ const sections = [
     id: "contact",
     title: "17. Contact Information",
     content:
-      "Questions about these terms can be sent to ivanchenko.b@gmail.com. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
+      "Questions about these terms can be sent to support@agilekit.app. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
   },
 ];
 
@@ -124,18 +124,18 @@ export function TermsContent() {
         {/* Hero Section */}
         <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32 overflow-hidden bg-white dark:bg-black border-b border-gray-200/50 dark:border-zinc-800/50">
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-          
+
           <div className="mx-auto max-w-[90rem] px-6 lg:px-8 relative z-10">
             <div className="mx-auto max-w-4xl text-center">
               <div className="inline-flex items-center gap-2 mb-8 rounded-full bg-gray-50 dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 px-4 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400">
                 <Calendar className="h-4 w-4" />
-                <span>Last updated: February 27, 2026</span>
+                <span>Last updated: February 28, 2026</span>
               </div>
-              
+
               <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
                 Terms of Service
               </h1>
-              
+
               <p className="mt-8 text-xl sm:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
                 Please read these terms carefully before using AgileKit.
               </p>
@@ -177,7 +177,7 @@ export function TermsContent() {
                     We believe in transparency and fairness. If you have any questions about these terms, please reach out.
                   </p>
                   <a
-                    href="mailto:ivanchenko.b@gmail.com"
+                    href="mailto:support@agilekit.app"
                     className="inline-flex items-center text-sm font-bold tracking-wide text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
                     Email support <ArrowRight className="ml-2 h-4 w-4" />
