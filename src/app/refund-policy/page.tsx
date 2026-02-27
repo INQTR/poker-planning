@@ -80,15 +80,16 @@ const sections = [
     title: "4. Billing Questions",
     content: (
       <p>
-        If you have billing or refund questions, contact Bohdan Ivanchenko at{" "}
+        To request a refund, contact Bohdan Ivanchenko at{" "}
         <a
           href="mailto:ivanchenko.b@gmail.com"
           className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
         >
           ivanchenko.b@gmail.com
-        </a>
-        . Refund requests for self-serve purchases must be submitted within 30
-        calendar days of the original purchase date.
+        </a>{" "}
+        within 30 calendar days of the original purchase date and we will
+        process it via Paddle. For general billing questions, you can also
+        reach us at the same address.
       </p>
     ),
   },
