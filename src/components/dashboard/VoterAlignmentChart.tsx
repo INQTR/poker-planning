@@ -1,6 +1,6 @@
 "use client";
 
-import { Crosshair } from "lucide-react";
+
 import {
   ScatterChart,
   Scatter,

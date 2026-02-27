@@ -1,6 +1,6 @@
 "use client";
 
-import { Timer } from "lucide-react";
+
 import { Area, AreaChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import {
   Card,

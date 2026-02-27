@@ -180,13 +180,11 @@ export function PredictabilityGauge({
           <div className="flex items-center gap-2 text-muted-foreground">
             <Activity className="h-3.5 w-3.5" />
             <span className="text-xs font-medium truncate">Status</span>
-            <TooltipProvider delayDuration={200}>
+            <TooltipProvider delay={200}>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help ml-auto shrink-0" />
-                </TooltipTrigger>
+                <TooltipTrigger render={<Info className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help ml-auto shrink-0" />} />
                 <TooltipContent className="max-w-[200px] text-center">
-                  <p>Represents the team's ability to reliably deliver their estimated story points.</p>
+                  <p>Represents the team&apos;s ability to reliably deliver their estimated story points.</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

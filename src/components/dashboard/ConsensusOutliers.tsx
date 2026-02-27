@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+
 import { Bar, BarChart, XAxis, YAxis, Cell } from "recharts";
 import {
   Card,

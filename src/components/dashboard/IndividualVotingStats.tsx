@@ -5,7 +5,6 @@ import {
   ArrowUp,
   Equal,
   Minus,
-  Users,
 } from "lucide-react";
 import {
   Card,

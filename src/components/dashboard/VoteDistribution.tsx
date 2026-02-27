@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart } from "lucide-react";
+
 import { Bar, BarChart, XAxis, YAxis } from "recharts";
 import {
   Card,
