@@ -15,7 +15,7 @@ const sections = [
     id: "scope",
     title: "1. Scope and Acceptance",
     content:
-      "These Terms of Service govern your access to and use of the hosted AgileKit website, application, and related services, and they form a legal agreement between you and AgileKit. By accessing or using the service, you agree to these terms. If you use the service on behalf of an organization, you represent that you have authority to bind that organization to these terms.",
+      "These Terms of Service govern your access to and use of the hosted AgileKit website, application, and related services. AgileKit is operated by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine, doing business as AgileKit. These terms form a legal agreement between you and AgileKit. By accessing or using the service, you agree to these terms. If you use the service on behalf of an organization, you represent that you have authority to bind that organization to these terms.",
   },
   {
     id: "operator",
@@ -69,7 +69,7 @@ const sections = [
     id: "billing",
     title: "10. Paid Features and Billing",
     content:
-      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases will include a 14 calendar day refund window for the initial charge of a new paid plan. Payments may be processed by Paddle or another disclosed merchant of record, reseller, or payment provider. The provider shown at checkout will control payment processing terms for that transaction.",
+      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases include a 30 calendar day money-back guarantee for the initial charge of a new paid plan. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.",
   },
   {
     id: "disclaimers",
@@ -129,7 +129,7 @@ export function TermsContent() {
             <div className="mx-auto max-w-4xl text-center">
               <div className="inline-flex items-center gap-2 mb-8 rounded-full bg-gray-50 dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 px-4 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400">
                 <Calendar className="h-4 w-4" />
-                <span>Last updated: February 27, 2026</span>
+                <span>Last updated: February 28, 2026</span>
               </div>
               
               <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
