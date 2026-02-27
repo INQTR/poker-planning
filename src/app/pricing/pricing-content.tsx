@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Check, X, ArrowRight, Play } from "lucide-react";
+import { Check, ArrowRight, Play } from "lucide-react";
 import { PricingSection } from "@/components/homepage";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -12,16 +12,51 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const comparisonFeatures = [
-  { name: "Team members", free: "Unlimited", pro: "Unlimited" },
-  { name: "Planning sessions", free: "Unlimited", pro: "Unlimited" },
-  { name: "Real-time collaboration", free: true, pro: true },
-  { name: "Session history", free: "5-day rolling", pro: "Unlimited history" },
-  { name: "Basic analytics", free: true, pro: true },
-  { name: "Advanced actionable insights", free: false, pro: true },
-  { name: "Export reports", free: "CSV only", pro: "CSV + JSON + Analytics" },
-  { name: "Jira & GitHub integrations", free: false, pro: true },
-  { name: "Automated session summaries", free: false, pro: true },
+const comparisonCategories = [
+  {
+    category: "Core Planning",
+    features: [
+      { name: "Team members", free: "Unlimited", pro: "Unlimited" },
+      { name: "Planning sessions", free: "Unlimited", pro: "Unlimited" },
+      { name: "Real-time voting & whiteboard", free: true, pro: true },
+      { name: "Spectator mode", free: true, pro: true },
+      { name: "Session timer", free: true, pro: true },
+    ],
+  },
+  {
+    category: "History & Retention",
+    features: [
+      { name: "Session history", free: "5-day rolling", pro: "Unlimited" },
+      { name: "Issue & vote data retention", free: "5 days", pro: "Unlimited" },
+    ],
+  },
+  {
+    category: "Analytics & Insights",
+    features: [
+      { name: "Basic results summary", free: true, pro: true },
+      { name: "Time-to-consensus tracking", free: false, pro: true },
+      { name: "Voter alignment matrix", free: false, pro: true },
+      { name: "Sprint predictability score", free: false, pro: true },
+      { name: "Estimation accuracy trends", free: false, pro: true },
+      { name: "Automated session summaries", free: false, pro: true },
+    ],
+  },
+  {
+    category: "Exports & Integrations",
+    features: [
+      { name: "CSV export", free: true, pro: true },
+      { name: "JSON & analytics export", free: false, pro: true },
+      { name: "Two-way Jira Cloud sync", free: false, pro: true },
+      { name: "GitHub integration", free: false, pro: true },
+    ],
+  },
+  {
+    category: "Support",
+    features: [
+      { name: "Community support", free: true, pro: true },
+      { name: "Priority email support", free: false, pro: true },
+    ],
+  },
 ];
 
 const faqs = [
@@ -138,57 +173,110 @@ export function PricingContent() {
 
             <div className="overflow-hidden rounded-[2rem] border border-gray-200/50 dark:border-zinc-800/50 bg-white dark:bg-black shadow-sm">
               {/* Header */}
-              <div className="grid grid-cols-3 bg-gray-50/80 dark:bg-zinc-900/80 border-b border-gray-200/50 dark:border-zinc-800/50">
-                <div className="px-8 py-6 text-sm font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase">
+              <div className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-3 bg-gray-50/80 dark:bg-zinc-900/80 border-b border-gray-200/50 dark:border-zinc-800/50">
+                <div className="px-6 sm:px-8 py-6 text-sm font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase">
                   Feature
                 </div>
-                <div className="px-8 py-6 text-center text-lg font-bold tracking-tight text-gray-900 dark:text-white border-l border-gray-200/50 dark:border-zinc-800/50">
+                <div className="px-4 sm:px-8 py-6 text-center text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-white border-l border-gray-200/50 dark:border-zinc-800/50">
                   Free
                 </div>
-                <div className="px-8 py-6 text-center text-lg font-bold tracking-tight text-white bg-gray-900 dark:bg-white dark:text-black border-l border-gray-900 dark:border-white">
+                <div className="px-4 sm:px-8 py-6 text-center text-base sm:text-lg font-bold tracking-tight text-white bg-gray-900 dark:bg-white dark:text-black border-l border-gray-900 dark:border-white">
                   Pro
                 </div>
               </div>
 
-              {/* Rows */}
-              <div className="divide-y divide-gray-200/50 dark:divide-zinc-800/50">
-                {comparisonFeatures.map((feature, index) => (
-                  <div
-                    key={feature.name}
-                    className="grid grid-cols-3 transition-colors hover:bg-gray-50/50 dark:hover:bg-zinc-900/30"
-                  >
-                    <div className="px-8 py-5 text-base font-medium text-gray-900 dark:text-gray-200 flex items-center">
-                      {feature.name}
+              {/* Category groups */}
+              {comparisonCategories.map((group, groupIndex) => (
+                <div key={group.category}>
+                  {/* Category header */}
+                  <div className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-3 border-b border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/60 dark:bg-zinc-900/40">
+                    <div className="px-6 sm:px-8 py-4 col-span-3 sm:col-span-1">
+                      <span className="text-xs font-bold tracking-widest text-primary uppercase">
+                        {group.category}
+                      </span>
                     </div>
-                    <div className="px-8 py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50">
-                      {typeof feature.free === "boolean" ? (
-                        feature.free ? (
-                          <Check className="h-6 w-6 text-gray-900 dark:text-white" />
-                        ) : (
-                          <X className="h-6 w-6 text-gray-300 dark:text-zinc-700" />
-                        )
-                      ) : (
-                        <span className="text-base font-light text-gray-600 dark:text-gray-400">
-                          {feature.free}
-                        </span>
-                      )}
-                    </div>
-                    <div className="px-8 py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/30 dark:bg-zinc-900/20">
-                      {typeof feature.pro === "boolean" ? (
-                        feature.pro ? (
-                          <Check className="h-6 w-6 text-gray-900 dark:text-white" />
-                        ) : (
-                          <X className="h-6 w-6 text-gray-300 dark:text-zinc-700" />
-                        )
-                      ) : (
-                        <span className="text-base font-bold text-gray-900 dark:text-white">
-                          {feature.pro}
-                        </span>
-                      )}
-                    </div>
+                    <div className="hidden sm:block border-l border-gray-200/50 dark:border-zinc-800/50" />
+                    <div className="hidden sm:block border-l border-gray-200/50 dark:border-zinc-800/50" />
                   </div>
-                ))}
-              </div>
+
+                  {/* Feature rows */}
+                  <div className="divide-y divide-gray-200/50 dark:divide-zinc-800/50">
+                    {group.features.map((feature) => {
+                      const isProExclusive =
+                        feature.free === false ||
+                        (typeof feature.free === "string" &&
+                          typeof feature.pro === "string" &&
+                          feature.free !== feature.pro);
+
+                      return (
+                        <div
+                          key={feature.name}
+                          className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-3 transition-colors hover:bg-gray-50/50 dark:hover:bg-zinc-900/30"
+                        >
+                          <div className="px-6 sm:px-8 py-4 sm:py-5 text-sm sm:text-base font-medium text-gray-900 dark:text-gray-200 flex items-center">
+                            {feature.name}
+                          </div>
+                          <div className="px-4 sm:px-8 py-4 sm:py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50">
+                            {typeof feature.free === "boolean" ? (
+                              feature.free ? (
+                                <Check className="h-5 w-5 sm:h-6 sm:w-6 text-gray-900 dark:text-white" />
+                              ) : (
+                                <span className="text-gray-300 dark:text-zinc-700 text-lg">
+                                  &mdash;
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-sm sm:text-base font-light text-gray-600 dark:text-gray-400">
+                                {feature.free}
+                              </span>
+                            )}
+                          </div>
+                          <div
+                            className={`px-4 sm:px-8 py-4 sm:py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50 ${
+                              isProExclusive
+                                ? "bg-gray-900/[0.03] dark:bg-white/[0.03]"
+                                : ""
+                            }`}
+                          >
+                            {typeof feature.pro === "boolean" ? (
+                              feature.pro ? (
+                                <div
+                                  className={`flex items-center justify-center rounded-full ${
+                                    isProExclusive
+                                      ? "w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 dark:bg-white"
+                                      : ""
+                                  }`}
+                                >
+                                  <Check
+                                    className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                                      isProExclusive
+                                        ? "text-white dark:text-black"
+                                        : "text-gray-900 dark:text-white"
+                                    }`}
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-gray-300 dark:text-zinc-700 text-lg">
+                                  &mdash;
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
+                                {feature.pro}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Separator between groups */}
+                  {groupIndex < comparisonCategories.length - 1 && (
+                    <div className="border-b-2 border-gray-200/80 dark:border-zinc-800/80" />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </section>
