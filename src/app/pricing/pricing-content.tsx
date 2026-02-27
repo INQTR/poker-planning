@@ -49,114 +49,72 @@ const faqs = [
 
 export function PricingContent() {
   return (
-    <div className="bg-white dark:bg-black min-h-screen">
+    <div className="bg-white dark:bg-black min-h-screen selection:bg-primary/10 selection:text-primary">
       <Navbar />
 
-      <main className="relative isolate overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <svg
-            className="absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-white/5 [mask-image:radial-gradient(100%_100%_at_top_center,white,transparent)]"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern
-                id="pricing-pattern"
-                width={40}
-                height={40}
-                x="50%"
-                y={-1}
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M.5 40V.5H40" fill="none" />
-              </pattern>
-            </defs>
-            <rect
-              width="100%"
-              height="100%"
-              strokeWidth={0}
-              fill="url(#pricing-pattern)"
-            />
-          </svg>
-          <div
-            className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-            aria-hidden="true"
-          >
-            <div
-              className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-purple-600 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
-          </div>
-        </div>
-
+      <main className="relative isolate overflow-hidden bg-white dark:bg-black">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-8 sm:pt-40 sm:pb-12">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-                Simple pricing for teams of all sizes
+        <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32 overflow-hidden bg-white dark:bg-black">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+          
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8 relative z-10">
+            <div className="mx-auto max-w-4xl text-center">
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
+                Simple pricing,<br />
+                <span className="text-gray-300 dark:text-zinc-700">infinite value.</span>
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+
+              <p className="mt-8 text-xl sm:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
                 AgileKit is completely free for core planning sessions today.
                 Pro is in development and is planned to add deeper insights,
                 longer retention, and workflow integrations.
               </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <span>No credit card required for Free</span>
-                <span className="hidden sm:inline">•</span>
-                <span>Pro checkout not live yet</span>
-                <span className="hidden sm:inline">•</span>
-                <span>Open source</span>
+
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-base font-medium text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-gray-900 dark:text-white" />
+                  <span>No credit card required for Free</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-gray-900 dark:text-white" />
+                  <span>Pro checkout not live yet</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-gray-900 dark:text-white" />
+                  <span>Open source</span>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="pb-8 pt-4 sm:pb-12">
-          <div className="mx-auto max-w-4xl px-6 lg:px-8">
-            <div className="rounded-3xl border border-gray-200/70 bg-gray-50/80 p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900/40">
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-                <div className="max-w-2xl">
-                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
-                    Launch status
-                  </p>
-                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                    Paid checkout is not live yet
-                  </h2>
-                  <p className="mt-3 text-base leading-7 text-gray-600 dark:text-gray-400">
-                    We are preparing the site for payment-provider approval
-                    before enabling any live checkout. Exact launch pricing,
-                    final billing terms, and any Pro-specific retention rules
-                    will be published here before checkout goes live.
-                  </p>
-                </div>
-                <div className="shrink-0 rounded-2xl border border-gray-200/70 bg-white px-5 py-4 text-sm text-gray-600 dark:border-zinc-800 dark:bg-black dark:text-gray-400">
-                  <p>Custom or enterprise pricing is not currently offered.</p>
-                </div>
+        {/* Status Banner */}
+        <section className="border-y border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/50 dark:bg-zinc-900/10">
+          <div className="mx-auto max-w-[90rem] px-6 py-12 lg:px-8">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="max-w-2xl">
+                <p className="text-sm font-bold tracking-widest text-primary uppercase mb-2">
+                  Launch status
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+                  Paid checkout is not live yet
+                </h2>
+                <p className="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
+                  We are preparing the site for payment-provider approval
+                  before enabling any live checkout. Exact launch pricing,
+                  final billing terms, and any Pro-specific retention rules
+                  will be published here before checkout goes live.
+                </p>
               </div>
-
-              <div className="mt-6 flex flex-col gap-3 text-sm text-gray-600 dark:text-gray-400 sm:flex-row sm:items-center sm:gap-6">
-                <Link
-                  href="/refund-policy"
-                  className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
-                >
-                  Review refund policy
-                </Link>
-                <Link
-                  href="/terms"
-                  className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
-                >
-                  Review terms
-                </Link>
-                <a
-                  href="mailto:ivanchenko.b@gmail.com"
-                  className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
-                >
-                  Contact billing owner
-                </a>
+              <div className="shrink-0 flex flex-col gap-4 w-full lg:w-auto">
+                <div className="rounded-2xl border border-gray-200/50 bg-white p-6 text-center text-base font-medium text-gray-600 dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:text-gray-400">
+                  Custom or enterprise pricing is not currently offered.
+                </div>
+                <div className="flex flex-wrap justify-center gap-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <Link href="/refund-policy" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Refund policy</Link>
+                  <Link href="/terms" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Terms</Link>
+                  <a href="mailto:ivanchenko.b@gmail.com" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Contact billing</a>
+                </div>
               </div>
             </div>
           </div>
@@ -166,67 +124,64 @@ export function PricingContent() {
         <PricingSection />
 
         {/* Comparison Table */}
-        <section className="py-24 sm:py-32 bg-gray-50 dark:bg-zinc-950/50">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Compare plans
-              </h2>
-              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                See what is available now and what is planned for Pro
+        <section className="py-24 sm:py-32 bg-gray-50/50 dark:bg-zinc-900/10 border-y border-gray-200/50 dark:border-zinc-800/50">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="mb-16 max-w-2xl">
+              <p className="text-sm font-bold tracking-widest text-primary uppercase mb-4">
+                Compare Plans
               </p>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
+                Everything you need,<br />
+                <span className="text-gray-400 dark:text-zinc-600">nothing you don&apos;t.</span>
+              </h2>
             </div>
 
-            <div className="mx-auto max-w-3xl">
-              <div className="overflow-hidden rounded-2xl ring-1 ring-gray-200 dark:ring-zinc-800">
-                {/* Header */}
-                <div className="grid grid-cols-3 bg-gray-100 dark:bg-zinc-900">
-                  <div className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">
-                    Feature
-                  </div>
-                  <div className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">
-                    Free
-                  </div>
-                  <div className="px-6 py-4 text-center text-sm font-semibold text-primary">
-                    Pro
-                  </div>
+            <div className="overflow-hidden rounded-[2rem] border border-gray-200/50 dark:border-zinc-800/50 bg-white dark:bg-black shadow-sm">
+              {/* Header */}
+              <div className="grid grid-cols-3 bg-gray-50/80 dark:bg-zinc-900/80 border-b border-gray-200/50 dark:border-zinc-800/50">
+                <div className="px-8 py-6 text-sm font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase">
+                  Feature
                 </div>
+                <div className="px-8 py-6 text-center text-lg font-bold tracking-tight text-gray-900 dark:text-white border-l border-gray-200/50 dark:border-zinc-800/50">
+                  Free
+                </div>
+                <div className="px-8 py-6 text-center text-lg font-bold tracking-tight text-white bg-gray-900 dark:bg-white dark:text-black border-l border-gray-900 dark:border-white">
+                  Pro
+                </div>
+              </div>
 
-                {/* Rows */}
+              {/* Rows */}
+              <div className="divide-y divide-gray-200/50 dark:divide-zinc-800/50">
                 {comparisonFeatures.map((feature, index) => (
                   <div
                     key={feature.name}
-                    className={`grid grid-cols-3 ${
-                      index % 2 === 0
-                        ? "bg-white dark:bg-surface-1"
-                        : "bg-gray-50 dark:bg-zinc-950/50"
-                    }`}
+                    className="grid grid-cols-3 transition-colors hover:bg-gray-50/50 dark:hover:bg-zinc-900/30"
                   >
-                    <div className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300 flex items-center">
+                    <div className="px-8 py-5 text-base font-medium text-gray-900 dark:text-gray-200 flex items-center">
                       {feature.name}
                     </div>
-                    <div className="px-6 py-4 text-center flex items-center justify-center">
+                    <div className="px-8 py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50">
                       {typeof feature.free === "boolean" ? (
                         feature.free ? (
-                          <Check className="mx-auto h-5 w-5 text-green-600 dark:text-green-500" />
+                          <Check className="h-6 w-6 text-gray-900 dark:text-white" />
                         ) : (
-                          <X className="mx-auto h-5 w-5 text-gray-400 dark:text-gray-600" />
+                          <X className="h-6 w-6 text-gray-300 dark:text-zinc-700" />
                         )
                       ) : (
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="text-base font-light text-gray-600 dark:text-gray-400">
                           {feature.free}
                         </span>
                       )}
                     </div>
-                    <div className="px-6 py-4 text-center flex items-center justify-center">
+                    <div className="px-8 py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/30 dark:bg-zinc-900/20">
                       {typeof feature.pro === "boolean" ? (
                         feature.pro ? (
-                          <Check className="mx-auto h-5 w-5 text-green-600 dark:text-green-500" />
+                          <Check className="h-6 w-6 text-gray-900 dark:text-white" />
                         ) : (
-                          <X className="mx-auto h-5 w-5 text-gray-400 dark:text-gray-600" />
+                          <X className="h-6 w-6 text-gray-300 dark:text-zinc-700" />
                         )
                       ) : (
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        <span className="text-base font-bold text-gray-900 dark:text-white">
                           {feature.pro}
                         </span>
                       )}
@@ -239,97 +194,68 @@ export function PricingContent() {
         </section>
 
         {/* FAQ */}
-        <section className="py-24 sm:py-32 bg-gray-50 dark:bg-zinc-950/50">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Frequently asked questions
-              </h2>
-              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                Everything you need to know about AgileKit pricing and plans.
-              </p>
-            </div>
+        <section className="py-24 sm:py-32 bg-white dark:bg-black">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="grid lg:grid-cols-12 gap-16">
+              <div className="lg:col-span-5">
+                <p className="text-sm font-bold tracking-widest text-primary uppercase mb-4">
+                  FAQ
+                </p>
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1] mb-6">
+                  Frequently asked questions.
+                </h2>
+                <p className="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
+                  Everything you need to know about AgileKit pricing and plans.
+                  Can&apos;t find what you&apos;re looking for? Reach out to our team.
+                </p>
+              </div>
 
-            <div className="mx-auto max-w-3xl">
-              <Accordion className="space-y-4">
-                {faqs.map((faq, index) => (
-                  <AccordionItem
-                    key={faq.question}
-                    value={`item-${index}`}
-                    className="bg-white dark:bg-surface-1 rounded-xl px-6 border-0 ring-1 ring-gray-200 dark:ring-zinc-800"
-                  >
-                    <AccordionTrigger className="text-base font-semibold text-gray-900 dark:text-white hover:no-underline py-5">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-base text-gray-600 dark:text-gray-300 pb-5">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+              <div className="lg:col-span-7">
+                <Accordion className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <AccordionItem
+                      key={faq.question}
+                      value={`item-${index}`}
+                      className="bg-gray-50/50 dark:bg-zinc-900/10 rounded-3xl px-8 border border-gray-200/50 dark:border-zinc-800/50"
+                    >
+                      <AccordionTrigger className="text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:no-underline py-6">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-base font-light leading-relaxed text-gray-600 dark:text-gray-400 pb-6">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Final CTA */}
-        <section className="relative py-24 sm:py-32 bg-gray-900 dark:bg-black overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <svg
-              className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-white/10 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
-              aria-hidden="true"
-            >
-              <defs>
-                <pattern
-                  id="cta-pattern"
-                  width={200}
-                  height={200}
-                  x="50%"
-                  y={-1}
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path d="M100 200V.5M.5 .5H200" fill="none" />
-                </pattern>
-              </defs>
-              <rect
-                width="100%"
-                height="100%"
-                strokeWidth={0}
-                fill="url(#cta-pattern)"
-              />
-            </svg>
-            <div className="absolute inset-x-0 top-10 -z-10 transform-gpu overflow-hidden blur-3xl">
-              <div
-                className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-purple-600 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-                style={{
-                  clipPath:
-                    "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
+        <section className="relative py-24 sm:py-32 bg-gray-50/50 dark:bg-zinc-900/10 border-t border-gray-200/50 dark:border-zinc-800/50">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="mx-auto max-w-4xl text-center">
+              <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
                 Ready to plan better?
               </h2>
-              <p className="mt-6 text-lg text-gray-300">
+              <p className="mt-8 text-xl sm:text-2xl text-gray-600 dark:text-gray-400 font-light leading-relaxed">
                 Start using AgileKit for faster, more accurate sprint estimation
                 — jump right in, completely free.
               </p>
-              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/room/new"
-                  className="group inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105"
+                  className="inline-flex h-16 items-center justify-center gap-2 bg-black dark:bg-white px-12 text-lg font-bold tracking-tight text-white dark:text-black hover:scale-105 transition-transform duration-200 rounded-2xl w-full sm:w-auto"
                 >
                   Start planning for free
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link
                   href="/demo"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105"
+                  className="inline-flex h-16 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-12 text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"
                 >
-                  <Play className="h-5 w-5" />
+                  <Play className="h-5 w-5" fill="currentColor" />
                   View demo
                 </Link>
               </div>

@@ -64,14 +64,14 @@ export function PricingSection() {
             <div
               key={tier.id}
               className={cn(
-                "flex flex-col p-10 rounded-3xl border relative overflow-hidden",
+                "flex flex-col p-10 rounded-[2rem] border relative overflow-hidden transition-all duration-300",
                 index === 1
-                  ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-black"
-                  : "border-gray-200/50 dark:border-zinc-800/50 bg-white dark:bg-black",
+                  ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-black shadow-xl scale-100 md:scale-105 z-10"
+                  : "border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/50 dark:bg-zinc-900/10 hover:bg-white dark:hover:bg-zinc-900/30",
               )}
             >
               {tier.disabled && (
-                <div className="absolute top-6 right-6 px-3 py-1 bg-white/20 dark:bg-black/10 rounded-full text-xs font-bold tracking-wider uppercase">
+                <div className="absolute top-6 right-6 px-4 py-1.5 bg-white/20 dark:bg-black/10 backdrop-blur-md rounded-full text-xs font-bold tracking-wider uppercase">
                   In Development
                 </div>
               )}
@@ -79,7 +79,7 @@ export function PricingSection() {
               <div className="mb-8">
                 <h4
                   className={cn(
-                    "text-xl font-bold mb-2",
+                    "text-2xl font-bold mb-4",
                     index === 1
                       ? "text-white dark:text-black"
                       : "text-gray-900 dark:text-white",
@@ -87,10 +87,10 @@ export function PricingSection() {
                 >
                   {tier.name}
                 </h4>
-                <div className="flex items-baseline gap-2 mb-4 h-12">
+                <div className="flex items-baseline gap-2 mb-6 h-14">
                   <span
                     className={cn(
-                      "text-4xl sm:text-5xl font-bold tracking-tighter",
+                      "text-5xl sm:text-6xl font-bold tracking-tighter",
                       index === 1
                         ? "text-white dark:text-black"
                         : "text-gray-900 dark:text-white",
@@ -101,19 +101,19 @@ export function PricingSection() {
                   {tier.period && (
                     <span
                       className={cn(
-                        "text-base",
+                        "text-lg font-medium",
                         index === 1
                           ? "text-gray-300 dark:text-gray-600"
                           : "text-gray-500",
                       )}
                     >
-                      {tier.period}
+                      /{tier.period}
                     </span>
                   )}
                 </div>
                 <p
                   className={cn(
-                    "text-base font-light",
+                    "text-lg font-light leading-relaxed",
                     index === 1
                       ? "text-gray-300 dark:text-gray-700"
                       : "text-gray-600 dark:text-gray-400",
@@ -123,12 +123,12 @@ export function PricingSection() {
                 </p>
               </div>
 
-              <ul className="space-y-4 mb-10 flex-1">
+              <ul className="space-y-5 mb-10 flex-1">
                 {tier.features.map((feature, fIndex) => (
                   <li
                     key={feature}
                     className={cn(
-                      "flex items-start gap-3 text-base",
+                      "flex items-start gap-4 text-base",
                       index === 1
                         ? "text-gray-200 dark:text-gray-800"
                         : "text-gray-900 dark:text-gray-300",
@@ -137,7 +137,7 @@ export function PricingSection() {
                     {fIndex === 0 && index === 1 ? (
                       <span
                         className={cn(
-                          "font-semibold",
+                          "font-bold",
                           index === 1
                             ? "text-white dark:text-black"
                             : "text-gray-900 dark:text-white",
@@ -147,15 +147,22 @@ export function PricingSection() {
                       </span>
                     ) : (
                       <>
-                        <Check
-                          className={cn(
-                            "h-5 w-5 shrink-0",
-                            index === 1
-                              ? "text-gray-400 dark:text-gray-500"
-                              : "text-gray-400",
-                          )}
-                        />
-                        <span>{feature}</span>
+                        <div className={cn(
+                          "flex items-center justify-center w-6 h-6 rounded-full shrink-0",
+                          index === 1 
+                            ? "bg-white/20 dark:bg-black/10" 
+                            : "bg-gray-200/50 dark:bg-zinc-800/50"
+                        )}>
+                          <Check
+                            className={cn(
+                              "h-3.5 w-3.5",
+                              index === 1
+                                ? "text-white dark:text-black"
+                                : "text-gray-900 dark:text-white",
+                            )}
+                          />
+                        </div>
+                        <span className="font-medium">{feature}</span>
                       </>
                     )}
                   </li>
@@ -165,7 +172,7 @@ export function PricingSection() {
               {tier.disabled ? (
                 <div
                   className={cn(
-                    "inline-flex h-14 items-center justify-center px-8 text-base font-bold tracking-tight rounded-2xl cursor-not-allowed opacity-70",
+                    "inline-flex h-16 items-center justify-center px-8 text-lg font-bold tracking-tight rounded-2xl cursor-not-allowed opacity-70",
                     index === 1
                       ? "bg-white/20 dark:bg-black/10 text-white dark:text-black"
                       : "bg-gray-100 dark:bg-zinc-900 text-gray-900 dark:text-white",
@@ -177,14 +184,14 @@ export function PricingSection() {
                 <Link
                   href={tier.href}
                   className={cn(
-                    "inline-flex h-14 items-center justify-center px-8 text-base font-bold tracking-tight transition-all rounded-2xl group",
+                    "inline-flex h-16 items-center justify-center px-8 text-lg font-bold tracking-tight transition-all rounded-2xl group",
                     index === 1
                       ? "bg-white dark:bg-black text-black dark:text-white hover:scale-105"
-                      : "bg-gray-100 dark:bg-zinc-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-800",
+                      : "bg-black dark:bg-white text-white dark:text-black hover:scale-105",
                   )}
                 >
                   {tier.cta}
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               )}
             </div>
