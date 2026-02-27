@@ -21,7 +21,7 @@ const sections = [
     id: "operator",
     title: "2. Service Operator and Contact",
     content:
-      "AgileKit is the business name for this service and the contracting party referenced in these terms. The service is operated and supported by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to AgileKit.",
+      "AgileKit is the business name for this service and the contracting party referenced in these terms, operated by the individual identified in Section 1. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to AgileKit.",
   },
   {
     id: "eligibility",
@@ -69,7 +69,7 @@ const sections = [
     id: "billing",
     title: "10. Paid Features and Billing",
     content:
-      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases include a 30 calendar day money-back guarantee for the initial charge of a new paid plan. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. Paddle provides all customer service inquiries and handles returns.",
+      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases include a 30 calendar day money-back guarantee for the initial charge of a new paid plan. Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of Record for all our orders. For billing inquiries, payment disputes, and refund processing, Paddle handles these directly. For product support and general questions, contact us at the email in Section 2.",
   },
   {
     id: "disclaimers",
