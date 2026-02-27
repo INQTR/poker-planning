@@ -247,7 +247,7 @@ export async function resetRoomGame(
   if (room?.currentIssueId) {
     const currentIssue = await ctx.db.get(room.currentIssueId);
     if (currentIssue) {
-      if (currentIssue.status === "voting") {
+      if (currentIssue.status === "voting" && !room.isDemoRoom) {
         // Mid-vote reset: close the open timestamp, revert to voting
         await Issues.closeOpenTimestamp(ctx, room.currentIssueId);
       }
@@ -259,19 +259,22 @@ export async function resetRoomGame(
         // Set back to voting and start a new timestamp round
         await ctx.db.patch(room.currentIssueId, { status: "voting" });
 
-        const existingRounds = await ctx.db
-          .query("votingTimestamps")
-          .withIndex("by_issue", (q) =>
-            q.eq("issueId", room.currentIssueId!)
-          )
-          .collect();
+        // Skip timestamp tracking for demo rooms to avoid unbounded growth
+        if (!room.isDemoRoom) {
+          const existingRounds = await ctx.db
+            .query("votingTimestamps")
+            .withIndex("by_issue", (q) =>
+              q.eq("issueId", room.currentIssueId!)
+            )
+            .collect();
 
-        await ctx.db.insert("votingTimestamps", {
-          roomId,
-          issueId: room.currentIssueId,
-          votingStartedAt: Date.now(),
-          roundNumber: existingRounds.length + 1,
-        });
+          await ctx.db.insert("votingTimestamps", {
+            roomId,
+            issueId: room.currentIssueId,
+            votingStartedAt: Date.now(),
+            roundNumber: existingRounds.length + 1,
+          });
+        }
       }
     }
   }
