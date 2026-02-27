@@ -7,6 +7,7 @@ const features = [
   { name: "Real-time updates", available: true },
   { name: "Multiple voting scales", available: true },
   { name: "Issues management", available: true },
+  { name: "Jira Cloud integration", available: true },
   { name: "CSV export with stats", available: true },
   { name: "Session timer", available: true },
   { name: "Spectator mode", available: true },
