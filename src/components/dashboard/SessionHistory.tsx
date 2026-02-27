@@ -1,7 +1,7 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { Users, Target, TrendingUp, Calendar, ArrowRight, Activity, Clock } from "lucide-react";
+import { Users, Target, TrendingUp, ArrowRight, Activity, Clock } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -53,7 +53,7 @@ export function SessionHistory({ sessions, isLoading }: SessionHistoryProps) {
         </div>
         <h2 className="text-xl font-semibold mb-2">No active sessions</h2>
         <p className="text-sm text-muted-foreground max-w-sm mb-6">
-          You haven't joined any planning rooms yet. Create or join a room to start estimating with your team.
+          You haven&apos;t joined any planning rooms yet. Create or join a room to start estimating with your team.
         </p>
       </div>
     );
