@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.6.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.5.0...agilekit-v2.6.0) (2026-02-27)
+
+
+### Features
+
+* add Jira Cloud integration (Epic 6) ([#158](https://github.com/INQTR/poker-planning/issues/158)) ([18e8549](https://github.com/INQTR/poker-planning/commit/18e854979721625e5a79af46ab9c0320f03dcfff))
+
+
+### Miscellaneous
+
+* **deps:** bump rollup from 4.56.0 to 4.59.0 ([#156](https://github.com/INQTR/poker-planning/issues/156)) ([d53c19a](https://github.com/INQTR/poker-planning/commit/d53c19afe17c26d78ed0b5f1f28b6629009911f2))
+
 ## [2.5.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.4.0...agilekit-v2.5.0) (2026-02-26)
 
 
