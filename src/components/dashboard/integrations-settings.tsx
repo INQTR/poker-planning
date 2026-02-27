@@ -31,6 +31,9 @@ export function IntegrationsSettings() {
     const error = searchParams.get("error");
     if (error?.startsWith("jira_")) {
       const messages: Record<string, string> = {
+        jira_unauthorized: "You must be signed in to connect Jira.",
+        jira_not_configured:
+          "Jira integration is not configured. Please contact the administrator.",
         jira_denied: "Jira authorization was denied.",
         jira_invalid: "Invalid callback parameters.",
         jira_state_mismatch: "Security check failed. Please try again.",

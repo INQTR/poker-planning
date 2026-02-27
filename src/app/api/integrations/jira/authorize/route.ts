@@ -1,17 +1,18 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { isAuthenticated } from "@/lib/auth-server";
 
 export async function GET() {
   const authed = await isAuthenticated();
   if (!authed) {
-    return new Response("Unauthorized", { status: 401 });
+    redirect("/dashboard/settings?tab=integrations&error=jira_unauthorized");
   }
 
   const clientId = process.env.JIRA_CLIENT_ID;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
 
   if (!clientId || !appUrl) {
-    return new Response("Jira integration not configured", { status: 500 });
+    redirect("/dashboard/settings?tab=integrations&error=jira_not_configured");
   }
 
   // CSRF protection: store random state in httpOnly cookie
