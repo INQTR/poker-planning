@@ -47,15 +47,16 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
               {/* Left Column */}
               <div className="flex flex-col items-start lg:py-20">
-                {versionInfo && (
-                  <Link
-                    href="/changelog"
-                    className="inline-flex items-center gap-2 mb-8 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                  >
-                    <span>What&apos;s new in v{versionInfo.version}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                )}
+                <Link
+                  href="/blog/jira-integration"
+                  className="inline-flex items-center gap-2 mb-8 rounded-full bg-white/60 dark:bg-zinc-800/60 backdrop-blur-md px-4 py-1.5 text-sm font-medium text-primary hover:bg-white/80 dark:hover:bg-zinc-800/80 transition-colors shadow-sm"
+                >
+                  <span className="inline-flex items-center rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground leading-none">
+                    {versionInfo ? `v${versionInfo.version}` : "New"}
+                  </span>
+                  <span>Jira Cloud integration is here</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
                 
                 <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
                   Planning poker,<br />

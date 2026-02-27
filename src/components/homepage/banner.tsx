@@ -1,30 +1,24 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import Link from "next/link";
 
 export const Banner = () => {
   return (
     <aside
-      aria-label="Ukraine support banner"
-      className="bg-black text-white dark:bg-white dark:text-black px-6 py-3 flex items-center justify-center gap-x-6 z-50 text-sm font-medium"
+      aria-label="New feature announcement"
+      className="bg-black text-white dark:bg-white dark:text-black px-6 py-3 flex items-center justify-center gap-x-2 z-50 text-sm font-medium"
     >
+      <span className="inline-flex items-center rounded-full bg-white/20 dark:bg-black/10 px-2 py-0.5 text-xs font-semibold text-white dark:text-black">
+        New
+      </span>
       <p>
-        We stand with Ukraine and its people.{" "}
-        <a
-          href="https://u24.gov.ua/"
-          target="_blank"
-          rel="noreferrer"
+        Jira Cloud integration is here — import issues and push estimates
+        automatically.{" "}
+        <Link
+          href="/blog/jira-integration"
           className="underline decoration-1 underline-offset-2 hover:opacity-80 transition-opacity ml-1"
         >
-          Support Ukraine
-        </a>
+          Learn more
+        </Link>
       </p>
-      <button
-        type="button"
-        className="-m-3 p-3 hidden"
-        aria-label="Dismiss"
-      >
-        <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
-      </button>
     </aside>
   );
 };

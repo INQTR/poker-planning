@@ -18,6 +18,7 @@ import {
   IndividualVotingStats,
   PredictabilityGauge,
   VelocityTrend,
+  DashboardBanner,
 } from "@/components/dashboard";
 import { useDateRange } from "@/components/dashboard/date-range-context";
 
@@ -96,8 +97,9 @@ export function DashboardContent() {
     <>
       <DashboardHeader title="Overview" />
       <main className="flex-1 p-6">
-        {/* Stats Summary */}
-        <div className="mb-8">
+        <DashboardBanner />
+        {/* Stats Summary & Time to Consensus */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <StatsSummary
             totalSessions={summary?.totalSessions ?? 0}
             totalIssuesEstimated={summary?.totalIssuesEstimated ?? 0}
@@ -105,10 +107,6 @@ export function DashboardContent() {
             averageAgreement={summary?.averageAgreement ?? null}
             isLoading={summaryLoading}
           />
-        </div>
-
-        {/* Time to Consensus Card */}
-        <div className="mb-8">
           <TimeToConsensusCard
             averageMs={timeToConsensus?.averageMs ?? null}
             medianMs={timeToConsensus?.medianMs ?? null}
@@ -149,8 +147,8 @@ export function DashboardContent() {
           />
         </div>
 
-        {/* Consensus Trend + Voter Alignment */}
-        <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        {/* Consensus Trend + Voter Alignment + Vote Distribution */}
+        <div className="mb-8 grid gap-6 lg:grid-cols-3">
           <ConsensusTrend
             data={timeToConsensus?.trendBySession ?? []}
             isLoading={consensusLoading}
@@ -158,6 +156,10 @@ export function DashboardContent() {
           <VoterAlignmentChart
             data={voterAlignment?.scatterPoints ?? []}
             isLoading={alignmentLoading}
+          />
+          <VoteDistribution
+            data={voteDistribution ?? []}
+            isLoading={distributionLoading}
           />
         </div>
 
@@ -169,20 +171,12 @@ export function DashboardContent() {
           />
         </div>
 
-        {/* Vote Distribution */}
-        <div className="mb-8 grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-1">
-            <VoteDistribution
-              data={voteDistribution ?? []}
-              isLoading={distributionLoading}
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <SessionHistory
-              sessions={sessions ?? []}
-              isLoading={sessionsLoading}
-            />
-          </div>
+        {/* Session History */}
+        <div className="mb-8">
+          <SessionHistory
+            sessions={sessions ?? []}
+            isLoading={sessionsLoading}
+          />
         </div>
       </main>
     </>

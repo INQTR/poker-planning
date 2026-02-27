@@ -1,7 +1,7 @@
 "use client";
 
 import { Users, Target, TrendingUp, CheckCircle2 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface StatsSummaryProps {
   totalSessions: number;
@@ -21,17 +21,15 @@ interface StatCardProps {
 function StatCard({ icon, label, value, subtext }: StatCardProps) {
   return (
     <Card>
-      <CardContent className="pt-4">
-        <div className="flex items-start gap-3">
-          <div className="rounded-lg bg-primary/10 p-2 text-primary">{icon}</div>
-          <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="text-2xl font-bold">{value}</p>
-            {subtext && (
-              <p className="text-xs text-muted-foreground">{subtext}</p>
-            )}
-          </div>
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+        <div className="text-muted-foreground">{icon}</div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        {subtext && (
+          <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
+        )}
       </CardContent>
     </Card>
   );
@@ -40,14 +38,13 @@ function StatCard({ icon, label, value, subtext }: StatCardProps) {
 function StatCardSkeleton() {
   return (
     <Card>
-      <CardContent className="pt-4">
-        <div className="flex items-start gap-3">
-          <div className="h-10 w-10 animate-pulse rounded-lg bg-muted" />
-          <div className="space-y-2">
-            <div className="h-4 w-20 animate-pulse rounded bg-muted" />
-            <div className="h-7 w-16 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-4 animate-pulse rounded bg-muted" />
+      </CardHeader>
+      <CardContent>
+        <div className="h-8 w-16 animate-pulse rounded bg-muted" />
+        <div className="h-3 w-24 animate-pulse rounded bg-muted mt-2" />
       </CardContent>
     </Card>
   );
@@ -62,16 +59,16 @@ export function StatsSummary({
 }: StatsSummaryProps) {
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <>
         {[1, 2, 3, 4].map((i) => (
           <StatCardSkeleton key={i} />
         ))}
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <>
       <StatCard
         icon={<Users className="h-5 w-5" />}
         label="Total Sessions"
@@ -96,6 +93,6 @@ export function StatsSummary({
         value={averageAgreement !== null ? `${averageAgreement}%` : "—"}
         subtext={averageAgreement !== null ? "Team alignment" : "No data yet"}
       />
-    </div>
+    </>
   );
 }

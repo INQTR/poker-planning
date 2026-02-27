@@ -5,7 +5,6 @@ import {
   ArrowUp,
   Equal,
   Minus,
-  Users,
 } from "lucide-react";
 import {
   Card,
@@ -83,15 +82,12 @@ export function IndividualVotingStats({
 }: IndividualVotingStatsProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Individual Voting Stats
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Individual Voting Stats</CardTitle>
           <CardDescription>Per-voter alignment with consensus</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="h-[250px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
@@ -100,15 +96,12 @@ export function IndividualVotingStats({
 
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Individual Voting Stats
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Individual Voting Stats</CardTitle>
           <CardDescription>Per-voter alignment with consensus</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="flex h-[250px] items-center justify-center text-muted-foreground">
             No individual vote data yet
           </div>
@@ -118,15 +111,12 @@ export function IndividualVotingStats({
   }
 
   return (
-    <Card>
+    <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Individual Voting Stats
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Individual Voting Stats</CardTitle>
         <CardDescription>Per-voter alignment with consensus</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <div className="max-h-[280px] overflow-auto">
           <table className="w-full text-sm">
             <thead>

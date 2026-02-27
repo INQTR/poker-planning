@@ -32,8 +32,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useRoomPresence } from "@/hooks/useRoomPresence";
-import { RoomSettingsPanel } from "./room-settings-panel";
-import { IssuesPanel } from "./issues-panel";
 import { UserMenu } from "@/components/user-menu";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { cn } from "@/lib/utils";
@@ -45,10 +43,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
-import type { Id } from "@/convex/_generated/dataModel";
 import { copyTextToClipboard } from "@/utils/copy-text-to-clipboard";
 import { UserPresenceAvatars } from "./user-presence-avatars";
-import { usePermissions } from "@/hooks/usePermissions";
 
 interface CanvasNavigationProps {
   roomData: RoomWithRelatedData;
@@ -57,6 +53,8 @@ interface CanvasNavigationProps {
   isFullscreen?: boolean;
   isIssuesPanelOpen: boolean;
   onIssuesPanelChange: (open: boolean) => void;
+  isSettingsOpen: boolean;
+  onSettingsPanelChange: (open: boolean) => void;
   isDemoMode?: boolean;
 }
 
@@ -67,6 +65,8 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
   isFullscreen = false,
   isIssuesPanelOpen,
   onIssuesPanelChange,
+  isSettingsOpen,
+  onSettingsPanelChange,
   isDemoMode = false,
 }) => {
   const { zoomIn, zoomOut, fitView } = useReactFlow();
@@ -78,12 +78,10 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
     currentUserId,
     roomData.users,
   );
-  const perms = usePermissions(roomData, currentUserId);
   const { toast } = useToast();
   const [isFullscreenSupported] = useState(
     () => typeof document !== "undefined" && document.fullscreenEnabled,
   );
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -280,7 +278,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                   variant="outline"
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    setIsSettingsOpen(true);
+                    onSettingsPanelChange(true);
                   }}
                   className="w-full h-11 justify-start gap-3"
                 >
@@ -556,7 +554,7 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
                     ref={settingsButtonRef}
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                    onClick={() => onSettingsPanelChange(!isSettingsOpen)}
                     className={cn(
                       buttonClass,
                       isSettingsOpen && "bg-gray-100 dark:bg-surface-3",
@@ -590,28 +588,6 @@ export const CanvasNavigation: FC<CanvasNavigationProps> = ({
           )}
         </div>
       </div>
-
-      {/* Settings Panel */}
-      <RoomSettingsPanel
-        roomData={roomData}
-        usersWithPresence={usersWithPresence}
-        currentUserId={isDemoMode ? undefined : (currentUserId as Id<"users">)}
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        triggerRef={settingsButtonRef}
-        isDemoMode={isDemoMode}
-      />
-
-      {/* Issues Panel */}
-      <IssuesPanel
-        roomId={room._id}
-        roomName={room.name}
-        isOpen={isIssuesPanelOpen}
-        onClose={() => onIssuesPanelChange(false)}
-        isDemoMode={isDemoMode}
-        canManageIssues={perms.canManageIssues}
-        canControlGameFlow={perms.canControlGameFlow}
-      />
     </>
   );
 };

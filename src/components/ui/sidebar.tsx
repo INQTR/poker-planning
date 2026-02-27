@@ -521,7 +521,7 @@ function SidebarMenuButton({
       },
       props
     ),
-    render: !tooltip ? render : TooltipTrigger,
+    render,
     state: {
       slot: "sidebar-menu-button",
       sidebar: "menu-button",
@@ -542,7 +542,7 @@ function SidebarMenuButton({
 
   return (
     <Tooltip>
-      {comp}
+      <TooltipTrigger render={comp} />
       <TooltipContent
         side="right"
         align="center"

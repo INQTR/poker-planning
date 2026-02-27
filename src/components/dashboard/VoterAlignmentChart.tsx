@@ -1,6 +1,6 @@
 "use client";
 
-import { Crosshair } from "lucide-react";
+
 import {
   ScatterChart,
   Scatter,
@@ -56,18 +56,15 @@ export function VoterAlignmentChart({
 }: VoterAlignmentChartProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Crosshair className="h-5 w-5" />
-            Voter Alignment
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[250px] animate-pulse rounded bg-muted" />
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex-1 min-h-[250px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
     );
@@ -75,18 +72,15 @@ export function VoterAlignmentChart({
 
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Crosshair className="h-5 w-5" />
-            Voter Alignment
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-[250px] items-center justify-center text-muted-foreground">
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex flex-1 min-h-[250px] items-center justify-center text-muted-foreground">
             No individual vote data yet
           </div>
         </CardContent>
@@ -95,18 +89,15 @@ export function VoterAlignmentChart({
   }
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Crosshair className="h-5 w-5" />
-          Voter Alignment
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
         <CardDescription>
           X: avg bias (- under, + over) &middot; Y: variability (stddev)
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[250px] w-full">
+      <CardContent className="flex-1 flex flex-col pb-6">
+        <ChartContainer config={chartConfig} className="flex-1 min-h-[250px] w-full aspect-auto">
           <ScatterChart
             accessibilityLayer
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}

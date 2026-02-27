@@ -16,3 +16,4 @@ export { VoterAlignmentChart } from "./VoterAlignmentChart";
 export { IndividualVotingStats } from "./IndividualVotingStats";
 export { PredictabilityGauge } from "./PredictabilityGauge";
 export { VelocityTrend } from "./VelocityTrend";
+export { DashboardBanner } from "./dashboard-banner";

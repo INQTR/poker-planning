@@ -3,7 +3,7 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import {
   ComposedChart,
-  Bar,
+  Area,
   Line,
   XAxis,
   YAxis,
@@ -109,18 +109,15 @@ export function VelocityTrend({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Velocity Trend
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Velocity Trend</CardTitle>
           <CardDescription>
             Story points per session with rolling average
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[200px] animate-pulse rounded bg-muted" />
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex-1 min-h-[200px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
     );
@@ -128,18 +125,15 @@ export function VelocityTrend({
 
   if (!hasData) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Velocity Trend
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Velocity Trend</CardTitle>
           <CardDescription>
             Story points per session with rolling average
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex flex-1 min-h-[200px] items-center justify-center text-muted-foreground">
             No estimation data yet
           </div>
         </CardContent>
@@ -150,12 +144,9 @@ export function VelocityTrend({
   const chartData = computeRollingAverage(sessionsWithPoints, 3);
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          Velocity Trend
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Velocity Trend</CardTitle>
         <CardDescription className="flex items-center gap-2">
           <span>
             {totalPoints} points across {totalIssues} issues
@@ -166,13 +157,27 @@ export function VelocityTrend({
           </span>
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+      <CardContent className="flex-1 flex flex-col pb-6">
+        <ChartContainer config={chartConfig} className="flex-1 min-h-[200px] w-full aspect-auto">
           <ComposedChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
+            <defs>
+              <linearGradient id="fillEstimatedPoints" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-estimatedPoints)"
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-estimatedPoints)"
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="date"
@@ -189,10 +194,12 @@ export function VelocityTrend({
                 />
               }
             />
-            <Bar
+            <Area
+              type="monotone"
               dataKey="estimatedPoints"
-              fill="var(--color-estimatedPoints)"
-              radius={[4, 4, 0, 0]}
+              stroke="var(--color-estimatedPoints)"
+              fill="url(#fillEstimatedPoints)"
+              strokeWidth={2}
             />
             <Line
               type="monotone"

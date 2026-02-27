@@ -8,6 +8,7 @@ import type { EnhancedExportableIssue } from "@/convex/model/issues";
 
 interface UseIssuesProps {
   roomId: Id<"rooms">;
+  isDemoMode?: boolean;
 }
 
 interface UseIssuesReturn {
@@ -25,11 +26,11 @@ interface UseIssuesReturn {
   exportData: EnhancedExportableIssue[] | undefined;
 }
 
-export function useIssues({ roomId }: UseIssuesProps): UseIssuesReturn {
+export function useIssues({ roomId, isDemoMode = false }: UseIssuesProps): UseIssuesReturn {
   // Queries
   const issues = useQuery(api.issues.list, { roomId });
   const currentIssue = useQuery(api.issues.getCurrent, { roomId });
-  const exportData = useQuery(api.issues.getForEnhancedExport, { roomId });
+  const exportData = useQuery(api.issues.getForEnhancedExport, isDemoMode ? "skip" : { roomId });
 
   // Mutations
   const createMutation = useMutation(api.issues.create);

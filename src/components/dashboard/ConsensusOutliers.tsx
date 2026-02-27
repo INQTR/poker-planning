@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+
 import { Bar, BarChart, XAxis, YAxis, Cell } from "recharts";
 import {
   Card,
@@ -58,16 +58,13 @@ export function ConsensusOutliers({
 }: ConsensusOutliersProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Consensus Outliers
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
           <CardDescription>Issues that took longest to estimate</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[200px] animate-pulse rounded bg-muted" />
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex-1 min-h-[200px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
     );
@@ -75,16 +72,13 @@ export function ConsensusOutliers({
 
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Consensus Outliers
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
           <CardDescription>Issues that took longest to estimate</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex flex-1 min-h-[200px] items-center justify-center text-muted-foreground">
             {averageMs !== null
               ? "No outliers detected — great consistency!"
               : "No timing data yet"}
@@ -108,19 +102,16 @@ export function ConsensusOutliers({
   }));
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5" />
-          Consensus Outliers
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
         <CardDescription>
           {data.length} issue{data.length !== 1 ? "s" : ""} took &gt;2x average
           time
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+      <CardContent className="flex-1 flex flex-col pb-6">
+        <ChartContainer config={chartConfig} className="flex-1 min-h-[200px] w-full aspect-auto">
           <BarChart
             accessibilityLayer
             data={chartData}

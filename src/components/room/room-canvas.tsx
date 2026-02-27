@@ -21,6 +21,8 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useLatest } from "@/hooks/use-latest";
 import { CanvasNavigation } from "./canvas-navigation";
+import { RoomSettingsPanel } from "./room-settings-panel";
+import { IssuesPanel } from "./issues-panel";
 import { DemoExplainer } from "./demo-explainer";
 import { useCanvasNodes } from "./hooks/useCanvasNodes";
 import { NodePickerToolbar } from "./node-picker-toolbar";
@@ -135,8 +137,9 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
     null
   );
 
-  // Issues panel state - lifted up so it can be passed to SessionNode
+  // Issues and Settings panel state
   const [isIssuesPanelOpen, setIsIssuesPanelOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Delete note confirmation state
   const [pendingDeleteNodeId, setPendingDeleteNodeId] = useState<string | null>(null);
@@ -145,6 +148,7 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
   const [pendingDeleteUserId, setPendingDeleteUserId] = useState<{id: Id<"users">, name: string} | null>(null);
 
   const handleOpenIssuesPanel = useCallback(() => {
+    setIsSettingsOpen(false);
     setIsIssuesPanelOpen(true);
   }, []);
 
@@ -418,17 +422,26 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
   }
 
   return (
-    <div className="w-full h-screen relative overflow-hidden bg-transparent">
-      {(isDemoMode || currentUserId) && !(isDemoMode && isEmbedded) && (
-        <CanvasNavigation
-          roomData={roomData}
-          currentUserId={currentUserId ?? DEMO_VIEWER_ID}
-          isIssuesPanelOpen={isIssuesPanelOpen}
-          onIssuesPanelChange={setIsIssuesPanelOpen}
-          isDemoMode={isDemoMode}
-        />
-      )}
-      <ReactFlow
+    <div className="flex w-full h-screen overflow-hidden bg-transparent">
+      <div className="flex-1 relative min-w-0 h-full">
+        {(isDemoMode || currentUserId) && !(isDemoMode && isEmbedded) && (
+          <CanvasNavigation
+            roomData={roomData}
+            currentUserId={currentUserId ?? DEMO_VIEWER_ID}
+            isIssuesPanelOpen={isIssuesPanelOpen}
+            onIssuesPanelChange={(open) => {
+              setIsIssuesPanelOpen(open);
+              if (open) setIsSettingsOpen(false);
+            }}
+            isSettingsOpen={isSettingsOpen}
+            onSettingsPanelChange={(open) => {
+              setIsSettingsOpen(open);
+              if (open) setIsIssuesPanelOpen(false);
+            }}
+            isDemoMode={isDemoMode}
+          />
+        )}
+        <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={isDemoMode ? undefined : handleNodesChange}
@@ -516,6 +529,27 @@ function RoomCanvasInner({ roomData, currentUserId, isDemoMode = false, isEmbedd
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      </div>
+
+      {/* Settings Panel */}
+      <RoomSettingsPanel
+        roomData={roomData}
+        currentUserId={isDemoMode ? undefined : (currentUserId as Id<"users">)}
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        isDemoMode={isDemoMode}
+      />
+
+      {/* Issues Panel */}
+      <IssuesPanel
+        roomId={roomId}
+        roomName={roomData.room.name}
+        isOpen={isIssuesPanelOpen}
+        onClose={() => setIsIssuesPanelOpen(false)}
+        isDemoMode={isDemoMode}
+        canManageIssues={permissions.canManageIssues}
+        canControlGameFlow={permissions.canControlGameFlow}
+      />
     </div>
   );
 }

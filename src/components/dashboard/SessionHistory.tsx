@@ -3,7 +3,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { ExternalLink, Users, Target, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 interface SessionSummary {
   roomId: string;
@@ -23,14 +23,12 @@ interface SessionHistoryProps {
 export function SessionHistory({ sessions, isLoading }: SessionHistoryProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Session History
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Session History</CardTitle>
+          <CardDescription>Recent planning rooms joined</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse">
@@ -45,16 +43,14 @@ export function SessionHistory({ sessions, isLoading }: SessionHistoryProps) {
 
   if (sessions.length === 0) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Session History
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Session History</CardTitle>
+          <CardDescription>Recent planning rooms joined</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="py-8 text-center text-muted-foreground">
-            <Users className="mx-auto mb-2 h-8 w-8 opacity-50" />
+        <CardContent className="flex-1">
+          <div className="flex h-full min-h-[200px] flex-col items-center justify-center text-muted-foreground">
+            <Users className="mb-2 h-8 w-8 opacity-50" />
             <p>No sessions yet</p>
             <p className="text-sm">
               Join a planning room to start tracking your sessions
@@ -66,14 +62,12 @@ export function SessionHistory({ sessions, isLoading }: SessionHistoryProps) {
   }
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Session History
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Session History</CardTitle>
+        <CardDescription>Recent planning rooms joined</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <div className="space-y-2">
           {sessions.map((session) => (
             <Link

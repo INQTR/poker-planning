@@ -1,7 +1,7 @@
 "use client";
 
-import { Timer } from "lucide-react";
-import { Line, LineChart, XAxis, YAxis, CartesianGrid } from "recharts";
+
+import { Area, AreaChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import {
   Card,
   CardContent,
@@ -68,16 +68,13 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Timer className="h-5 w-5" />
-            Consensus Time Trend
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Consensus Time Trend</CardTitle>
           <CardDescription>Average time per issue over sessions</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[200px] animate-pulse rounded bg-muted" />
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex-1 min-h-[200px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
     );
@@ -85,16 +82,13 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
 
   if (!hasData) {
     return (
-      <Card>
+      <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Timer className="h-5 w-5" />
-            Consensus Time Trend
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Consensus Time Trend</CardTitle>
           <CardDescription>Average time per issue over sessions</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+        <CardContent className="flex-1 flex flex-col">
+          <div className="flex flex-1 min-h-[200px] items-center justify-center text-muted-foreground">
             No timing data yet
           </div>
         </CardContent>
@@ -103,21 +97,32 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
   }
 
   return (
-    <Card>
+    <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Timer className="h-5 w-5" />
-          Consensus Time Trend
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Consensus Time Trend</CardTitle>
         <CardDescription>Average time per issue over sessions</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[200px] w-full">
-          <LineChart
+      <CardContent className="flex-1 flex flex-col pb-6">
+        <ChartContainer config={chartConfig} className="flex-1 min-h-[200px] w-full aspect-auto">
+          <AreaChart
             accessibilityLayer
             data={chartData}
             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
           >
+            <defs>
+              <linearGradient id="fillAverageSec" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-averageSec)"
+                  stopOpacity={0.3}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-averageSec)"
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="date"
@@ -142,15 +147,14 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
                 />
               }
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="averageSec"
               stroke="var(--color-averageSec)"
+              fill="url(#fillAverageSec)"
               strokeWidth={2}
-              dot={{ fill: "var(--color-averageSec)", r: 3 }}
-              activeDot={{ r: 5 }}
             />
-          </LineChart>
+          </AreaChart>
         </ChartContainer>
       </CardContent>
     </Card>

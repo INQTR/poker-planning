@@ -7,7 +7,7 @@
 > are added as the final step. At that point, existing permanent accounts get 6 months
 > of free Pro access (grandfathering).
 >
-> Updated: 2026-02-25
+> Updated: 2026-02-26
 
 ## Status Legend
 
@@ -88,14 +88,22 @@
 
 ### Epic 6: Jira Integration
 
-**Status: Not started**
+**Status: Complete**
 
-- [ ] **6.1** OAuth 2.0 (3LO) authentication with Atlassian
-- [ ] **6.2** Token encryption (AES-256-GCM) and storage
-- [ ] **6.3** Import issues from sprint/backlog
-- [ ] **6.4** Push estimates to custom fields
-- [ ] **6.5** Jira webhook handling for real-time sync
-- [ ] **6.6** Token refresh cron job
+- [x] **6.1** Schema: `integrationConnections`, `integrationMappings`, `issueLinks`, `webhookEvents` tables
+- [x] **6.2** Token encryption (AES-256-GCM) — `convex/lib/encryption.ts`
+- [x] **6.3** OAuth 2.0 (3LO) authentication with Atlassian — Next.js API routes + Convex actions
+- [x] **6.4** Token refresh — cron job every 30 min + just-in-time refresh
+- [x] **6.5** Jira API client — `convex/integrations/jiraClient.ts`
+- [x] **6.6** Import issues from sprint/backlog — `importIssues` action + modal UI
+- [x] **6.7** Push estimates to Jira — auto-push after consensus via `pushEstimateToJira`
+- [x] **6.8** Jira webhook handling — HTTP endpoint + dedup + issue sync
+- [x] **6.9** Frontend: Connect Jira UI — settings page at `/dashboard/settings`
+- [x] **6.10** Frontend: Import modal — multi-step project/board/sprint/issues selector
+- [x] **6.11** Frontend: Room mapping — integration settings section in room settings panel
+- [x] **6.12** Jira webhook registration + refresh cron
+- [x] **6.13** Cleanup cascade — integrationMappings + issueLinks deleted with rooms
+- [x] **6.14** Export populated — `externalUrl`/`externalId` fields in enhanced export
 
 ### Epic 7: GitHub Integration
 
@@ -165,4 +173,4 @@
 
 ## Next Focus
 
-**Epic 6 (Jira Integration)** — next integration to build. No gating needed yet; all features available to all users until Phase 4.
+**Epic 7 (GitHub Integration)** — next integration to build. Shares infrastructure with Epic 6 (`integrationConnections`, encryption, `issueLinks`). No gating needed yet.

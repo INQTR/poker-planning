@@ -234,18 +234,20 @@ export async function startVotingOnIssue(
 
   await Promise.all(votes.map((vote) => ctx.db.delete(vote._id)));
 
-  // Record voting timestamp for time-to-consensus tracking
-  const existingRounds = await ctx.db
-    .query("votingTimestamps")
-    .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
-    .collect();
+  // Record voting timestamp for time-to-consensus tracking (skip demo rooms)
+  if (!room.isDemoRoom) {
+    const existingRounds = await ctx.db
+      .query("votingTimestamps")
+      .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+      .collect();
 
-  await ctx.db.insert("votingTimestamps", {
-    roomId: args.roomId,
-    issueId: args.issueId,
-    votingStartedAt: Date.now(),
-    roundNumber: existingRounds.length + 1,
-  });
+    await ctx.db.insert("votingTimestamps", {
+      roomId: args.roomId,
+      issueId: args.issueId,
+      votingStartedAt: Date.now(),
+      roundNumber: existingRounds.length + 1,
+    });
+  }
 }
 
 /**
@@ -262,31 +264,38 @@ export async function completeIssueVoting(
 ): Promise<void> {
   const now = Date.now();
 
-  // Find and close the latest voting timestamp for this issue
-  const timestamps = await ctx.db
-    .query("votingTimestamps")
-    .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
-    .collect();
-
+  // Find and close the latest voting timestamp for this issue (skip demo rooms)
+  const room = await ctx.db.get(args.roomId);
   let timeToConsensusMs: number | undefined;
-  const latestTimestamp = timestamps[timestamps.length - 1];
-  if (latestTimestamp && !latestTimestamp.votingEndedAt) {
-    const durationMs = now - latestTimestamp.votingStartedAt;
-    await ctx.db.patch(latestTimestamp._id, {
-      votingEndedAt: now,
-      durationMs,
-    });
 
-    // Total time = sum of all previously completed rounds + current round
-    const totalMs =
-      timestamps.reduce((sum, ts) => sum + (ts.durationMs ?? 0), 0) +
-      durationMs;
-    timeToConsensusMs = totalMs;
-  } else if (timestamps.length > 0) {
-    // All rounds already closed (e.g. issue was reset then completed) — sum existing
-    const totalMs = timestamps.reduce((sum, ts) => sum + (ts.durationMs ?? 0), 0);
-    if (totalMs > 0) {
+  if (!room?.isDemoRoom) {
+    const timestamps = await ctx.db
+      .query("votingTimestamps")
+      .withIndex("by_issue", (q) => q.eq("issueId", args.issueId))
+      .collect();
+
+    const latestTimestamp = timestamps[timestamps.length - 1];
+    if (latestTimestamp && !latestTimestamp.votingEndedAt) {
+      const durationMs = now - latestTimestamp.votingStartedAt;
+      await ctx.db.patch(latestTimestamp._id, {
+        votingEndedAt: now,
+        durationMs,
+      });
+
+      // Total time = sum of all previously completed rounds + current round
+      const totalMs =
+        timestamps.reduce((sum, ts) => sum + (ts.durationMs ?? 0), 0) +
+        durationMs;
       timeToConsensusMs = totalMs;
+    } else if (timestamps.length > 0) {
+      // All rounds already closed (e.g. issue was reset then completed) — sum existing
+      const totalMs = timestamps.reduce(
+        (sum, ts) => sum + (ts.durationMs ?? 0),
+        0
+      );
+      if (totalMs > 0) {
+        timeToConsensusMs = totalMs;
+      }
     }
   }
 
@@ -547,6 +556,26 @@ export async function getEnhancedIssuesForExport(
     votesByIssue.set(key, existing);
   }
 
+  // Batch-query issueLinks for all issues in this room
+  const allIssueLinks = await Promise.all(
+    issues.map((issue) =>
+      ctx.db
+        .query("issueLinks")
+        .withIndex("by_issue", (q) => q.eq("issueId", issue._id))
+        .first()
+    )
+  );
+  const issueLinkMap = new Map<string, { externalUrl: string; externalId: string }>();
+  for (let i = 0; i < issues.length; i++) {
+    const link = allIssueLinks[i];
+    if (link) {
+      issueLinkMap.set(issues[i]._id as string, {
+        externalUrl: link.externalUrl,
+        externalId: link.externalId,
+      });
+    }
+  }
+
   // Collect unique userIds and batch-resolve names
   const uniqueUserIds = new Set<Id<"users">>();
   for (const iv of allIndividualVotes) {
@@ -591,8 +620,8 @@ export async function getEnhancedIssuesForExport(
       timeToConsensusFormatted,
       votingRounds,
       individualVotes,
-      externalUrl: null,
-      externalId: null,
+      externalUrl: issueLinkMap.get(issueId)?.externalUrl ?? null,
+      externalId: issueLinkMap.get(issueId)?.externalId ?? null,
     };
   });
 }

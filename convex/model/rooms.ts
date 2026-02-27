@@ -1,4 +1,5 @@
 import { QueryCtx, MutationCtx } from "../_generated/server";
+import { internal } from "../_generated/api";
 import { Id, Doc } from "../_generated/dataModel";
 import * as Canvas from "./canvas";
 import * as Issues from "./issues";
@@ -204,6 +205,32 @@ export async function showRoomCards(
       consensusLabel: consensus,
       votingScale: room.votingScale,
     });
+
+    // Auto-push estimate to Jira if linked and enabled
+    if (consensus) {
+      const issueLink = await ctx.db
+        .query("issueLinks")
+        .withIndex("by_issue", (q) => q.eq("issueId", room.currentIssueId!))
+        .first();
+
+      if (issueLink?.provider === "jira") {
+        const mapping = await ctx.db
+          .query("integrationMappings")
+          .withIndex("by_room", (q) => q.eq("roomId", roomId))
+          .first();
+
+        if (mapping?.autoPushEstimates) {
+          await ctx.scheduler.runAfter(
+            0,
+            internal.integrations.jira.pushEstimateToJira,
+            {
+              issueId: room.currentIssueId!,
+              finalEstimate: consensus,
+            }
+          );
+        }
+      }
+    }
   }
 }
 
@@ -220,7 +247,7 @@ export async function resetRoomGame(
   if (room?.currentIssueId) {
     const currentIssue = await ctx.db.get(room.currentIssueId);
     if (currentIssue) {
-      if (currentIssue.status === "voting") {
+      if (currentIssue.status === "voting" && !room.isDemoRoom) {
         // Mid-vote reset: close the open timestamp, revert to voting
         await Issues.closeOpenTimestamp(ctx, room.currentIssueId);
       }
@@ -232,19 +259,22 @@ export async function resetRoomGame(
         // Set back to voting and start a new timestamp round
         await ctx.db.patch(room.currentIssueId, { status: "voting" });
 
-        const existingRounds = await ctx.db
-          .query("votingTimestamps")
-          .withIndex("by_issue", (q) =>
-            q.eq("issueId", room.currentIssueId!)
-          )
-          .collect();
+        // Skip timestamp tracking for demo rooms to avoid unbounded growth
+        if (!room.isDemoRoom) {
+          const existingRounds = await ctx.db
+            .query("votingTimestamps")
+            .withIndex("by_issue", (q) =>
+              q.eq("issueId", room.currentIssueId!)
+            )
+            .collect();
 
-        await ctx.db.insert("votingTimestamps", {
-          roomId,
-          issueId: room.currentIssueId,
-          votingStartedAt: Date.now(),
-          roundNumber: existingRounds.length + 1,
-        });
+          await ctx.db.insert("votingTimestamps", {
+            roomId,
+            issueId: room.currentIssueId,
+            votingStartedAt: Date.now(),
+            roundNumber: existingRounds.length + 1,
+          });
+        }
       }
     }
   }
