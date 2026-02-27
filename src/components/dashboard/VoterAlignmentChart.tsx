@@ -25,6 +25,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ScatterPoint {
   userId: string;
@@ -67,7 +74,17 @@ export function VoterAlignmentChart({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Voter Alignment
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Plots each member by estimation bias and consistency. Center = aligned with consensus.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
@@ -83,7 +100,17 @@ export function VoterAlignmentChart({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Voter Alignment
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Plots each member by estimation bias and consistency. Center = aligned with consensus.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
@@ -100,7 +127,17 @@ export function VoterAlignmentChart({
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Voter Alignment
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Plots each member by estimation bias and consistency. Center = aligned with consensus.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>
           X: avg bias (- under, + over) &middot; Y: variability (stddev)
         </CardDescription>

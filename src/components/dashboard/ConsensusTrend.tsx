@@ -15,6 +15,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface TrendDataPoint {
   date: string;
@@ -70,7 +77,17 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Consensus Time Trend</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Consensus Time Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Tracks how long it takes to reach consensus over time. A downward trend indicates improving efficiency.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Average time per issue over sessions</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -84,7 +101,17 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Consensus Time Trend</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Consensus Time Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Tracks how long it takes to reach consensus over time. A downward trend indicates improving efficiency.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Average time per issue over sessions</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -99,7 +126,17 @@ export function ConsensusTrend({ data, isLoading }: ConsensusTrendProps) {
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Consensus Time Trend</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Consensus Time Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Tracks how long it takes to reach consensus over time. A downward trend indicates improving efficiency.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>Average time per issue over sessions</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col pb-6">

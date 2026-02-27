@@ -4,6 +4,7 @@ import {
   ArrowDown,
   ArrowUp,
   Equal,
+  HelpCircle,
   Minus,
 } from "lucide-react";
 import {
@@ -14,6 +15,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface VoterUser {
   userId: string;
@@ -84,7 +91,17 @@ export function IndividualVotingStats({
     return (
       <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Individual Voting Stats</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Individual Voting Stats
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Per-voter agreement rate and estimation tendency. Intended for coaching, not performance evaluation.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Per-voter alignment with consensus</CardDescription>
         </CardHeader>
         <CardContent className="flex-1">
@@ -98,7 +115,17 @@ export function IndividualVotingStats({
     return (
       <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Individual Voting Stats</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Individual Voting Stats
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Per-voter agreement rate and estimation tendency. Intended for coaching, not performance evaluation.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Per-voter alignment with consensus</CardDescription>
         </CardHeader>
         <CardContent className="flex-1">
@@ -113,7 +140,17 @@ export function IndividualVotingStats({
   return (
     <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Individual Voting Stats</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Individual Voting Stats
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Per-voter agreement rate and estimation tendency. Intended for coaching, not performance evaluation.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>Per-voter alignment with consensus</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">

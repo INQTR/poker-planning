@@ -15,6 +15,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface VoteDistributionItem {
   value: string;
@@ -43,7 +50,17 @@ export function VoteDistribution({ data, isLoading }: VoteDistributionProps) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Vote Distribution</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Vote Distribution
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Shows which estimates your team picks most often.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Most common estimates</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -57,7 +74,17 @@ export function VoteDistribution({ data, isLoading }: VoteDistributionProps) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Vote Distribution</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Vote Distribution
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Shows which estimates your team picks most often.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Most common estimates</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -75,7 +102,17 @@ export function VoteDistribution({ data, isLoading }: VoteDistributionProps) {
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Vote Distribution</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Vote Distribution
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Shows which estimates your team picks most often.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>
           {topValue ? `Most common: ${topValue}` : "Most common estimates"}
         </CardDescription>
