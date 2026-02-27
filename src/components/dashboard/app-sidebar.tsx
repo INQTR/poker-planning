@@ -38,7 +38,7 @@ const navMain = [
   },
 ];
 
-const navSecondary = [
+const navSecondary: { title: string; url: string; icon: typeof Settings; external?: boolean }[] = [
   {
     title: "Settings",
     url: "/dashboard/settings",
@@ -46,8 +46,9 @@ const navSecondary = [
   },
   {
     title: "Help",
-    url: "/help",
+    url: "https://github.com/INQTR/poker-planning/issues",
     icon: HelpCircle,
+    external: true,
   },
   {
     title: "Back to Home",
@@ -76,7 +77,7 @@ export function AppSidebar() {
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">AgileKit</span>
-                <span className="text-xs text-muted-foreground">Analytics</span>
+                <span className="text-xs text-muted-foreground">Dashboard</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -111,8 +112,8 @@ export function AppSidebar() {
               {navSecondary.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
-                    render={<Link href={item.url} />}
-                    isActive={pathname === item.url}
+                    render={item.external ? <a href={item.url} target="_blank" rel="noopener noreferrer" /> : <Link href={item.url} />}
+                    isActive={!item.external && pathname === item.url}
                     tooltip={item.title}
                   >
                     <item.icon className="size-4" />

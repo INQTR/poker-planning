@@ -25,7 +25,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard, LogIn } from "lucide-react";
+import { Moon, Sun, LogOut, UserPen, Monitor, Eye, LayoutDashboard, LogIn, History } from "lucide-react";
 import Link from "next/link";
 import type { Id } from "@/convex/_generated/dataModel";
 import { toast } from "@/lib/toast";
@@ -129,6 +129,20 @@ export function UserMenu() {
 
           <DropdownMenuSeparator />
 
+          {/* Dashboard link */}
+          <DropdownMenuItem render={<Link href="/dashboard" />}>
+            <LayoutDashboard className="mr-2 size-4" />
+            Dashboard
+          </DropdownMenuItem>
+
+          {/* Sessions link */}
+          <DropdownMenuItem render={<Link href="/dashboard/sessions" />}>
+            <History className="mr-2 size-4" />
+            Sessions
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
           {/* Sign in link - only for anonymous users, shown first */}
           {isAnonymous && (
             <>
@@ -144,12 +158,6 @@ export function UserMenu() {
           <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
             <UserPen className="mr-2 size-4" />
             Edit name
-          </DropdownMenuItem>
-
-          {/* Dashboard link */}
-          <DropdownMenuItem render={<Link href="/dashboard" />}>
-            <LayoutDashboard className="mr-2 size-4" />
-            Analytics
           </DropdownMenuItem>
 
           {/* Spectator toggle - only show when in a room */}
