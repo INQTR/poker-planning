@@ -15,6 +15,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
@@ -70,37 +71,35 @@ export function PredictabilityGauge({
 }: PredictabilityGaugeProps) {
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gauge className="h-5 w-5" />
-            Predictability Score
-          </CardTitle>
+      <Card className="flex flex-col">
+        <CardHeader className="items-center pb-0">
+          <CardTitle className="text-base font-semibold">Predictability Score</CardTitle>
           <CardDescription>
             Estimation consistency across sessions
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[250px] animate-pulse rounded bg-muted" />
+        <CardContent className="flex-1 pb-0">
+          <div className="mx-auto aspect-square max-h-[250px] w-full animate-pulse rounded-full bg-muted mt-4" />
         </CardContent>
+        <CardFooter className="flex w-full gap-4 border-t pt-4 mt-auto">
+          <div className="h-16 flex-1 animate-pulse rounded-lg bg-muted" />
+          <div className="h-16 flex-1 animate-pulse rounded-lg bg-muted" />
+        </CardFooter>
       </Card>
     );
   }
 
   if (score === null) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gauge className="h-5 w-5" />
-            Predictability Score
-          </CardTitle>
+      <Card className="flex flex-col">
+        <CardHeader className="items-center pb-0">
+          <CardTitle className="text-base font-semibold">Predictability Score</CardTitle>
           <CardDescription>
             Estimation consistency across sessions
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex h-[250px] flex-col items-center justify-center gap-2 text-muted-foreground">
+        <CardContent className="flex-1 pb-0">
+          <div className="flex mx-auto aspect-square max-h-[250px] w-full flex-col items-center justify-center gap-2 text-muted-foreground">
             <Gauge className="h-10 w-10 opacity-50" />
             <p className="font-medium">Not enough data</p>
             <p className="text-sm">
@@ -119,20 +118,17 @@ export function PredictabilityGauge({
   const AgreementIcon = trendIcons[agreementTrend];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Gauge className="h-5 w-5" />
-          Predictability Score
-        </CardTitle>
+    <Card className="flex flex-col">
+      <CardHeader className="items-center pb-0">
+        <CardTitle>Predictability Score</CardTitle>
         <CardDescription>
           Estimation consistency across sessions
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1 pb-0">
         <div className="flex flex-col items-center gap-4">
           {/* Gauge */}
-          <ChartContainer config={chartConfig} className="h-[180px] w-[180px]">
+          <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px] w-full">
             <RadialBarChart
               innerRadius="75%"
               outerRadius="100%"
@@ -176,40 +172,38 @@ export function PredictabilityGauge({
 
           {/* Score label badge */}
           <span
-            className={`rounded-full px-3 py-1 text-xs font-medium ${getScoreBadgeClasses(score)}`}
+            className={`rounded-full px-3 py-1 text-xs font-medium -mt-10 ${getScoreBadgeClasses(score)}`}
           >
             {getScoreLabel(score)}
           </span>
-
-          {/* Sub-indicators */}
-          <div className="flex w-full gap-4">
-            <div className="flex flex-1 items-center gap-2 rounded-lg border p-3">
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              <div className="min-w-0 flex-1">
-                <p className="text-xs text-muted-foreground">Avg Velocity</p>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-semibold">
-                    {averageVelocityPerSession} pts
-                  </span>
-                  <VelocityIcon className="h-3 w-3 text-muted-foreground" />
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-1 items-center gap-2 rounded-lg border p-3">
-              <Handshake className="h-4 w-4 text-muted-foreground" />
-              <div className="min-w-0 flex-1">
-                <p className="text-xs text-muted-foreground">Avg Agreement</p>
-                <div className="flex items-center gap-1">
-                  <span className="text-sm font-semibold">
-                    {averageAgreement}%
-                  </span>
-                  <AgreementIcon className="h-3 w-3 text-muted-foreground" />
-                </div>
-              </div>
+        </div>
+      </CardContent>
+      <CardFooter className="flex w-full gap-4 border-t pt-4 mt-auto">
+        <div className="flex flex-1 items-center gap-2 rounded-lg border p-3 bg-muted/50">
+          <BarChart3 className="h-4 w-4 text-muted-foreground" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground">Avg Velocity</p>
+            <div className="flex items-center gap-1">
+              <span className="text-sm font-semibold">
+                {averageVelocityPerSession} pts
+              </span>
+              <VelocityIcon className="h-3 w-3 text-muted-foreground" />
             </div>
           </div>
         </div>
-      </CardContent>
+        <div className="flex flex-1 items-center gap-2 rounded-lg border p-3 bg-muted/50">
+          <Handshake className="h-4 w-4 text-muted-foreground" />
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-muted-foreground">Avg Agreement</p>
+            <div className="flex items-center gap-1">
+              <span className="text-sm font-semibold">
+                {averageAgreement}%
+              </span>
+              <AgreementIcon className="h-3 w-3 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+      </CardFooter>
     </Card>
   );
 }

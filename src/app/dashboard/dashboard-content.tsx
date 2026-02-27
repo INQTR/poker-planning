@@ -96,8 +96,8 @@ export function DashboardContent() {
     <>
       <DashboardHeader title="Overview" />
       <main className="flex-1 p-6">
-        {/* Stats Summary */}
-        <div className="mb-8">
+        {/* Stats Summary & Time to Consensus */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <StatsSummary
             totalSessions={summary?.totalSessions ?? 0}
             totalIssuesEstimated={summary?.totalIssuesEstimated ?? 0}
@@ -105,10 +105,6 @@ export function DashboardContent() {
             averageAgreement={summary?.averageAgreement ?? null}
             isLoading={summaryLoading}
           />
-        </div>
-
-        {/* Time to Consensus Card */}
-        <div className="mb-8">
           <TimeToConsensusCard
             averageMs={timeToConsensus?.averageMs ?? null}
             medianMs={timeToConsensus?.medianMs ?? null}

@@ -51,7 +51,7 @@ export function HomeContent({ versionInfo }: HomeContentProps) {
                   href="/blog/jira-integration"
                   className="inline-flex items-center gap-2 mb-8 rounded-full bg-white/60 dark:bg-zinc-800/60 backdrop-blur-md px-4 py-1.5 text-sm font-medium text-primary hover:bg-white/80 dark:hover:bg-zinc-800/80 transition-colors shadow-sm"
                 >
-                  <span className="inline-flex items-center rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-white leading-none">
+                  <span className="inline-flex items-center rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground leading-none">
                     {versionInfo ? `v${versionInfo.version}` : "New"}
                   </span>
                   <span>Jira Cloud integration is here</span>

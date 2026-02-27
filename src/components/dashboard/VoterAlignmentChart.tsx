@@ -56,17 +56,14 @@ export function VoterAlignmentChart({
 }: VoterAlignmentChartProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Crosshair className="h-5 w-5" />
-            Voter Alignment
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="h-[250px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
@@ -75,17 +72,14 @@ export function VoterAlignmentChart({
 
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Crosshair className="h-5 w-5" />
-            Voter Alignment
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="flex h-[250px] items-center justify-center text-muted-foreground">
             No individual vote data yet
           </div>
@@ -95,17 +89,14 @@ export function VoterAlignmentChart({
   }
 
   return (
-    <Card>
+    <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Crosshair className="h-5 w-5" />
-          Voter Alignment
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
         <CardDescription>
           X: avg bias (- under, + over) &middot; Y: variability (stddev)
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
           <ScatterChart
             accessibilityLayer

@@ -58,15 +58,12 @@ export function ConsensusOutliers({
 }: ConsensusOutliersProps) {
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Consensus Outliers
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
           <CardDescription>Issues that took longest to estimate</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="h-[200px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
@@ -75,15 +72,12 @@ export function ConsensusOutliers({
 
   if (data.length === 0) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Consensus Outliers
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
           <CardDescription>Issues that took longest to estimate</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="flex h-[200px] items-center justify-center text-muted-foreground">
             {averageMs !== null
               ? "No outliers detected — great consistency!"
@@ -108,18 +102,15 @@ export function ConsensusOutliers({
   }));
 
   return (
-    <Card>
+    <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5" />
-          Consensus Outliers
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
         <CardDescription>
           {data.length} issue{data.length !== 1 ? "s" : ""} took &gt;2x average
           time
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <ChartContainer config={chartConfig} className="h-[200px] w-full">
           <BarChart
             accessibilityLayer

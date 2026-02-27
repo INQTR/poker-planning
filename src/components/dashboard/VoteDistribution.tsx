@@ -41,15 +41,12 @@ export function VoteDistribution({ data, isLoading }: VoteDistributionProps) {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <PieChart className="h-5 w-5" />
-            Vote Distribution
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Vote Distribution</CardTitle>
           <CardDescription>Most common estimates</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="h-[200px] animate-pulse rounded bg-muted" />
         </CardContent>
       </Card>
@@ -58,15 +55,12 @@ export function VoteDistribution({ data, isLoading }: VoteDistributionProps) {
 
   if (!hasData) {
     return (
-      <Card>
+      <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <PieChart className="h-5 w-5" />
-            Vote Distribution
-          </CardTitle>
+          <CardTitle className="text-base font-semibold">Vote Distribution</CardTitle>
           <CardDescription>Most common estimates</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           <div className="flex h-[200px] items-center justify-center text-muted-foreground">
             No estimates yet
           </div>
@@ -79,17 +73,14 @@ export function VoteDistribution({ data, isLoading }: VoteDistributionProps) {
   const chartData = data.slice(0, 8);
 
   return (
-    <Card>
+    <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <PieChart className="h-5 w-5" />
-          Vote Distribution
-        </CardTitle>
+        <CardTitle className="text-base font-semibold">Vote Distribution</CardTitle>
         <CardDescription>
           {topValue ? `Most common: ${topValue}` : "Most common estimates"}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <ChartContainer config={chartConfig} className="h-[200px] w-full">
           <BarChart
             accessibilityLayer

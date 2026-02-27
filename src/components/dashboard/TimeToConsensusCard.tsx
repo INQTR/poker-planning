@@ -1,7 +1,7 @@
 "use client";
 
 import { Clock, TrendingDown, TrendingUp, Minus } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface TimeToConsensusCardProps {
   averageMs: number | null;
@@ -26,15 +26,13 @@ function formatDuration(ms: number): string {
 function CardSkeleton() {
   return (
     <Card>
-      <CardContent className="pt-4">
-        <div className="flex items-start gap-3">
-          <div className="h-10 w-10 animate-pulse rounded-lg bg-muted" />
-          <div className="flex-1 space-y-2">
-            <div className="h-4 w-32 animate-pulse rounded bg-muted" />
-            <div className="h-7 w-20 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-40 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-4 animate-pulse rounded bg-muted" />
+      </CardHeader>
+      <CardContent>
+        <div className="h-8 w-24 animate-pulse rounded bg-muted" />
+        <div className="h-3 w-48 animate-pulse rounded bg-muted mt-2" />
       </CardContent>
     </Card>
   );
@@ -53,17 +51,13 @@ export function TimeToConsensusCard({
   if (averageMs === null) {
     return (
       <Card>
-        <CardContent className="pt-4">
-          <div className="flex items-start gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 text-primary">
-              <Clock className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Avg Time to Consensus</p>
-              <p className="text-2xl font-bold">&mdash;</p>
-              <p className="text-xs text-muted-foreground">No timing data yet</p>
-            </div>
-          </div>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">Avg Time to Consensus</CardTitle>
+          <Clock className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">&mdash;</div>
+          <p className="text-xs text-muted-foreground mt-1">No timing data yet</p>
         </CardContent>
       </Card>
     );
@@ -98,26 +92,22 @@ export function TimeToConsensusCard({
 
   return (
     <Card>
-      <CardContent className="pt-4">
-        <div className="flex items-start gap-3">
-          <div className="rounded-lg bg-primary/10 p-2 text-primary">
-            <Clock className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm text-muted-foreground">Avg Time to Consensus</p>
-            <p className="text-2xl font-bold">{formatDuration(averageMs)}</p>
-            <div className="flex items-center gap-2 text-xs">
-              <span className={`flex items-center gap-1 ${trendColor}`}>
-                <TrendIcon className="h-3 w-3" />
-                {trendText}
-              </span>
-              {medianMs !== null && (
-                <span className="text-muted-foreground">
-                  Median: {formatDuration(medianMs)}
-                </span>
-              )}
-            </div>
-          </div>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">Avg Time to Consensus</CardTitle>
+        <Clock className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{formatDuration(averageMs)}</div>
+        <div className="flex items-center gap-2 text-xs mt-1">
+          <span className={`flex items-center gap-1 ${trendColor}`}>
+            <TrendIcon className="h-3 w-3" />
+            {trendText}
+          </span>
+          {medianMs !== null && (
+            <span className="text-muted-foreground">
+              — Median: {formatDuration(medianMs)}
+            </span>
+          )}
         </div>
       </CardContent>
     </Card>
