@@ -8,11 +8,11 @@ import { Navbar } from "@/components/navbar";
 export const metadata: Metadata = {
   title: "Refund Policy",
   description:
-    "Review AgileKit's current refund policy and the prelaunch status of paid plans.",
+    "Review AgileKit's current refund policy, including the 14 calendar day refund window for future self-serve paid plans.",
   openGraph: {
     title: "Refund Policy | AgileKit",
     description:
-      "Review AgileKit's current refund policy and the prelaunch status of paid plans.",
+      "Review AgileKit's current refund policy, including the 14 calendar day refund window for future self-serve paid plans.",
     url: "https://agilekit.app/refund-policy",
   },
   alternates: {
@@ -35,11 +35,15 @@ const sections = [
   },
   {
     id: "future-purchases",
-    title: "2. Future Paid Plans",
+    title: "2. Future Paid Plans and Refund Window",
     content: (
       <p>
-        Before any paid plan goes live, we will publish the applicable pricing,
-        billing terms, renewal terms, taxes, and refund eligibility on our{" "}
+        If and when self-serve paid plans go live, we will offer a refund if
+        you request it within 14 calendar days of the original purchase date
+        for the first charge of a new self-serve plan, unless a different
+        written agreement applies or mandatory law requires otherwise. We will
+        publish the applicable pricing, billing terms, renewal terms, taxes,
+        and this 14 day refund window on our{" "}
         <Link
           href="/pricing"
           className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
@@ -66,9 +70,9 @@ const sections = [
     content: (
       <p>
         If we offer a pilot, enterprise engagement, or another paid arrangement
-        under a separate written agreement before public launch, the refund and
-        cancellation terms in that written agreement or order form will control
-        for that purchase.
+        under a separate written agreement before public launch, the refund,
+        cancellation, and payment terms in that written agreement or order form
+        will control for that purchase.
       </p>
     ),
   },
@@ -84,8 +88,8 @@ const sections = [
         >
           ivanchenko.b@gmail.com
         </a>
-        . We will update this page before enabling live paid checkout on the
-        site.
+        . Once checkout is enabled, refund requests for self-serve purchases
+        must be sent within 14 calendar days of the original purchase date.
       </p>
     ),
   },
@@ -123,8 +127,8 @@ export default function RefundPolicyPage() {
               </h1>
 
               <p className="mx-auto mt-8 max-w-2xl text-xl font-light leading-relaxed text-gray-600 dark:text-gray-400 sm:text-2xl">
-                Clear billing and refund expectations for the current prelaunch
-                state of AgileKit.
+                Clear billing and refund expectations, including a 14 calendar
+                day refund window for future self-serve paid plans.
               </p>
             </div>
           </div>
@@ -158,8 +162,10 @@ export default function RefundPolicyPage() {
                   Launch pricing updates
                 </h3>
                 <p className="mb-6 text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
-                  Pro checkout is not live yet. Exact pricing and live billing
-                  rules will be published here before checkout is enabled.
+                  Pro checkout is not live yet. When it launches, self-serve
+                  purchases will include a 14 calendar day refund window for the
+                  initial charge unless a separate written agreement says
+                  otherwise.
                 </p>
                 <Link
                   href="/pricing"

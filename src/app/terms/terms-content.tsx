@@ -15,13 +15,13 @@ const sections = [
     id: "scope",
     title: "1. Scope and Acceptance",
     content:
-      "These Terms of Service govern your access to and use of the hosted AgileKit website, application, and related services. By accessing or using the service, you agree to these terms. If you use the service on behalf of an organization, you represent that you have authority to bind that organization to these terms.",
+      "These Terms of Service govern your access to and use of the hosted AgileKit website, application, and related services, and they form a legal agreement between you and AgileKit. By accessing or using the service, you agree to these terms. If you use the service on behalf of an organization, you represent that you have authority to bind that organization to these terms.",
   },
   {
     id: "operator",
     title: "2. Service Operator and Contact",
     content:
-      "AgileKit is operated by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine ('Operator'). Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to the Operator.",
+      "AgileKit is the business name for this service and the contracting party referenced in these terms. The service is operated and supported by Bohdan Ivanchenko, a registered Individual Entrepreneur (FOP - Sole Proprietorship) in Ukraine. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to AgileKit.",
   },
   {
     id: "eligibility",
@@ -69,7 +69,7 @@ const sections = [
     id: "billing",
     title: "10. Paid Features and Billing",
     content:
-      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and any refund rights at checkout or in a separate order form. Payments may be processed by Paddle or another disclosed merchant of record, reseller, or payment provider. The provider shown at checkout will control payment processing terms for that transaction.",
+      "If we introduce paid plans, we will disclose pricing, billing frequency, taxes, renewal terms, and refund terms at checkout or in a separate order form. Unless a separate written agreement states otherwise, self-serve purchases will include a 14 calendar day refund window for the initial charge of a new paid plan. Payments may be processed by Paddle or another disclosed merchant of record, reseller, or payment provider. The provider shown at checkout will control payment processing terms for that transaction.",
   },
   {
     id: "disclaimers",
