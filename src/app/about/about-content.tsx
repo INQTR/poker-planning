@@ -10,9 +10,8 @@ import {
   Code2, 
   Database, 
   Layers, 
-  Palette, 
-  Users, 
-  GitMerge 
+  Palette,
+  GitMerge
 } from "lucide-react";
 
 import { Footer } from "@/components/footer";
