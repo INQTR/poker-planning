@@ -21,7 +21,7 @@ const sections = [
     id: "operator",
     title: "2. Service Operator and Contact",
     content:
-      "AgileKit is the business name for this service and the contracting party referenced in these terms. The service is operated by Bohdan Ivanchenko (the 'Operator'), as further described in Section 1. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to the Operator doing business as AgileKit.",
+      "AgileKit is the business name for this service and the contracting party referenced in these terms. The service is operated by Bohdan Ivanchenko (the 'Operator'), as further described in Section 1. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: support@agilekit.app. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to the Operator doing business as AgileKit.",
   },
   {
     id: "eligibility",
@@ -111,7 +111,7 @@ const sections = [
     id: "contact",
     title: "17. Contact Information",
     content:
-      "Questions about these terms can be sent to ivanchenko.b@gmail.com. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
+      "Questions about these terms can be sent to support@agilekit.app. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
   },
 ];
 
@@ -177,7 +177,7 @@ export function TermsContent() {
                     We believe in transparency and fairness. If you have any questions about these terms, please reach out.
                   </p>
                   <a
-                    href="mailto:ivanchenko.b@gmail.com"
+                    href="mailto:support@agilekit.app"
                     className="inline-flex items-center text-sm font-bold tracking-wide text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
                     Email support <ArrowRight className="ml-2 h-4 w-4" />

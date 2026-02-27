@@ -85,10 +85,10 @@ const sections = [
         within 30 calendar days of the original purchase date. For general
         billing questions, contact Bohdan Ivanchenko at{" "}
         <a
-          href="mailto:ivanchenko.b@gmail.com"
+          href="mailto:support@agilekit.app"
           className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
         >
-          ivanchenko.b@gmail.com
+          support@agilekit.app
         </a>
         .
       </p>
@@ -189,7 +189,7 @@ export default function RefundPolicyPage() {
                   commercial terms directly before sale.
                 </p>
                 <a
-                  href="mailto:ivanchenko.b@gmail.com"
+                  href="mailto:support@agilekit.app"
                   className="inline-flex items-center text-sm font-bold tracking-wide text-gray-900 transition-colors hover:text-gray-600 dark:text-white dark:hover:text-gray-300"
                 >
                   Email billing contact <ArrowRight className="ml-2 h-4 w-4" />

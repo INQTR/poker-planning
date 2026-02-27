@@ -148,7 +148,7 @@ export function PricingContent() {
                 <div className="flex flex-wrap justify-center gap-4 text-sm font-medium text-gray-500 dark:text-gray-400">
                   <Link href="/refund-policy" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Refund policy</Link>
                   <Link href="/terms" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Terms</Link>
-                  <a href="mailto:ivanchenko.b@gmail.com" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Contact billing</a>
+                  <a href="mailto:support@agilekit.app" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Contact billing</a>
                 </div>
               </div>
             </div>
