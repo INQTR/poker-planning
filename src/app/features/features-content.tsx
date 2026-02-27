@@ -7,8 +7,6 @@ import {
   Timer,
   BarChart3,
   Layout,
-  PlayCircle,
-  UserPlus,
   FileText,
   Moon,
   Smartphone,
@@ -29,15 +27,15 @@ import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { GithubIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { 
+import {
   RealtimeVotingAnimation,
   AnalyticsAnimation,
-  TimerAnimation,
+  JiraIntegrationAnimation,
   CanvasAnimation,
   ScalesAnimation,
-  PlayerManagementAnimation,
+  TimeToConsensusAnimation,
   IssuesAnimation,
-  AutoCompleteAnimation
+  VoterAlignmentAnimation,
 } from "./feature-animations";
 
 // Features that are available now
@@ -82,26 +80,28 @@ const coreFeatures = [
     visual: IssuesAnimation,
   },
   {
-    name: "Auto-Complete Voting",
-    description: "3-second countdown auto-reveal when all participants vote",
-    icon: PlayCircle,
-    gradient: "from-rose-500 to-pink-600",
-    visual: AutoCompleteAnimation,
-  },
-  {
-    name: "Player Management",
-    description: "Join and leave rooms freely, with spectator mode support",
-    icon: UserPlus,
-    gradient: "from-indigo-500 to-violet-600",
-    visual: PlayerManagementAnimation,
-  },
-  {
-    name: "Synchronized Timer",
+    name: "Jira Cloud Integration",
     description:
-      "Server-synced countdown with start, pause, and reset controls",
+      "Two-way sync — import sprints, push estimates back automatically",
+    icon: Link2,
+    gradient: "from-blue-500 to-indigo-600",
+    visual: JiraIntegrationAnimation,
+  },
+  {
+    name: "Time-to-Consensus Tracking",
+    description:
+      "Measure how long your team takes to reach agreement on each story",
     icon: Timer,
+    gradient: "from-rose-500 to-pink-600",
+    visual: TimeToConsensusAnimation,
+  },
+  {
+    name: "Voter Alignment Matrix",
+    description:
+      "Visualize voting patterns and spot persistent disagreements",
+    icon: Target,
     gradient: "from-fuchsia-500 to-purple-600",
-    visual: TimerAnimation,
+    visual: VoterAlignmentAnimation,
   },
 ];
 
@@ -116,24 +116,6 @@ const quickFeatures = [
 
 const recentlyShipped = [
   {
-    name: "Jira Cloud Integration",
-    description:
-      "Two-way sync — import sprints, push estimates back automatically",
-    icon: Link2,
-  },
-  {
-    name: "Time-to-Consensus Tracking",
-    description:
-      "Measure how long your team takes to reach agreement on each story",
-    icon: Timer,
-  },
-  {
-    name: "Voter Alignment Matrix",
-    description:
-      "Visualize voting patterns and spot persistent disagreements",
-    icon: Target,
-  },
-  {
     name: "Sprint Predictability Score",
     description:
       "Track estimation accuracy over time with predictability health metrics",
@@ -141,7 +123,8 @@ const recentlyShipped = [
   },
   {
     name: "Enhanced Data Exports",
-    description: "Export full session data as CSV or JSON with analytics included",
+    description:
+      "Export full session data as CSV or JSON with analytics included",
     icon: FileDown,
   },
 ];
