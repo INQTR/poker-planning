@@ -16,6 +16,10 @@ import {
   ArrowRightLeft,
   AlertTriangle,
   Info,
+  ShieldAlert,
+  Zap,
+  Users,
+  Settings,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useMutation } from "convex/react";
@@ -24,7 +28,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -41,7 +44,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useClickOutside } from "@/hooks/use-click-outside";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { SidePanel } from "@/components/ui/side-panel";
 import { useToast } from "@/hooks/use-toast";
 import {
   Select,
@@ -56,19 +60,18 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import type { RoomWithRelatedData } from "@/convex/model/rooms";
-import type { UserWithPresence } from "@/hooks/useRoomPresence";
 import type { PermissionLevel, PermissionCategory, RoomPermissions } from "@/convex/permissions";
 import { getEffectivePermissions } from "@/convex/permissions";
 import { UserAvatar } from "@/components/user-menu/user-avatar";
 import { formatLastSeen } from "./user-presence-avatars";
 
+import { useRoomPresence } from "@/hooks/useRoomPresence";
+
 interface RoomSettingsPanelProps {
   roomData: RoomWithRelatedData;
-  usersWithPresence: UserWithPresence[];
   currentUserId?: Id<"users">;
   isOpen: boolean;
   onClose: () => void;
-  triggerRef?: React.RefObject<HTMLButtonElement | null>;
   isDemoMode?: boolean;
 }
 
@@ -103,16 +106,19 @@ const LEVEL_LABELS: Record<PermissionLevel, string> = {
 
 export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   roomData,
-  usersWithPresence,
   currentUserId,
   isOpen,
   onClose,
-  triggerRef,
   isDemoMode = false,
 }) => {
-  const panelRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+
+  const usersWithPresence = useRoomPresence(
+    roomData.room._id,
+    currentUserId ?? "",
+    roomData.users
+  );
 
   const [roomName, setRoomName] = useState(roomData.room.name);
   const [isSaving, setIsSaving] = useState(false);
@@ -135,28 +141,6 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
   useEffect(() => {
     setRoomName(roomData.room.name);
   }, [roomData.room.name]);
-
-  // Handle click outside - only when dialog/select popup is not open
-  useClickOutside(
-    panelRef,
-    () => {
-      if (!pendingDeleteUser && !pendingTransferUser && openSelectCountRef.current === 0) {
-        onClose();
-      }
-    },
-    triggerRef ? [triggerRef] : undefined
-  );
-
-  // Handle escape key - only when dialog is not open
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !pendingDeleteUser && !pendingTransferUser) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [onClose, pendingDeleteUser, pendingTransferUser]);
 
   // Reset pending state when panel closes
   useEffect(() => {
@@ -281,492 +265,481 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
     }
   };
 
-  // Filter out current user and sort: online first, then by join time
-  const otherUsers = usersWithPresence
-    .filter((u) => u._id !== currentUserId)
-    .sort((a, b) => {
-      // Online users first
-      if (a.isOnline !== b.isOnline) {
-        return a.isOnline ? -1 : 1;
-      }
-      // Then by join time (earliest first)
-      return a.joinedAt - b.joinedAt;
-    });
+  // Filter users: sort online first, then by join time
+  const sortedUsers = [...usersWithPresence].sort((a, b) => {
+    // Current user always first
+    if (a._id === currentUserId) return -1;
+    if (b._id === currentUserId) return 1;
+    
+    // Online users next
+    if (a.isOnline !== b.isOnline) {
+      return a.isOnline ? -1 : 1;
+    }
+    // Then by join time (earliest first)
+    return a.joinedAt - b.joinedAt;
+  });
 
   const currentPermissions = getEffectivePermissions(roomData.room);
 
-  if (!isOpen) {
-    return (
-      // Render dialogs even when panel is closed so they can animate out properly
-      <>
-        <AlertDialog
-          open={!!pendingDeleteUser}
-          onOpenChange={(open) => !open && setPendingDeleteUser(null)}
-        >
-          <AlertDialogContent size="sm">
-            <AlertDialogHeader>
-              <AlertDialogTitle>Remove {pendingDeleteUser?.name}?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will remove the user from the room. They can rejoin using the room link.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction variant="destructive" onClick={handleConfirmRemoveUser}>
-                Remove
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </>
-    );
-  }
-
   return (
-    <div
-      ref={panelRef}
-      className={cn(
-        "absolute top-26 right-4 z-50 w-96",
-        "max-h-[calc(100vh-7rem)]",
-        "flex flex-col",
-        "bg-white/95 dark:bg-surface-1/95 backdrop-blur-sm",
-        "rounded-xl shadow-2xl",
-        "border border-gray-200/50 dark:border-border",
-        "animate-in fade-in-0 slide-in-from-top-2 duration-200"
-      )}
-      role="dialog"
-      aria-label="Room settings"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/50 dark:border-border shrink-0">
-        <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-          Room Settings
-        </h2>
-        <Tooltip>
-          <TooltipTrigger
-            render={
+    <>
+    <SidePanel isOpen={isOpen} onClose={onClose}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 h-14 border-b border-gray-200/50 dark:border-border shrink-0 bg-white dark:bg-surface-1">
+          <div className="flex items-center gap-2.5">
+            <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+              Room Settings
+            </h2>
+          </div>
+          <Tooltip>
+            <TooltipTrigger render={
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon-sm"
                 onClick={onClose}
-                className="h-7 w-7 p-0 hover:bg-gray-100 dark:hover:bg-surface-3 rounded-md"
+                className="hover:bg-gray-100 dark:hover:bg-surface-3"
                 aria-label="Close settings"
               >
                 <X className="h-4 w-4" />
               </Button>
-            }
-          />
-          <TooltipContent>
-            <p>Close</p>
-          </TooltipContent>
-        </Tooltip>
-      </div>
+            } />
+            <TooltipContent>
+              <p>Close</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
 
-      {/* Content */}
-      <div className="p-4 flex flex-col gap-4 min-h-0 flex-1 overflow-hidden">
-        {/* Owner-absent banner */}
-        {perms.isOwnerAbsent && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 dark:bg-status-warning-bg border border-amber-200 dark:border-amber-800 shrink-0">
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-status-warning-fg shrink-0" />
-            <span className="text-xs text-amber-700 dark:text-status-warning-fg">
-              The room owner has left. Owner-level actions are disabled.
-            </span>
-          </div>
-        )}
+        {/* Content */}
+        <div className="flex flex-col min-h-0 flex-1 overflow-y-auto bg-gray-50/30 dark:bg-surface-1">
+          {/* Top Fixed Section */}
+          <div className="p-6 space-y-6 shrink-0 border-b border-gray-200/50 dark:border-border bg-white dark:bg-surface-1">
+            {/* Owner-absent banner */}
+            {perms.isOwnerAbsent && (
+              <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-amber-50 dark:bg-status-warning-bg border border-amber-200 dark:border-amber-800 shrink-0">
+                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-status-warning-fg shrink-0" />
+                <span className="text-sm text-amber-700 dark:text-status-warning-fg">
+                  The room owner has left. Owner-level actions are disabled.
+                </span>
+              </div>
+            )}
 
-        {/* Room Name Section */}
-        <div className="space-y-2 shrink-0">
-          <Label
-            htmlFor="room-name"
-            className="text-xs font-medium text-gray-600 dark:text-gray-400"
-          >
-            Room Name
-          </Label>
-          <div className="flex gap-2">
-            <Input
-              id="room-name"
-              value={roomName}
-              onChange={(e) => !isDemoMode && perms.canChangeRoomSettings && setRoomName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !isDemoMode && perms.canChangeRoomSettings) handleSaveRoomName();
-              }}
-              placeholder="Enter room name"
-              className="h-8 text-sm"
-              readOnly={isDemoMode || !perms.canChangeRoomSettings}
-              title={!perms.canChangeRoomSettings ? getPermissionDeniedTooltip(currentPermissions.roomSettings) : undefined}
-            />
-            {!isDemoMode && (
-              <Button
-                size="sm"
-                onClick={handleSaveRoomName}
-                disabled={
-                  !perms.canChangeRoomSettings ||
-                  isSaving ||
-                  !roomName.trim() ||
-                  roomName === roomData.room.name
-                }
-                className="h-8 px-3"
-                title={!perms.canChangeRoomSettings ? getPermissionDeniedTooltip(currentPermissions.roomSettings) : undefined}
+            {/* Room Name Section */}
+            <div className="space-y-2.5">
+              <Label
+                htmlFor="room-name"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                {isSaving ? "..." : "Save"}
-              </Button>
-            )}
-          </div>
-        </div>
-
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
-
-        {/* Auto-Reveal Section */}
-        <div className="flex items-center justify-between shrink-0">
-          <div className="space-y-0.5">
-            <Label
-              htmlFor="auto-reveal"
-              className="text-xs font-medium text-gray-600 dark:text-gray-400"
-            >
-              Auto-reveal cards
-            </Label>
-            <p className="text-xs text-gray-500 dark:text-gray-500">
-              Reveal when all vote
-            </p>
-          </div>
-          <Switch
-            id="auto-reveal"
-            checked={roomData.room.autoCompleteVoting}
-            onCheckedChange={isDemoMode || !perms.canChangeRoomSettings ? undefined : handleToggleAutoReveal}
-            disabled={isDemoMode || !perms.canChangeRoomSettings}
-          />
-        </div>
-
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
-
-        {/* Permissions Section */}
-        <div className="space-y-3 shrink-0">
-          <div className="flex items-center gap-1.5">
-            <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-              Permissions
-            </Label>
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <span className="inline-flex cursor-help">
-                    <Info className="h-3 w-3 text-gray-400 dark:text-gray-500" />
-                  </span>
-                }
-              />
-              <TooltipContent side="top" className="max-w-56">
-                <p>Control who can perform actions in this room. Defaults to everyone. {perms.canChangePermissionsFlag ? "Only you (the owner) can change these." : "Only the room owner can change these."}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <div className="space-y-1">
-            {(Object.keys(PERMISSION_CONFIG) as PermissionCategory[]).map((category) => {
-              const config = PERMISSION_CONFIG[category];
-              return (
-                <div
-                  key={category}
-                  className="flex items-center justify-between gap-3 py-1.5 px-2 -mx-2 rounded-md hover:bg-gray-50 dark:hover:bg-surface-2/50 transition-colors"
-                >
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <span className="inline-flex cursor-help text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                            <Info className="h-3 w-3" />
-                          </span>
-                        }
-                      />
-                      <TooltipContent side="left" className="max-w-52">
-                        <p>{config.tooltip}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <div className="min-w-0">
-                      <span className="text-xs text-gray-700 dark:text-gray-300">
-                        {config.label}
-                      </span>
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 truncate">
-                        {config.description}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="shrink-0">
-                    {perms.canChangePermissionsFlag ? (
-                      <Select
-                        value={currentPermissions[category]}
-                        onValueChange={(value) => handlePermissionChange(category, value as PermissionLevel)}
-                        onOpenChange={(open) => { openSelectCountRef.current += open ? 1 : -1; }}
-                      >
-                        <SelectTrigger size="sm" className="text-xs w-auto">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent align="end">
-                          <SelectItem value="everyone">Everyone</SelectItem>
-                          <SelectItem value="facilitators">Facilitators</SelectItem>
-                          <SelectItem value="owner">Owner only</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <span className="text-xs text-gray-500 dark:text-gray-500 px-2 py-1 rounded-md bg-gray-100 dark:bg-surface-2">
-                        {LEVEL_LABELS[currentPermissions[category]]}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
-
-        {/* Jira Integration Section */}
-        <div className="shrink-0">
-          <IntegrationSettingsSection roomId={roomData.room._id} />
-        </div>
-
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
-
-        {/* Theme Section */}
-        <div className="space-y-2 shrink-0">
-          <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-            Theme
-          </Label>
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setTheme("light")}
-              className={cn(
-                "flex-1 h-8 gap-1.5 text-xs",
-                theme === "light" && "bg-gray-100 dark:bg-surface-3"
-              )}
-            >
-              <Sun className="h-3.5 w-3.5" />
-              Light
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setTheme("dark")}
-              className={cn(
-                "flex-1 h-8 gap-1.5 text-xs",
-                theme === "dark" && "bg-gray-100 dark:bg-surface-3"
-              )}
-            >
-              <Moon className="h-3.5 w-3.5" />
-              Dark
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setTheme("system")}
-              className={cn(
-                "flex-1 h-8 gap-1.5 text-xs",
-                theme === "system" && "bg-gray-100 dark:bg-surface-3"
-              )}
-            >
-              <Monitor className="h-3.5 w-3.5" />
-              System
-            </Button>
-          </div>
-        </div>
-
-        <Separator className="bg-gray-200/50 dark:bg-surface-3/50 shrink-0" />
-
-        {/* Users Section */}
-        <div className="flex flex-col min-h-0 flex-1">
-          <div className="flex items-center justify-between shrink-0 mb-2">
-            <Label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-              Participants
-            </Label>
-            <span className="text-xs text-gray-500 dark:text-gray-500">
-              {usersWithPresence.length}{" "}
-              {usersWithPresence.length === 1 ? "user" : "users"}
-            </span>
-          </div>
-          <div className="space-y-1 min-h-0 flex-1 overflow-y-auto">
-            {otherUsers.length === 0 ? (
-              <p className="text-xs text-gray-500 dark:text-gray-500 py-2 text-center">
-                No other participants
-              </p>
-            ) : (
-              otherUsers.map((u) => {
-                const userRole = u.role ?? "participant";
-                const canRemoveThis = perms.canRemoveTarget(userRole);
-                const canPromoteThis = perms.canPromoteTarget(userRole);
-                const canDemoteThis = perms.canDemoteFacilitatorFlag && userRole === "facilitator";
-                const canTransfer = perms.canTransferOwnershipFlag;
-
-                return (
-                  <div
-                    key={u._id}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-gray-100/50 dark:hover:bg-surface-3/50"
+                Room Name
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="room-name"
+                  value={roomName}
+                  onChange={(e) => !isDemoMode && perms.canChangeRoomSettings && setRoomName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !isDemoMode && perms.canChangeRoomSettings) handleSaveRoomName();
+                  }}
+                  placeholder="Enter room name"
+                  className="h-10 text-sm bg-gray-50 dark:bg-surface-2"
+                  readOnly={isDemoMode || !perms.canChangeRoomSettings}
+                  title={!perms.canChangeRoomSettings ? getPermissionDeniedTooltip(currentPermissions.roomSettings) : undefined}
+                />
+                {!isDemoMode && (
+                  <Button
+                    size="default"
+                    onClick={handleSaveRoomName}
+                    disabled={
+                      !perms.canChangeRoomSettings ||
+                      isSaving ||
+                      !roomName.trim() ||
+                      roomName === roomData.room.name
+                    }
+                    className="h-10 px-4 whitespace-nowrap"
+                    title={!perms.canChangeRoomSettings ? getPermissionDeniedTooltip(currentPermissions.roomSettings) : undefined}
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="relative shrink-0">
-                        <UserAvatar name={u.name} avatarUrl={u.avatarUrl} size="sm" className="w-7 h-7" />
-                        <div
-                          className={cn(
-                            "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-surface-1",
-                            u.isOnline ? "bg-green-500" : "bg-gray-400"
-                          )}
-                        />
+                    {isSaving ? "Saving..." : "Save"}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Auto-Reveal Section */}
+            <div className="flex items-center justify-between pt-2">
+              <div className="space-y-1">
+                <Label
+                  htmlFor="auto-reveal"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Auto-reveal cards
+                </Label>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Automatically reveal votes when everyone has voted
+                </p>
+              </div>
+              <Switch
+                id="auto-reveal"
+                checked={roomData.room.autoCompleteVoting}
+                onCheckedChange={isDemoMode || !perms.canChangeRoomSettings ? undefined : handleToggleAutoReveal}
+                disabled={isDemoMode || !perms.canChangeRoomSettings}
+                className="data-[state=checked]:bg-primary"
+              />
+            </div>
+
+            {/* Appearance Section (Moved out of accordion) */}
+            <div className="pt-5 mt-4 border-t border-gray-100 dark:border-border/50">
+              <div className="flex flex-col gap-3">
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Theme
+                  </Label>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Customize the look of the room
+                  </p>
+                </div>
+              <div className="flex gap-1.5 p-1 bg-gray-100/80 dark:bg-surface-2 rounded-lg border border-gray-200/50 dark:border-border/50">
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setTheme("light")}
+                      className={cn(
+                        "flex-1 h-8 px-3 gap-2 rounded-md transition-all text-xs font-medium",
+                        theme === "light" 
+                          ? "bg-white dark:bg-surface-3 shadow-sm text-gray-900 border border-gray-200/50 dark:border-transparent" 
+                          : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      )}
+                    >
+                      <Sun className="h-3.5 w-3.5" />
+                      Light
+                    </Button>
+                  } />
+                  <TooltipContent><p>Light theme</p></TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setTheme("dark")}
+                      className={cn(
+                        "flex-1 h-8 px-3 gap-2 rounded-md transition-all text-xs font-medium",
+                        theme === "dark" 
+                          ? "bg-white dark:bg-surface-3 shadow-sm text-gray-900 dark:text-white border border-gray-200/50 dark:border-transparent" 
+                          : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      )}
+                    >
+                      <Moon className="h-3.5 w-3.5" />
+                      Dark
+                    </Button>
+                  } />
+                  <TooltipContent><p>Dark theme</p></TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setTheme("system")}
+                      className={cn(
+                        "flex-1 h-8 px-3 gap-2 rounded-md transition-all text-xs font-medium",
+                        theme === "system" 
+                          ? "bg-white dark:bg-surface-3 shadow-sm text-gray-900 dark:text-white border border-gray-200/50 dark:border-transparent" 
+                          : "text-gray-500 hover:text-gray-900 dark:hover:text-gray-300"
+                      )}
+                    >
+                      <Monitor className="h-3.5 w-3.5" />
+                      System
+                    </Button>
+                  } />
+                  <TooltipContent><p>System theme</p></TooltipContent>
+                </Tooltip>
+              </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Scrollable Bottom Section */}
+          <div className="p-6 space-y-8 flex-1">
+            {/* Advanced Settings */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Configuration</h3>
+              <Accordion className="space-y-3">
+                <AccordionItem value="permissions" className="border border-gray-200/50 dark:border-border rounded-lg px-4 bg-white dark:bg-surface-2/30 shadow-sm">
+                  <AccordionTrigger className="text-sm font-medium py-3.5 hover:no-underline text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-3">
+                      <ShieldAlert className="h-4 w-4 text-gray-400" />
+                      Permissions
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 pt-1">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-1.5 p-3 rounded-lg bg-gray-50 dark:bg-surface-3 border border-gray-100 dark:border-border/50">
+                        <Info className="h-4 w-4 text-blue-500 shrink-0" />
+                        <span className="text-xs text-gray-600 dark:text-gray-300">
+                          {perms.canChangePermissionsFlag ? "As the owner, you can control who can perform actions in this room." : "Only the room owner can change these permissions."}
+                        </span>
                       </div>
-                      <div className="flex flex-col min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
-                            {u.name}
-                          </span>
-                          {userRole === "owner" && (
-                            <span className="flex items-center gap-0.5">
-                              <Crown className="h-3 w-3 text-amber-500" />
-                              <Badge variant="secondary" className="h-4 text-[10px] px-1.5">
-                                Owner
-                              </Badge>
-                            </span>
-                          )}
-                          {userRole === "facilitator" && (
-                            <span className="flex items-center gap-0.5">
-                              <Star className="h-3 w-3 text-blue-500" />
-                              <Badge variant="secondary" className="h-4 text-[10px] px-1.5">
-                                Facilitator
-                              </Badge>
-                            </span>
-                          )}
-                          {u.isSpectator && (
-                            <Badge variant="secondary" className="h-4 text-[10px] px-1.5">
-                              Spectator
-                            </Badge>
-                          )}
-                        </div>
-                        {!u.isOnline && u.lastSeen && (
-                          <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                            {formatLastSeen(u.lastSeen)}
-                          </span>
-                        )}
+                      <div className="space-y-2">
+                        {(Object.keys(PERMISSION_CONFIG) as PermissionCategory[]).map((category) => {
+                          const config = PERMISSION_CONFIG[category];
+                          return (
+                            <div
+                              key={category}
+                              className="flex items-center justify-between gap-4 py-2.5 px-3 rounded-lg hover:bg-gray-50 dark:hover:bg-surface-3/50 transition-colors border border-transparent hover:border-gray-100 dark:hover:border-border/50"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className="min-w-0">
+                                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                    {config.label}
+                                  </span>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                    {config.description}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="shrink-0">
+                                {perms.canChangePermissionsFlag ? (
+                                  <Select
+                                    value={currentPermissions[category]}
+                                    onValueChange={(value) => handlePermissionChange(category, value as PermissionLevel)}
+                                    onOpenChange={(open) => { openSelectCountRef.current += open ? 1 : -1; }}
+                                  >
+                                    <SelectTrigger size="sm" className="h-8 text-xs w-[130px] bg-white dark:bg-surface-2">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent align="end">
+                                      <SelectItem value="everyone">Everyone</SelectItem>
+                                      <SelectItem value="facilitators">Facilitators</SelectItem>
+                                      <SelectItem value="owner">Owner only</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                ) : (
+                                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-md bg-gray-100 dark:bg-surface-3">
+                                    {LEVEL_LABELS[currentPermissions[category]]}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
-                    {!isDemoMode && (
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        {/* Promote button (for participants) */}
-                        {canPromoteThis && (
-                          <Tooltip>
-                            <TooltipTrigger
-                              render={
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handlePromote(u._id, u.name)}
-                                  className="h-7 w-7 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400"
-                                  aria-label={`Promote ${u.name} to facilitator`}
-                                >
-                                  <ChevronUp className="h-4 w-4" />
-                                </Button>
-                              }
-                            />
-                            <TooltipContent>
-                              <p>Promote to facilitator</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="integrations" className="border border-gray-200/50 dark:border-border rounded-lg px-4 bg-white dark:bg-surface-2/30 shadow-sm">
+                  <AccordionTrigger className="text-sm font-medium py-3.5 hover:no-underline text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-3">
+                      <Zap className="h-4 w-4 text-gray-400" />
+                      Integrations
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-4 pt-1">
+                    <IntegrationSettingsSection roomId={roomData.room._id} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
 
-                        {/* Demote button (for facilitators, owner only) */}
-                        {canDemoteThis && (
-                          <Tooltip>
-                            <TooltipTrigger
-                              render={
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDemote(u._id, u.name)}
-                                  className="h-7 w-7 p-0 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:text-amber-600 dark:hover:text-amber-400"
-                                  aria-label={`Demote ${u.name} to participant`}
-                                >
-                                  <ChevronDown className="h-4 w-4" />
-                                </Button>
-                              }
-                            />
-                            <TooltipContent>
-                              <p>Demote to participant</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-
-                        {/* Transfer ownership button (owner only, on non-owners) */}
-                        {canTransfer && userRole !== "owner" && (
-                          <Tooltip>
-                            <TooltipTrigger
-                              render={
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setPendingTransferUser({ id: u._id, name: u.name })}
-                                  className="h-7 w-7 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:text-purple-600 dark:hover:text-purple-400"
-                                  aria-label={`Transfer ownership to ${u.name}`}
-                                >
-                                  <ArrowRightLeft className="h-3.5 w-3.5" />
-                                </Button>
-                              }
-                            />
-                            <TooltipContent>
-                              <p>Transfer ownership</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-
-                        {/* Remove button */}
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={canRemoveThis ? () => handleRemoveUser(u._id, u.name) : undefined}
-                                disabled={removingUserId === u._id || !canRemoveThis}
-                                className={cn(
-                                  "h-7 w-7 p-0 shrink-0",
-                                  canRemoveThis
-                                    ? "hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
-                                    : "opacity-40 cursor-not-allowed",
-                                )}
-                                aria-label={
-                                  canRemoveThis
-                                    ? `Remove ${u.name}`
-                                    : "You don't have permission to remove this user"
-                                }
-                              >
-                                <UserMinus className="h-4 w-4" />
-                              </Button>
-                            }
-                          />
-                          <TooltipContent>
-                            <p>
-                              {canRemoveThis
-                                ? "Remove user"
-                                : "Only facilitators and the owner can remove members"}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    )}
+            {/* Users Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Participants
+                </h3>
+                <Badge variant="secondary" className="bg-white dark:bg-surface-2 text-xs font-medium px-2.5 py-0.5 rounded-full border border-gray-200 dark:border-border">
+                  {usersWithPresence.length} Total
+                </Badge>
+              </div>
+              
+              <div className="space-y-2 mt-3">
+                {sortedUsers.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-10 px-4 rounded-xl border-2 border-dashed border-gray-200 dark:border-border bg-white/50 dark:bg-surface-2/10">
+                    <Users className="h-8 w-8 text-gray-300 dark:text-gray-600 mb-3" />
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 text-center">
+                      No participants yet
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 text-center mt-1">
+                      Share the room link to invite your team
+                    </p>
                   </div>
-                );
-              })
+                ) : (
+                  sortedUsers.map((u) => {
+                    const userRole = u.role ?? "participant";
+                    const isMe = u._id === currentUserId;
+                    const canRemoveThis = perms.canRemoveTarget(userRole);
+                    const canPromoteThis = perms.canPromoteTarget(userRole);
+                    const canDemoteThis = perms.canDemoteFacilitatorFlag && userRole === "facilitator";
+                    const canTransfer = perms.canTransferOwnershipFlag;
+
+                    return (
+                      <div
+                        key={u._id}
+                        className={cn(
+                          "flex items-center justify-between py-3 px-4 rounded-xl border shadow-sm transition-all group",
+                          isMe 
+                            ? "bg-blue-50/50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/50 hover:border-blue-200 dark:hover:border-blue-700/50" 
+                            : "bg-white dark:bg-surface-2 border-gray-200/50 dark:border-border hover:shadow-md hover:border-gray-300/50 dark:hover:border-border/80"
+                        )}
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="relative shrink-0">
+                            <UserAvatar name={u.name} avatarUrl={u.avatarUrl} size="sm" className="w-10 h-10 ring-2 ring-gray-50 dark:ring-surface-1" />
+                            <div
+                              className={cn(
+                                "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-surface-2",
+                                u.isOnline ? "bg-green-500" : "bg-gray-400"
+                              )}
+                            />
+                          </div>
+                          <div className="flex flex-col min-w-0 justify-center">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate flex items-center gap-1.5">
+                                {u.name}
+                                {isMe && <span className="text-[10px] text-gray-500 font-medium bg-white/60 dark:bg-surface-3/50 px-1.5 py-0.5 rounded-sm border border-gray-200/50 dark:border-border">(You)</span>}
+                              </span>
+                              {userRole === "owner" && (
+                                <Badge variant="secondary" className="h-5 text-[10px] px-2 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400 border-amber-200/50 dark:border-amber-900/50 gap-1 shrink-0">
+                                  <Crown className="h-3 w-3" />
+                                  Owner
+                                </Badge>
+                              )}
+                              {userRole === "facilitator" && (
+                                <Badge variant="secondary" className="h-5 text-[10px] px-2 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400 border-blue-200/50 dark:border-blue-900/50 gap-1 shrink-0">
+                                  <Star className="h-3 w-3" />
+                                  Facilitator
+                                </Badge>
+                              )}
+                              {u.isSpectator && (
+                                <Badge variant="secondary" className="h-5 text-[10px] px-2 bg-gray-100 dark:bg-surface-3 shrink-0">
+                                  Spectator
+                                </Badge>
+                              )}
+                            </div>
+                            {!u.isOnline && u.lastSeen && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                {formatLastSeen(u.lastSeen)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {!isDemoMode && !isMe && (
+                          <div className="flex items-center gap-1 shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
+                            {/* Promote button (for participants) */}
+                            {canPromoteThis && (
+                              <Tooltip>
+                                <TooltipTrigger render={
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    onClick={() => handlePromote(u._id, u.name)}
+                                    className="hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                    aria-label={`Promote ${u.name} to facilitator`}
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                } />
+                                <TooltipContent>
+                                  <p>Promote to facilitator</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+
+                            {/* Demote button (for facilitators, owner only) */}
+                            {canDemoteThis && (
+                              <Tooltip>
+                                <TooltipTrigger render={
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    onClick={() => handleDemote(u._id, u.name)}
+                                    className="hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                                    aria-label={`Demote ${u.name} to participant`}
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                } />
+                                <TooltipContent>
+                                  <p>Demote to participant</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+
+                            {/* Transfer ownership button (owner only, on non-owners) */}
+                            {canTransfer && userRole !== "owner" && (
+                              <Tooltip>
+                                <TooltipTrigger render={
+                                  <Button
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    onClick={() => setPendingTransferUser({ id: u._id, name: u.name })}
+                                    className="hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-500/10 dark:hover:text-purple-400"
+                                    aria-label={`Transfer ownership to ${u.name}`}
+                                  >
+                                    <ArrowRightLeft className="h-4 w-4" />
+                                  </Button>
+                                } />
+                                <TooltipContent>
+                                  <p>Transfer ownership</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+
+                            {/* Remove button */}
+                            <Tooltip>
+                              <TooltipTrigger render={
+                                <Button
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  onClick={canRemoveThis ? () => handleRemoveUser(u._id, u.name) : undefined}
+                                  disabled={removingUserId === u._id || !canRemoveThis}
+                                  className={cn(
+                                    canRemoveThis
+                                      ? "hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                                      : "opacity-40 cursor-not-allowed",
+                                  )}
+                                  aria-label={
+                                    canRemoveThis
+                                      ? `Remove ${u.name}`
+                                      : "You don't have permission to remove this user"
+                                  }
+                                >
+                                  <UserMinus className="h-4 w-4" />
+                                </Button>
+                              } />
+                              <TooltipContent>
+                                <p>
+                                  {canRemoveThis
+                                    ? "Remove user"
+                                    : "Only facilitators and the owner can remove members"}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+            
+            {/* Demo CTA */}
+            {isDemoMode && (
+              <div className="pt-4 mt-8 border-t border-gray-200/50 dark:border-border">
+                <Link href="/room/new">
+                  <Button className="w-full gap-2 h-11 text-sm font-medium shadow-sm">
+                    Create a room to customize settings
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
-
-        {/* Demo CTA */}
-        {isDemoMode && (
-          <div className="pt-4 border-t border-gray-200/50 dark:border-border shrink-0">
-            <Link href="/room/new">
-              <Button className="w-full gap-2" size="sm">
-                Create a room to customize settings
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        )}
-      </div>
+    </SidePanel>
 
       {/* Remove user confirmation dialog */}
       <AlertDialog
@@ -809,6 +782,6 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 };

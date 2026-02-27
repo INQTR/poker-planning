@@ -1,17 +1,24 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-provider";
 import { UserMenu } from "@/components/user-menu/user-menu";
 import { Button } from "@/components/ui/button";
 
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
+
 export function NavbarActions() {
   const { isAuthenticated, isLoading } = useAuth();
   const pathname = usePathname();
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  // Show nothing while loading to prevent flash
-  if (isLoading) {
+  // Render consistent placeholder during SSR, hydration, and auth loading
+  // to prevent Base UI useId() mismatches between server and client
+  if (!mounted || isLoading) {
     return <div className="w-24 h-8" />;
   }
 
