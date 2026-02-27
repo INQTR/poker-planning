@@ -16,42 +16,34 @@ const comparisonFeatures = [
   { name: "Team members", free: "Unlimited", pro: "Unlimited" },
   { name: "Planning sessions", free: "Unlimited", pro: "Unlimited" },
   { name: "Real-time collaboration", free: true, pro: true },
-  { name: "Session history", free: "Unlimited (for now)", pro: "Full history" },
-  { name: "Analytics dashboard", free: false, pro: true },
+  { name: "Session history", free: "5-day rolling", pro: "Unlimited history" },
+  { name: "Basic analytics", free: true, pro: true },
+  { name: "Advanced actionable insights", free: false, pro: true },
   { name: "Export reports", free: "CSV only", pro: "CSV + JSON + Analytics" },
   { name: "Jira & GitHub integrations", free: false, pro: true },
+  { name: "Automated session summaries", free: false, pro: true },
 ];
 
 const faqs = [
   {
     question: "Do all team members need a Pro account?",
     answer:
-      "No. Only the room owner needs Pro to enable advanced features for that room. Other participants can join and use those features for free.",
+      "No! Only the room owner will need Pro to enable advanced features for that room. Other participants will still be able to join and use those features for free.",
   },
   {
-    question: "What happens when Pro launches?",
+    question: "What happens to my past sessions on the Free tier?",
     answer:
-      "Right now everything is free with no limits. When Pro launches, free rooms will keep a rolling 5-day history. If your Pro subscription ends, you get a 14-day grace period before the free retention policy kicks in.",
+      "Until paid plans launch, current retention rules stay as they are today. If we introduce a shorter free-tier history window in the future, we will publish that change on this page before it takes effect.",
   },
   {
     question: "Can I cancel my Pro subscription anytime?",
     answer:
-      "Yes. You can cancel anytime from your dashboard. If you cancel, your rooms enter a 14-day grace period before free retention rules apply.",
+      "Paid checkout is not live yet. Before Pro launches, we will publish the final cancellation flow, billing cadence, and any downgrade rules on this page and at checkout.",
   },
   {
-    question: "What payment methods do you accept?",
+    question: "Is there a free trial for Pro?",
     answer:
-      "All major credit cards, PayPal, and local payment methods via Paddle. Paddle handles secure payments in 29 currencies.",
-  },
-  {
-    question: "Is there a free trial?",
-    answer:
-      "The Free tier has unlimited usage. When Pro launches, existing accounts will receive 6 months of free Pro access to evaluate the new features.",
-  },
-  {
-    question: "How does billing work?",
-    answer:
-      "Payments are processed by Paddle, our Merchant of Record. They handle all billing, invoices, and tax compliance globally.",
+      "The Free tier has unlimited usage for core features. When Pro fully launches, existing active accounts will receive early access to evaluate the new features.",
   },
 ];
 
@@ -105,19 +97,66 @@ export function PricingContent() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-                Better planning, forever free
+                Simple pricing for teams of all sizes
               </h1>
               <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                AgileKit is 100% free for teams of any size. Upgrade to Pro to
-                unlock full history, analytics, integrations, and support the
-                project you love.
+                AgileKit is completely free for core planning sessions today.
+                Pro is in development and is planned to add deeper insights,
+                longer retention, and workflow integrations.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <span>No credit card required</span>
+                <span>No credit card required for Free</span>
                 <span className="hidden sm:inline">•</span>
-                <span>Cancel anytime</span>
+                <span>Pro checkout not live yet</span>
                 <span className="hidden sm:inline">•</span>
                 <span>Open source</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="pb-8 pt-4 sm:pb-12">
+          <div className="mx-auto max-w-4xl px-6 lg:px-8">
+            <div className="rounded-3xl border border-gray-200/70 bg-gray-50/80 p-6 sm:p-8 dark:border-zinc-800 dark:bg-zinc-900/40">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div className="max-w-2xl">
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
+                    Launch status
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    Paid checkout is not live yet
+                  </h2>
+                  <p className="mt-3 text-base leading-7 text-gray-600 dark:text-gray-400">
+                    We are preparing the site for payment-provider approval
+                    before enabling any live checkout. Exact launch pricing,
+                    final billing terms, and any Pro-specific retention rules
+                    will be published here before checkout goes live.
+                  </p>
+                </div>
+                <div className="shrink-0 rounded-2xl border border-gray-200/70 bg-white px-5 py-4 text-sm text-gray-600 dark:border-zinc-800 dark:bg-black dark:text-gray-400">
+                  <p>Custom or enterprise pricing is not currently offered.</p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-col gap-3 text-sm text-gray-600 dark:text-gray-400 sm:flex-row sm:items-center sm:gap-6">
+                <Link
+                  href="/refund-policy"
+                  className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
+                >
+                  Review refund policy
+                </Link>
+                <Link
+                  href="/terms"
+                  className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
+                >
+                  Review terms
+                </Link>
+                <a
+                  href="mailto:ivanchenko.b@gmail.com"
+                  className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
+                >
+                  Contact billing owner
+                </a>
               </div>
             </div>
           </div>
@@ -134,7 +173,7 @@ export function PricingContent() {
                 Compare plans
               </h2>
               <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                See exactly what you get with each plan
+                See what is available now and what is planned for Pro
               </p>
             </div>
 
@@ -163,10 +202,10 @@ export function PricingContent() {
                         : "bg-gray-50 dark:bg-zinc-950/50"
                     }`}
                   >
-                    <div className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
+                    <div className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300 flex items-center">
                       {feature.name}
                     </div>
-                    <div className="px-6 py-4 text-center">
+                    <div className="px-6 py-4 text-center flex items-center justify-center">
                       {typeof feature.free === "boolean" ? (
                         feature.free ? (
                           <Check className="mx-auto h-5 w-5 text-green-600 dark:text-green-500" />
@@ -179,7 +218,7 @@ export function PricingContent() {
                         </span>
                       )}
                     </div>
-                    <div className="px-6 py-4 text-center">
+                    <div className="px-6 py-4 text-center flex items-center justify-center">
                       {typeof feature.pro === "boolean" ? (
                         feature.pro ? (
                           <Check className="mx-auto h-5 w-5 text-green-600 dark:text-green-500" />
@@ -207,7 +246,7 @@ export function PricingContent() {
                 Frequently asked questions
               </h2>
               <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                Everything you need to know about pricing
+                Everything you need to know about AgileKit pricing and plans.
               </p>
             </div>
 
@@ -275,8 +314,8 @@ export function PricingContent() {
                 Ready to plan better?
               </h2>
               <p className="mt-6 text-lg text-gray-300">
-                Start using AgileKit for faster, more accurate sprint
-                estimation — completely free.
+                Start using AgileKit for faster, more accurate sprint estimation
+                — jump right in, completely free.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link

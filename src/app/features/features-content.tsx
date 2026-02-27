@@ -463,11 +463,11 @@ export function FeaturesContent() {
                   <Shield className="h-8 w-8 text-gray-900 dark:text-white" />
                 </div>
                 <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
-                  Zero Tracking
+                  Privacy Controls
                 </h3>
                 <p className="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
-                  No analytics, no cookies, no data collection. Your privacy is
-                  our priority.
+                  Essential cookies keep sign-in and preferences working.
+                  Optional analytics stay off unless you opt in.
                 </p>
               </div>
 

@@ -5,6 +5,7 @@ import { SVGProps } from "react";
 const navigation = {
   product: [
     { name: "Features", href: "/features" },
+    { name: "Pricing", href: "/pricing" },
     { name: "How It Works", href: "/#how-it-works" },
     { name: "Use Cases", href: "/#use-cases" },
     { name: "FAQ", href: "/#faq" },
@@ -22,6 +23,7 @@ const navigation = {
   legal: [
     { name: "Privacy Policy", href: "/privacy" },
     { name: "Terms of Service", href: "/terms" },
+    { name: "Refund Policy", href: "/refund-policy" },
     {
       name: "License",
       href: "https://github.com/INQTR/poker-planning/blob/main/LICENSE",
@@ -196,7 +198,7 @@ export const Footer = () => {
         <div className="mt-16 border-t border-gray-900/10 dark:border-gray-700 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} AgileKit. Open source
-            under MIT License. Made with ❤️ by the community.
+            under MIT License. Operated by Bohdan Ivanchenko.
           </p>
         </div>
       </div>

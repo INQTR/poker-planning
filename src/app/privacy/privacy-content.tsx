@@ -2,266 +2,184 @@
 
 import {
   Calendar,
-  Mail,
-  Shield,
-  Cookie,
-  Database,
   Lock,
   Eye,
+  ArrowRight,
 } from "lucide-react";
 
+import { AnalyticsPreferenceControls } from "@/components/legal/analytics-consent";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 
 const sections = [
   {
-    id: "introduction",
-    title: "1. Introduction",
+    id: "controller",
+    title: "1. Controller and Scope",
     content:
-      "This Privacy Policy explains how AgileKit, operated by Bohdan Ivanchenko ('we', 'us', or 'our'), collects, uses, and protects your information when you use our service. We are committed to ensuring that your privacy is protected and that we handle your data responsibly.",
+      "This Privacy Policy explains how AgileKit, operated by Bohdan Ivanchenko, an individual entrepreneur in Ukraine doing business as AgileKit ('we', 'us', or 'our'), collects, uses, and protects personal information when you use our website, application, and related services.",
   },
   {
     id: "information-collection",
     title: "2. Information We Collect",
     content:
-      "We collect information to provide better services to our users. This includes: (a) Information you provide directly, such as your username when joining a planning session; (b) Information collected automatically, including IP addresses, browser type, and usage data through Google Analytics; (c) Session data, such as votes and participation in planning poker sessions.",
+      "Depending on how you use the service, we may collect: (a) account and profile data, such as display name, email address, authentication identifiers, and avatar image; (b) collaboration data, such as room memberships, issues, votes, session history, and messages or feedback you send us; (c) device and usage data, such as IP address, browser information, page visits, and diagnostic events; and (d) integration data, such as connected Jira account metadata and encrypted OAuth tokens when you connect a third-party integration.",
   },
   {
     id: "cookies",
-    title: "3. Cookies and Tracking",
+    title: "3. Cookies and Similar Technologies",
     content:
-      "We use cookies and similar tracking technologies to improve your experience. This includes: essential cookies for site functionality, Google Analytics cookies for understanding usage patterns, and session cookies to maintain your login state. You can control cookie settings through your browser preferences.",
+      "We use strictly necessary cookies and similar technologies for authentication, security, fraud prevention, CSRF protection, and user preferences. We also use an analytics consent cookie to remember your choice. Non-essential analytics tools, such as Google Analytics and Vercel Speed Insights, stay off unless you actively allow them.",
   },
   {
     id: "data-usage",
     title: "4. How We Use Your Information",
     content:
-      "We use the collected information to: provide and maintain our planning poker service, improve user experience and site functionality, analyze usage patterns to enhance our features, and ensure the security and integrity of our service. We do not sell or rent your personal information to third parties.",
+      "We use personal information to provide and secure the service, authenticate users, maintain planning sessions, support collaboration features, send sign-in emails, operate integrations you request, troubleshoot and improve the product, comply with legal obligations, and, where you consent, measure product usage through analytics.",
   },
   {
-    id: "data-storage",
-    title: "5. Data Storage and Security",
+    id: "legal-bases",
+    title: "5. Legal Bases for Processing",
     content:
-      "Your data is stored securely using industry-standard practices. We implement appropriate technical and organizational measures to protect your information against unauthorized access, alteration, disclosure, or destruction. When our Pro tier launches, free-tier data retention policies may apply — we will notify users in advance of any changes to data retention.",
+      "Where laws such as the GDPR or UK GDPR apply, we generally rely on one or more of the following legal bases: performance of a contract or steps taken at your request, our legitimate interests in operating and securing the service, your consent for optional analytics or similar choices, and compliance with legal obligations.",
   },
   {
-    id: "third-party",
-    title: "6. Third-Party Services",
+    id: "sharing",
+    title: "6. Sharing and Service Providers",
     content:
-      "We use Google Analytics to analyze website usage and improve our service. Google Analytics may collect and process data according to their own privacy policies. We do not share your personal information with any other third-party services except as required by law.",
+      "We may share personal information with service providers that help us operate the product, such as infrastructure, database, authentication, analytics, email delivery, and integration providers. Depending on the features you use, current examples may include Convex, Vercel Speed Insights, Google Analytics, Google sign-in, Resend, and Atlassian. We may also disclose information when required by law, to protect rights and safety, or in connection with a reorganization, sale, or transfer of the service.",
   },
   {
-    id: "user-rights",
-    title: "7. Your Rights",
+    id: "international-transfers",
+    title: "7. International Data Transfers",
     content:
-      "You have the right to: access the information we hold about you, request correction of any inaccurate information, request deletion of your data, opt-out of analytics tracking, and withdraw consent for data processing. To exercise these rights, please contact us through our GitHub repository.",
+      "We and our service providers may process personal information in countries other than the country where you live. When that happens, we take steps designed to protect the data, such as relying on contractual safeguards, provider transfer mechanisms, or other lawful measures where required by applicable law.",
   },
   {
     id: "data-retention",
     title: "8. Data Retention",
     content:
-      "We retain your information only for as long as necessary to provide our services. In the future, free-tier accounts may be subject to a rolling data retention window; we will provide advance notice before any retention limits take effect. Analytics data is also retained according to Google Analytics' data retention policies. You can request deletion of your data at any time.",
+      "We retain personal information for as long as needed to provide the service, maintain security, comply with legal obligations, resolve disputes, and enforce our agreements. Retention periods vary by data type and feature. You may request deletion of your account data, but we may keep limited records where required for security, fraud prevention, or legal compliance.",
+  },
+  {
+    id: "security",
+    title: "9. Security and Automated Decisions",
+    content:
+      "We use reasonable technical and organizational measures designed to protect personal information, but no system is completely secure. We do not use automated decision-making or profiling that produces legal effects or similarly significant effects on users.",
+  },
+  {
+    id: "rights",
+    title: "10. Your Rights and Choices",
+    content:
+      "Depending on your location, you may have rights to request access, correction, deletion, portability, restriction, objection, or withdrawal of consent. You may also have the right to complain to your local data protection authority. We do not provide a public GitHub workflow for privacy requests because those channels can expose personal data; please use email for privacy-related requests.",
   },
   {
     id: "children",
-    title: "9. Children's Privacy",
+    title: "11. Children's Privacy",
     content:
-      "AgileKit is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.",
+      "AgileKit is not directed to children. We do not knowingly collect personal information from children under 13, or a higher age where local law requires. If you believe a child has provided personal information to us, please contact us so we can review and delete it where appropriate.",
   },
   {
     id: "changes",
-    title: "10. Changes to This Policy",
+    title: "12. Changes to This Policy",
     content:
-      "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the 'Last updated' date. Your continued use of the service after changes constitutes acceptance of the updated policy.",
+      "We may update this Privacy Policy from time to time. If we make material changes, we will update the 'Last updated' date and, where required, provide additional notice or request consent before the changes apply.",
   },
   {
     id: "contact",
-    title: "11. Contact Information",
+    title: "13. Contact Information",
     content:
-      "If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at ivanchenko.b@gmail.com or +380632841506. You can also reach us through our GitHub repository at https://github.com/INQTR/poker-planning/issues or contribute to the discussion at https://github.com/INQTR/poker-planning/discussions.",
+      "For privacy questions or requests, contact Bohdan Ivanchenko at ivanchenko.b@gmail.com. Postal contact: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine.",
   },
 ];
 
 export function PrivacyContent() {
   return (
-    <div className="bg-white dark:bg-gray-900">
+    <div className="bg-white dark:bg-black min-h-screen selection:bg-primary/10 selection:text-primary">
       <Navbar />
 
-      <main className="isolate">
-        {/* Hero section */}
-        <div className="relative isolate -z-10 overflow-hidden bg-gradient-to-b from-indigo-100/20 dark:from-indigo-900/20 pt-14">
-          <div
-            aria-hidden="true"
-            className="absolute inset-y-0 right-1/2 -z-10 -mr-96 w-[200%] origin-top-right skew-x-[-30deg] bg-white dark:bg-gray-900 shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 dark:ring-indigo-950 sm:-mr-80 lg:-mr-96"
-          />
-          <div className="mx-auto max-w-7xl px-6 py-32 sm:py-40 lg:px-8">
-            <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
-              <div className="flex items-center gap-x-4 text-xs">
-                <time dateTime="2026-01-26" className="text-gray-500">
-                  <Calendar className="mr-1 inline h-3 w-3" />
-                  Last updated: January 26, 2026
-                </time>
+      <main className="relative isolate overflow-hidden bg-white dark:bg-black">
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32 overflow-hidden bg-white dark:bg-black border-b border-gray-200/50 dark:border-zinc-800/50">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+          
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8 relative z-10">
+            <div className="mx-auto max-w-4xl text-center">
+              <div className="inline-flex items-center gap-2 mb-8 rounded-full bg-gray-50 dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 px-4 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400">
+                <Calendar className="h-4 w-4" />
+                <span>Last updated: February 27, 2026</span>
               </div>
-              <h1 className="mt-2 text-5xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-7xl">
+              
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
                 Privacy Policy
               </h1>
-              <p className="mt-6 text-xl/8 text-gray-600 dark:text-gray-300">
-                Learn how we collect, use, and protect your information at
-                AgileKit.
+              
+              <p className="mt-8 text-xl sm:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+                Learn how we collect, use, and protect your information at AgileKit.
               </p>
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-white dark:from-gray-900 sm:h-32" />
-        </div>
+        </section>
 
-        {/* Notice section */}
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
-              <div className="flex">
-                <div className="shrink-0">
-                  <Shield
-                    className="h-5 w-5 text-green-400"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
-                    Your Privacy Matters
-                  </h3>
-                  <div className="mt-2 text-sm text-green-700 dark:text-green-300">
-                    <p>
-                      We take your privacy seriously. This policy explains our
-                      commitment to protecting your data and your rights as a
-                      user of our open-source planning poker tool.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Privacy sections */}
-        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-20">
-          <div className="mx-auto max-w-4xl">
+        {/* Content Section */}
+        <section className="py-24 sm:py-32 bg-white dark:bg-black">
+          <div className="mx-auto max-w-4xl px-6 lg:px-8">
             <div className="space-y-16">
               {sections.map((section) => (
-                <div key={section.id} id={section.id}>
-                  <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                <div key={section.id} id={section.id} className="scroll-mt-32">
+                  <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
                     {section.title}
                   </h2>
-                  <p className="mt-4 text-base/7 text-gray-600 dark:text-gray-400">
-                    {section.content}
-                  </p>
+                  <div className="text-gray-600 dark:text-gray-400 font-light leading-relaxed text-lg">
+                    <p>{section.content}</p>
+                    {section.id === "rights" ? (
+                      <div className="mt-6">
+                        <AnalyticsPreferenceControls />
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Key features section */}
-        <div className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-6 text-center">
-                <Cookie className="mx-auto h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">
-                  Cookie Control
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  Manage your cookie preferences through your browser
-                </p>
-              </div>
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-6 text-center">
-                <Database className="mx-auto h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">
-                  Minimal Data
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  We only collect what&apos;s necessary for the service
-                </p>
-              </div>
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-6 text-center">
-                <Lock className="mx-auto h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">
-                  Secure Storage
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  Industry-standard security measures protect your data
-                </p>
-              </div>
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-800 p-6 text-center">
-                <Eye className="mx-auto h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="mt-4 text-sm font-semibold text-gray-900 dark:text-white">
-                  Transparency
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  Open source code means full transparency
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Contact section */}
-        <div className="mx-auto mt-24 max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl">
-            <div className="rounded-2xl bg-gray-50 dark:bg-gray-800 px-6 py-10 sm:px-10 sm:py-16 lg:px-12">
-              <div className="mx-auto max-w-2xl text-center">
-                <Lock className="mx-auto h-12 w-12 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                  Questions about privacy?
-                </h2>
-                <p className="mx-auto mt-4 max-w-xl text-lg text-gray-600 dark:text-gray-300">
-                  We&apos;re committed to transparency. If you have any
-                  questions about how we handle your data, please reach out
-                  through GitHub.
-                </p>
-                <div className="mt-8 flex items-center justify-center gap-x-4">
+        {/* Contact Section */}
+        <section className="py-24 sm:py-32 bg-gray-50/50 dark:bg-zinc-900/10 border-t border-gray-200/50 dark:border-zinc-800/50">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="mx-auto max-w-4xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="rounded-3xl bg-white dark:bg-black p-8 sm:p-10 border border-gray-200/50 dark:border-zinc-800/50">
+                  <div className="flex h-12 w-12 items-center justify-center bg-gray-50 dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 rounded-2xl mb-6">
+                    <Lock className="h-5 w-5 text-gray-900 dark:text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
+                    Questions about privacy?
+                  </h3>
+                  <p className="text-base font-light leading-relaxed text-gray-600 dark:text-gray-400 mb-6">
+                    We&apos;re committed to transparency. If you have any questions about how we handle your data, please reach out.
+                  </p>
                   <a
-                    href="https://github.com/INQTR/poker-planning/issues"
-                    className="inline-flex items-center text-base font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-400"
+                    href="mailto:ivanchenko.b@gmail.com"
+                    className="inline-flex items-center text-sm font-bold tracking-wide text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   >
-                    <Mail className="mr-2 h-4 w-4" />
-                    Contact via GitHub
+                    Email privacy contact <ArrowRight className="ml-2 h-4 w-4" />
                   </a>
+                </div>
+                <div className="rounded-3xl bg-white dark:bg-black p-8 sm:p-10 border border-gray-200/50 dark:border-zinc-800/50">
+                  <div className="flex h-12 w-12 items-center justify-center bg-gray-50 dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 rounded-2xl mb-6">
+                    <Eye className="h-5 w-5 text-gray-900 dark:text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
+                    Transparency
+                  </h3>
+                  <p className="text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
+                    Our code is public, but this policy controls how the hosted service handles personal information. When our practices change, we update this page.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Additional info */}
-        <div className="mx-auto mt-24 max-w-7xl px-6 lg:px-8 mb-24">
-          <div className="mx-auto max-w-4xl border-t border-gray-200 dark:border-gray-800 pt-16 sm:pt-20">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-              Additional Information
-            </h2>
-            <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Effective Date
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  This privacy policy is effective as of January 26, 2026 and
-                  will remain in effect except with respect to any changes in
-                  its provisions in the future.
-                </p>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Open Source Commitment
-                </h3>
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  As an open-source project, our code is publicly available for
-                  review on GitHub, ensuring complete transparency in how we
-                  handle data.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </section>
       </main>
 
       <Footer />

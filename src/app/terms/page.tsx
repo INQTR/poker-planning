@@ -4,11 +4,11 @@ import { TermsContent } from "./terms-content";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "Review AgileKit's terms of service. MIT licensed, free core features, with clear guidelines for fair use of our planning poker tool.",
+    "Review AgileKit's terms of service, acceptable use rules, and billing terms for any future paid features.",
   openGraph: {
     title: "Terms of Service | AgileKit",
     description:
-      "Review AgileKit's terms of service. MIT licensed, free core features, clear guidelines for fair use.",
+      "Review AgileKit's terms of service, acceptable use rules, and billing terms for any future paid features.",
     url: "https://agilekit.app/terms",
   },
   alternates: {
