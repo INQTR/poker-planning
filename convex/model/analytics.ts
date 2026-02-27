@@ -10,6 +10,7 @@ export interface SessionSummary {
   issuesCompleted: number;
   totalStoryPoints: number | null; // null if non-numeric scale
   averageAgreement: number | null;
+  participantCount: number;
 }
 
 export interface AgreementDataPoint {
@@ -129,6 +130,11 @@ export async function getUserSessions(
             )
           : null;
 
+      const roomMembers = await ctx.db
+        .query("roomMemberships")
+        .withIndex("by_room", (q) => q.eq("roomId", room._id))
+        .collect();
+
       return {
         roomId: room._id,
         roomName: room.name,
@@ -137,6 +143,7 @@ export async function getUserSessions(
         issuesCompleted: completedIssues.length,
         totalStoryPoints,
         averageAgreement,
+        participantCount: roomMembers.length,
       };
     })
   );

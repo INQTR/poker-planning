@@ -1,6 +1,6 @@
 "use client";
 
-
+import { useMemo } from "react";
 import {
   ScatterChart,
   Scatter,
@@ -9,6 +9,8 @@ import {
   CartesianGrid,
   ZAxis,
   Cell,
+  LabelList,
+  ReferenceLine,
 } from "recharts";
 import {
   Card,
@@ -23,6 +25,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ScatterPoint {
   userId: string;
@@ -45,20 +54,37 @@ const chartConfig = {
 
 function getDotColor(x: number): string {
   const absX = Math.abs(x);
-  if (absX <= 0.5) return "var(--chart-3)"; // green — aligned
-  if (absX <= 1.5) return "var(--chart-4)"; // yellow — slight bias
-  return "var(--chart-5)"; // red — significant bias
+  if (absX <= 0.5) return "var(--status-success-fg)";
+  if (absX <= 1.5) return "var(--status-warning-fg)";
+  return "var(--status-error-fg)";
 }
 
 export function VoterAlignmentChart({
   data,
   isLoading,
 }: VoterAlignmentChartProps) {
+  // Compute symmetric X domain so 0 is centered
+  const xBound = useMemo(() => {
+    if (data.length === 0) return 0.5;
+    const maxAbs = Math.max(...data.map((p) => Math.abs(p.x)));
+    return Math.max(Math.ceil(maxAbs * 4) / 4 + 0.25, 0.5);
+  }, [data]);
+
   if (isLoading) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Voter Alignment
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Plots each member by estimation bias and consistency. Center = aligned with consensus.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
@@ -74,7 +100,17 @@ export function VoterAlignmentChart({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Voter Alignment
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Plots each member by estimation bias and consistency. Center = aligned with consensus.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>
             Estimation bias vs consistency across team members
           </CardDescription>
@@ -91,7 +127,17 @@ export function VoterAlignmentChart({
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Voter Alignment</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Voter Alignment
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Plots each member by estimation bias and consistency. Center = aligned with consensus.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>
           X: avg bias (- under, + over) &middot; Y: variability (stddev)
         </CardDescription>
@@ -100,13 +146,14 @@ export function VoterAlignmentChart({
         <ChartContainer config={chartConfig} className="flex-1 min-h-[250px] w-full aspect-auto">
           <ScatterChart
             accessibilityLayer
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            margin={{ top: 20, right: 10, left: -20, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               type="number"
               dataKey="x"
               name="Avg Delta"
+              domain={[-xBound, xBound]}
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -119,6 +166,11 @@ export function VoterAlignmentChart({
               axisLine={false}
             />
             <ZAxis range={[60, 60]} />
+            <ReferenceLine
+              x={0}
+              stroke="var(--border)"
+              strokeDasharray="4 4"
+            />
             <ChartTooltip
               content={
                 <ChartTooltipContent
@@ -142,12 +194,55 @@ export function VoterAlignmentChart({
               {data.map((point) => (
                 <Cell key={point.userId} fill={getDotColor(point.x)} />
               ))}
+              <LabelList
+                dataKey="userName"
+                position="top"
+                offset={8}
+                fontSize={11}
+                content={({ x, y, value, offset: labelOffset }) => {
+                  const name = typeof value === "string" ? value : "";
+                  const displayName =
+                    name.length > 12 ? name.slice(0, 11) + "\u2026" : name;
+                  return (
+                    <text
+                      x={Number(x)}
+                      y={Number(y) - (Number(labelOffset) || 8)}
+                      textAnchor="middle"
+                      className="fill-foreground"
+                      fontSize={11}
+                    >
+                      {displayName}
+                    </text>
+                  );
+                }}
+              />
             </Scatter>
           </ScatterChart>
         </ChartContainer>
-        <p className="mt-2 text-center text-xs text-muted-foreground">
-          Center = aligned with consensus. Requires numeric scales.
-        </p>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: "var(--status-success-fg)" }}
+            />
+            Aligned
+          </span>
+          <span className="flex items-center gap-1">
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: "var(--status-warning-fg)" }}
+            />
+            Slight bias
+          </span>
+          <span className="flex items-center gap-1">
+            <span
+              className="inline-block h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: "var(--status-error-fg)" }}
+            />
+            Significant bias
+          </span>
+          <span>&middot; Requires numeric scales.</span>
+        </div>
       </CardContent>
     </Card>
   );

@@ -2,9 +2,8 @@ import { Github } from "lucide-react";
 
 export function DashboardBanner() {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-linear-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-indigo-500/20 mb-8">
-      <div className="absolute inset-0 bg-grid-white/10 mask-[linear-gradient(0deg,white,rgba(255,255,255,0.5))] dark:bg-grid-black/10" />
-      <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-background/50 backdrop-blur-sm px-4 py-3">
+    <div className="rounded-xl border border-indigo-500/20 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-4 py-3">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center rounded-md bg-indigo-500/15 px-2 py-0.5 text-xs font-medium text-indigo-700 dark:text-indigo-300">

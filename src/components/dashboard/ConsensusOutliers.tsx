@@ -15,6 +15,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface OutlierItem {
   issueTitle: string;
@@ -60,7 +67,17 @@ export function ConsensusOutliers({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Consensus Outliers
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Issues that took significantly longer than average to estimate, often indicating unclear requirements.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Issues that took longest to estimate</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -74,7 +91,17 @@ export function ConsensusOutliers({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Consensus Outliers
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Issues that took significantly longer than average to estimate, often indicating unclear requirements.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Issues that took longest to estimate</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -104,7 +131,17 @@ export function ConsensusOutliers({
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Consensus Outliers</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Consensus Outliers
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Issues that took significantly longer than average to estimate, often indicating unclear requirements.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>
           {data.length} issue{data.length !== 1 ? "s" : ""} took &gt;2x average
           time

@@ -15,6 +15,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AgreementDataPoint {
   date: string;
@@ -93,7 +100,17 @@ export function AgreementChart({ data, isLoading }: AgreementChartProps) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Agreement Trend</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Agreement Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Shows how often your team reaches consensus on the first vote across sessions.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Team alignment over time</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -107,7 +124,17 @@ export function AgreementChart({ data, isLoading }: AgreementChartProps) {
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Agreement Trend</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Agreement Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Shows how often your team reaches consensus on the first vote across sessions.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>Team alignment over time</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -122,7 +149,17 @@ export function AgreementChart({ data, isLoading }: AgreementChartProps) {
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Agreement Trend</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Agreement Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Shows how often your team reaches consensus on the first vote across sessions.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription>
           {trendText || "Team alignment over time"}
         </CardDescription>

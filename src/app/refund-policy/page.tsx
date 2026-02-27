@@ -38,12 +38,12 @@ const sections = [
     title: "2. 30-Day Money-Back Guarantee",
     content: (
       <p>
-        We offer a 30 calendar day money-back guarantee for the first charge
-        of any new self-serve paid plan. If you are not satisfied, you may
-        request a full refund within 30 calendar days of the original purchase
-        date, unless a different written agreement applies or mandatory law
-        requires otherwise. Applicable pricing, billing terms, renewal terms,
-        taxes, and this 30-day refund window are published on our{" "}
+        We offer a 30 calendar day money-back guarantee for the first charge of
+        any new self-serve paid plan. If you are not satisfied, you may request
+        a full refund within 30 calendar days of the original purchase date,
+        unless a different written agreement applies or mandatory law requires
+        otherwise. Applicable pricing, billing terms, renewal terms, taxes, and
+        this 30-day refund window are published on our{" "}
         <Link
           href="/pricing"
           className="font-medium text-gray-900 underline underline-offset-4 dark:text-white"
@@ -57,9 +57,9 @@ const sections = [
         >
           Terms of Service
         </Link>
-        , and at checkout. Payments are processed by Paddle.com, our merchant
-        of record. The Paddle checkout flow and order confirmation will
-        identify the billing entity for each transaction.
+        , and at checkout. Payments are processed by Paddle.com, our merchant of
+        record. The Paddle checkout flow and order confirmation will identify
+        the billing entity for each transaction.
       </p>
     ),
   },
@@ -87,8 +87,8 @@ const sections = [
         >
           ivanchenko.b@gmail.com
         </a>
-        . Refund requests for self-serve purchases must be submitted within
-        30 calendar days of the original purchase date.
+        . Refund requests for self-serve purchases must be submitted within 30
+        calendar days of the original purchase date.
       </p>
     ),
   },
@@ -122,7 +122,8 @@ export default function RefundPolicyPage() {
               </div>
 
               <h1 className="text-6xl font-bold tracking-tighter text-gray-900 dark:text-white sm:text-7xl lg:text-8xl">
-                Refund <span className="text-gray-300 dark:text-zinc-700">Policy</span>
+                Refund{" "}
+                <span className="text-gray-300 dark:text-zinc-700">Policy</span>
               </h1>
 
               <p className="mx-auto mt-8 max-w-2xl text-xl font-light leading-relaxed text-gray-600 dark:text-gray-400 sm:text-2xl">
@@ -181,9 +182,9 @@ export default function RefundPolicyPage() {
                   Need a written quote?
                 </h3>
                 <p className="mb-6 text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
-                  We do not currently offer a public enterprise or custom pricing
-                  sheet. If that changes, we will provide written commercial
-                  terms directly before sale.
+                  We do not currently offer a public enterprise or custom
+                  pricing sheet. If that changes, we will provide written
+                  commercial terms directly before sale.
                 </p>
                 <a
                   href="mailto:ivanchenko.b@gmail.com"

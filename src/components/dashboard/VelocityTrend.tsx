@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { HelpCircle, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import {
   ComposedChart,
   Area,
@@ -22,6 +22,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SessionDataPoint {
   roomName: string;
@@ -111,7 +117,17 @@ export function VelocityTrend({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Velocity Trend</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Velocity Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Story points estimated per session with a rolling average to track estimation capacity.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>
             Story points per session with rolling average
           </CardDescription>
@@ -127,7 +143,17 @@ export function VelocityTrend({
     return (
       <Card className="flex flex-col h-full shadow-sm">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Velocity Trend</CardTitle>
+          <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Velocity Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Story points estimated per session with a rolling average to track estimation capacity.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
           <CardDescription>
             Story points per session with rolling average
           </CardDescription>
@@ -146,7 +172,17 @@ export function VelocityTrend({
   return (
     <Card className="flex flex-col h-full shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Velocity Trend</CardTitle>
+        <CardTitle className="text-base font-semibold flex items-center gap-1.5">
+            Velocity Trend
+            <TooltipProvider delay={200}>
+              <Tooltip>
+                <TooltipTrigger render={<HelpCircle className="h-3.5 w-3.5 text-muted-foreground/50 hover:text-muted-foreground cursor-help shrink-0" />} />
+                <TooltipContent className="max-w-[220px] text-center font-normal">
+                  <p>Story points estimated per session with a rolling average to track estimation capacity.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </CardTitle>
         <CardDescription className="flex items-center gap-2">
           <span>
             {totalPoints} points across {totalIssues} issues
