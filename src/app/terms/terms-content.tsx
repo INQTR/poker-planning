@@ -21,7 +21,7 @@ const sections = [
     id: "operator",
     title: "2. Service Operator and Contact",
     content:
-      "AgileKit is the business name for this service and the contracting party referenced in these terms, operated by the individual identified in Section 1. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to AgileKit.",
+      "AgileKit is the business name for this service and the contracting party referenced in these terms. The service is operated by Bohdan Ivanchenko (the 'Operator'), as further described in Section 1. Business address: Nauky Ave, 86, Dnipro, Dnipropetrovs'ka oblast, 49000, Ukraine. Contact: ivanchenko.b@gmail.com. References to 'AgileKit', 'we', 'us', or 'our' in these terms refer to the Operator doing business as AgileKit.",
   },
   {
     id: "eligibility",
