@@ -127,10 +127,9 @@ export function DashboardContent() {
             agreementTrend={predictability?.agreementTrend ?? "stable"}
             isLoading={predictabilityLoading}
           />
-          <VelocityTrend
-            sessions={predictability?.sessions ?? []}
-            velocityTrend={predictability?.velocityTrend ?? "stable"}
-            isLoading={predictabilityLoading}
+          <VoterAlignmentChart
+            data={voterAlignment?.scatterPoints ?? []}
+            isLoading={alignmentLoading}
           />
         </div>
 
@@ -153,9 +152,10 @@ export function DashboardContent() {
             data={timeToConsensus?.trendBySession ?? []}
             isLoading={consensusLoading}
           />
-          <VoterAlignmentChart
-            data={voterAlignment?.scatterPoints ?? []}
-            isLoading={alignmentLoading}
+          <VelocityTrend
+            sessions={predictability?.sessions ?? []}
+            velocityTrend={predictability?.velocityTrend ?? "stable"}
+            isLoading={predictabilityLoading}
           />
           <VoteDistribution
             data={voteDistribution ?? []}

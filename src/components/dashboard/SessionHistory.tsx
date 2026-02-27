@@ -1,9 +1,10 @@
 "use client";
 
 import { formatDistanceToNow } from "date-fns";
-import { ExternalLink, Users, Target, TrendingUp } from "lucide-react";
+import { Users, Target, TrendingUp, Calendar, ArrowRight, Activity, Clock } from "lucide-react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface SessionSummary {
   roomId: string;
@@ -13,6 +14,7 @@ interface SessionSummary {
   issuesCompleted: number;
   totalStoryPoints: number | null;
   averageAgreement: number | null;
+  participantCount: number;
 }
 
 interface SessionHistoryProps {
@@ -23,103 +25,152 @@ interface SessionHistoryProps {
 export function SessionHistory({ sessions, isLoading }: SessionHistoryProps) {
   if (isLoading) {
     return (
-      <Card className="flex flex-col h-full">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">Session History</CardTitle>
-          <CardDescription>Recent planning rooms joined</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1">
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="h-16 rounded-lg bg-muted" />
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Recent Sessions</h2>
+          <p className="text-sm text-muted-foreground">Continue where you left off or review past estimates.</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="animate-pulse rounded-2xl border bg-card p-5 h-[200px]">
+              <div className="h-6 w-2/3 bg-muted rounded-md mb-4" />
+              <div className="space-y-3">
+                <div className="h-4 w-1/2 bg-muted rounded-md" />
+                <div className="h-4 w-3/4 bg-muted rounded-md" />
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
   if (sessions.length === 0) {
     return (
-      <Card className="flex flex-col h-full">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold">Session History</CardTitle>
-          <CardDescription>Recent planning rooms joined</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1">
-          <div className="flex h-full min-h-[200px] flex-col items-center justify-center text-muted-foreground">
-            <Users className="mb-2 h-8 w-8 opacity-50" />
-            <p>No sessions yet</p>
-            <p className="text-sm">
-              Join a planning room to start tracking your sessions
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center justify-center min-h-[300px] rounded-2xl border border-dashed p-8 text-center bg-muted/20">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 mb-4">
+          <Activity className="h-6 w-6 text-primary" />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">No active sessions</h2>
+        <p className="text-sm text-muted-foreground max-w-sm mb-6">
+          You haven't joined any planning rooms yet. Create or join a room to start estimating with your team.
+        </p>
+      </div>
     );
   }
 
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle className="text-base font-semibold">Session History</CardTitle>
-        <CardDescription>Recent planning rooms joined</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <div className="space-y-2">
-          {sessions.map((session) => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Recent Sessions</h2>
+          <p className="text-sm text-muted-foreground mt-1">Pick up where you left off or review past estimates.</p>
+        </div>
+      </div>
+      
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {sessions.map((session) => {
+          const isHighConsensus = session.averageAgreement !== null && session.averageAgreement >= 80;
+          const isMedConsensus = session.averageAgreement !== null && session.averageAgreement >= 60 && session.averageAgreement < 80;
+          
+          return (
             <Link
               key={session.roomId}
               href={`/room/${session.roomId}`}
-              className="group flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-300 hover:shadow-md hover:border-primary/30"
             >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="truncate font-medium">
-                    {session.roomName}
-                  </span>
-                  <ExternalLink className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-50" />
+              <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              
+              <div className="relative z-10 mb-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Activity className="h-5 w-5" />
+                  </div>
+                  {session.averageAgreement !== null && (
+                    <Tooltip>
+                      <TooltipTrigger render={<div className="cursor-default" onClick={(e) => e.preventDefault()} />}>
+                        <Badge 
+                          variant={isHighConsensus ? "default" : isMedConsensus ? "secondary" : "destructive"}
+                          className="font-medium"
+                        >
+                          <Users className="h-3 w-3 mr-1" />
+                          {session.averageAgreement}% Match
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Average team consensus matching</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
-                <div className="mt-1 text-xs text-muted-foreground">
-                  {formatDistanceToNow(session.lastActivityAt, {
-                    addSuffix: true,
-                  })}
-                </div>
+                
+                <h3 className="line-clamp-2 text-lg font-semibold leading-tight group-hover:text-primary transition-colors">
+                  {session.roomName}
+                </h3>
               </div>
 
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <Target className="h-4 w-4" />
-                  <span>{session.issuesCompleted}</span>
+              <div className="relative z-10 mt-auto">
+                <div className={`grid gap-4 mb-5 pb-5 border-b border-border/50 ${session.totalStoryPoints !== null ? "grid-cols-3" : "grid-cols-2"}`}>
+                  <Tooltip>
+                    <TooltipTrigger render={<div className="text-left cursor-default" onClick={(e) => e.preventDefault()} />}>
+                      <p className="text-xs text-muted-foreground flex items-center mb-1 whitespace-nowrap">
+                        <Target className="h-3 w-3 mr-1 shrink-0" /> Issues
+                      </p>
+                      <p className="text-base font-medium">{session.issuesCompleted}</p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Total issues estimated</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  <Tooltip>
+                    <TooltipTrigger render={<div className="text-left cursor-default" onClick={(e) => e.preventDefault()} />}>
+                      <p className="text-xs text-muted-foreground flex items-center mb-1 whitespace-nowrap">
+                        <Users className="h-3 w-3 mr-1 shrink-0" /> Members
+                      </p>
+                      <p className="text-base font-medium">{session.participantCount}</p>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Total room participants</p>
+                    </TooltipContent>
+                  </Tooltip>
+
+                  {session.totalStoryPoints !== null && (
+                    <Tooltip>
+                      <TooltipTrigger render={<div className="text-left cursor-default" onClick={(e) => e.preventDefault()} />}>
+                        <p className="text-xs text-muted-foreground flex items-center mb-1 whitespace-nowrap">
+                          <TrendingUp className="h-3 w-3 mr-1 shrink-0" /> Points
+                        </p>
+                        <p className="text-base font-medium">{session.totalStoryPoints}</p>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Total story points estimated</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
 
-                {session.totalStoryPoints !== null && (
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <TrendingUp className="h-4 w-4" />
-                    <span>{session.totalStoryPoints} pts</span>
+                <div className="flex items-center justify-between">
+                  <Tooltip>
+                    <TooltipTrigger render={<div className="flex items-center text-xs text-muted-foreground cursor-default" onClick={(e) => e.preventDefault()} />}>
+                      <Clock className="h-3.5 w-3.5 mr-1.5" />
+                      <time dateTime={new Date(session.lastActivityAt).toISOString()}>
+                        {formatDistanceToNow(session.lastActivityAt, { addSuffix: true })}
+                      </time>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Time since last activity</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground opacity-0 transition-all duration-300 transform translate-x-[-10px] group-hover:translate-x-0 group-hover:opacity-100">
+                    <ArrowRight className="h-4 w-4" />
                   </div>
-                )}
-
-                {session.averageAgreement !== null && (
-                  <div
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      session.averageAgreement >= 80
-                        ? "bg-green-100 text-green-700 dark:bg-status-success-bg dark:text-status-success-fg"
-                        : session.averageAgreement >= 60
-                          ? "bg-amber-100 text-amber-700 dark:bg-status-warning-bg dark:text-status-warning-fg"
-                          : "bg-red-100 text-red-700 dark:bg-status-error-bg dark:text-status-error-fg"
-                    }`}
-                  >
-                    {session.averageAgreement}%
-                  </div>
-                )}
+                </div>
               </div>
             </Link>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          );
+        })}
+      </div>
+    </div>
   );
 }
