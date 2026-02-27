@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { cookies } from "next/headers";
 
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { Toaster } from "sonner";
 import { getToken } from "@/lib/auth-server";
+import { AnalyticsConsentBanner } from "@/components/legal/analytics-consent";
 
 import "./globals.css";
 
@@ -95,7 +97,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
   const initialToken = await getToken();
+  const analyticsConsentValue = cookieStore.get("analytics_consent")?.value;
+  const analyticsConsent =
+    analyticsConsentValue === "granted"
+      ? "granted"
+      : analyticsConsentValue === "denied"
+        ? "denied"
+        : null;
 
   return (
     <html lang="en" className={outfit.variable} suppressHydrationWarning>
@@ -104,10 +114,11 @@ export default async function RootLayout({
       >
         <Providers initialToken={initialToken}>
           {children}
-          <SpeedInsights />
           <Toaster />
+          <AnalyticsConsentBanner initialConsent={analyticsConsent} />
+          {analyticsConsent === "granted" && <SpeedInsights />}
         </Providers>
-        {process.env.NEXT_PUBLIC_GA_ID && (
+        {analyticsConsent === "granted" && process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
       </body>

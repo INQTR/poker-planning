@@ -2,13 +2,13 @@ import { Metadata } from "next";
 import { PricingContent } from "./pricing-content";
 
 export const metadata: Metadata = {
-  title: "Pricing - Support the Project with Pro",
+  title: "Pricing and Launch Status",
   description:
-    "AgileKit is free forever. Subscribe to Pro to unlock extra features and support ongoing development. No credit card required, cancel anytime.",
+    "AgileKit core features are free today. Pro is in development, and launch pricing will be published here before checkout goes live.",
   openGraph: {
-    title: "Support the Project with Pro | AgileKit",
+    title: "Pricing and Launch Status | AgileKit",
     description:
-      "AgileKit is free forever. Subscribe to Pro to unlock extra features and support ongoing development.",
+      "AgileKit core features are free today. Pro is in development, and launch pricing will be published here before checkout goes live.",
     url: "https://agilekit.app/pricing",
   },
   alternates: {

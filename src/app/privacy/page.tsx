@@ -4,11 +4,11 @@ import { PrivacyContent } from "./privacy-content";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Read AgileKit's privacy policy. We prioritize your data security with minimal collection, no tracking, and transparent open-source practices.",
+    "Read how AgileKit handles account data, session data, cookies, and optional analytics.",
   openGraph: {
     title: "Privacy Policy | AgileKit",
     description:
-      "Read AgileKit's privacy policy. Minimal data collection, no tracking, transparent practices.",
+      "Read how AgileKit handles account data, session data, cookies, and optional analytics.",
     url: "https://agilekit.app/privacy",
   },
   alternates: {

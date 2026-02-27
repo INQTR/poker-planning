@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ArrowRight, Check } from "lucide-react";
 
 const tiers = [
   {
@@ -9,14 +10,15 @@ const tiers = [
     id: "free",
     price: "$0",
     period: "forever",
-    description: "For ad-hoc teams and quick sessions.",
+    description: "For ad-hoc teams and quick estimating sessions.",
     features: [
-      "No account required",
       "Unlimited participants",
-      "Core voting tools",
-      "No account required to start",
+      "Real-time voting & whiteboard",
+      "5-day session history",
+      "Basic results analytics",
+      "CSV exports",
     ],
-    cta: "Try it now for free",
+    cta: "Start planning for free",
     href: "/room/new",
   },
   {
@@ -24,14 +26,17 @@ const tiers = [
     id: "pro",
     price: "Coming Soon",
     period: "",
-    description: "For teams needing history, insights, and integrations. We're working hard to bring you these features.",
+    description:
+      "For engineering teams that need deep insights and workflow automation.",
     features: [
-      "Permanent account",
-      "Full session archive",
-      "Analytics & velocity insights",
-      "Jira & GitHub integrations",
+      "Everything in Free, plus:",
+      "Time-to-consensus tracking",
+      "Voter alignment matrix",
+      "Sprint predictability score",
+      "Two-way Jira & GitHub sync",
+      "Unlimited session history",
     ],
-    cta: "Coming Soon",
+    cta: "Join Waitlist",
     href: "#",
     disabled: true,
   },
@@ -49,43 +54,117 @@ export function PricingSection() {
             Transparent pricing.
           </h3>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 font-light max-w-xl">
-            Start using AgileKit completely free today. Our Pro tier with analytics, integrations, and more is actively in development.
+            Start using AgileKit completely free today. Our Pro tier brings
+            powerful integrations and team insights, currently in development.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
           {tiers.map((tier, index) => (
-            <div 
+            <div
               key={tier.id}
               className={cn(
-                "flex flex-col p-10 rounded-3xl border relative overflow-hidden",
-                index === 1 
-                  ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-black" 
-                  : "border-gray-200/50 dark:border-zinc-800/50 bg-white dark:bg-black"
+                "flex flex-col p-10 rounded-[2rem] border relative overflow-hidden transition-all duration-300",
+                index === 1
+                  ? "border-gray-900 dark:border-white bg-gray-900 dark:bg-white text-white dark:text-black shadow-xl scale-100 md:scale-105 z-10"
+                  : "border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/50 dark:bg-zinc-900/10 hover:bg-white dark:hover:bg-zinc-900/30",
               )}
             >
               {tier.disabled && (
-                <div className="absolute top-6 right-6 px-3 py-1 bg-white/20 dark:bg-black/10 rounded-full text-xs font-bold tracking-wider uppercase">
+                <div className="absolute top-6 right-6 px-4 py-1.5 bg-white/20 dark:bg-black/10 backdrop-blur-md rounded-full text-xs font-bold tracking-wider uppercase">
                   In Development
                 </div>
               )}
-              
+
               <div className="mb-8">
-                <h4 className={cn("text-xl font-bold mb-2", index === 1 ? "text-white dark:text-black" : "text-gray-900 dark:text-white")}>{tier.name}</h4>
-                <div className="flex items-baseline gap-2 mb-4 h-12">
-                  <span className={cn("text-4xl sm:text-5xl font-bold tracking-tighter", index === 1 ? "text-white dark:text-black" : "text-gray-900 dark:text-white")}>{tier.price}</span>
+                <h4
+                  className={cn(
+                    "text-2xl font-bold mb-4",
+                    index === 1
+                      ? "text-white dark:text-black"
+                      : "text-gray-900 dark:text-white",
+                  )}
+                >
+                  {tier.name}
+                </h4>
+                <div className="flex items-baseline gap-2 mb-6 h-14">
+                  <span
+                    className={cn(
+                      "text-5xl sm:text-6xl font-bold tracking-tighter",
+                      index === 1
+                        ? "text-white dark:text-black"
+                        : "text-gray-900 dark:text-white",
+                    )}
+                  >
+                    {tier.price}
+                  </span>
                   {tier.period && (
-                    <span className={cn("text-base", index === 1 ? "text-gray-300 dark:text-gray-600" : "text-gray-500")}>{tier.period}</span>
+                    <span
+                      className={cn(
+                        "text-lg font-medium",
+                        index === 1
+                          ? "text-gray-300 dark:text-gray-600"
+                          : "text-gray-500",
+                      )}
+                    >
+                      /{tier.period}
+                    </span>
                   )}
                 </div>
-                <p className={cn("text-base font-light", index === 1 ? "text-gray-300 dark:text-gray-700" : "text-gray-600 dark:text-gray-400")}>{tier.description}</p>
+                <p
+                  className={cn(
+                    "text-lg font-light leading-relaxed",
+                    index === 1
+                      ? "text-gray-300 dark:text-gray-700"
+                      : "text-gray-600 dark:text-gray-400",
+                  )}
+                >
+                  {tier.description}
+                </p>
               </div>
 
-              <ul className="space-y-4 mb-10 flex-1">
-                {tier.features.map((feature) => (
-                  <li key={feature} className={cn("flex items-start gap-3 text-base", index === 1 ? "text-gray-200 dark:text-gray-800 opacity-80" : "text-gray-900 dark:text-gray-300")}>
-                    <span className={cn(index === 1 ? "text-gray-400 dark:text-gray-600" : "text-gray-400")}>—</span>
-                    {feature}
+              <ul className="space-y-5 mb-10 flex-1">
+                {tier.features.map((feature, fIndex) => (
+                  <li
+                    key={feature}
+                    className={cn(
+                      "flex items-start gap-4 text-base",
+                      index === 1
+                        ? "text-gray-200 dark:text-gray-800"
+                        : "text-gray-900 dark:text-gray-300",
+                    )}
+                  >
+                    {fIndex === 0 && index === 1 ? (
+                      <span
+                        className={cn(
+                          "font-bold",
+                          index === 1
+                            ? "text-white dark:text-black"
+                            : "text-gray-900 dark:text-white",
+                        )}
+                      >
+                        {feature}
+                      </span>
+                    ) : (
+                      <>
+                        <div className={cn(
+                          "flex items-center justify-center w-6 h-6 rounded-full shrink-0",
+                          index === 1 
+                            ? "bg-white/20 dark:bg-black/10" 
+                            : "bg-gray-200/50 dark:bg-zinc-800/50"
+                        )}>
+                          <Check
+                            className={cn(
+                              "h-3.5 w-3.5",
+                              index === 1
+                                ? "text-white dark:text-black"
+                                : "text-gray-900 dark:text-white",
+                            )}
+                          />
+                        </div>
+                        <span className="font-medium">{feature}</span>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -93,10 +172,10 @@ export function PricingSection() {
               {tier.disabled ? (
                 <div
                   className={cn(
-                    "inline-flex h-14 items-center justify-center px-8 text-base font-bold tracking-tight rounded-2xl cursor-not-allowed opacity-70",
+                    "inline-flex h-16 items-center justify-center px-8 text-lg font-bold tracking-tight rounded-2xl cursor-not-allowed opacity-70",
                     index === 1
                       ? "bg-white/20 dark:bg-black/10 text-white dark:text-black"
-                      : "bg-gray-100 dark:bg-zinc-900 text-gray-900 dark:text-white"
+                      : "bg-gray-100 dark:bg-zinc-900 text-gray-900 dark:text-white",
                   )}
                 >
                   {tier.cta}
@@ -105,13 +184,14 @@ export function PricingSection() {
                 <Link
                   href={tier.href}
                   className={cn(
-                    "inline-flex h-14 items-center justify-center px-8 text-base font-bold tracking-tight transition-all rounded-2xl",
+                    "inline-flex h-16 items-center justify-center px-8 text-lg font-bold tracking-tight transition-all rounded-2xl group",
                     index === 1
                       ? "bg-white dark:bg-black text-black dark:text-white hover:scale-105"
-                      : "bg-gray-100 dark:bg-zinc-900 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-800"
+                      : "bg-black dark:bg-white text-white dark:text-black hover:scale-105",
                   )}
                 >
                   {tier.cta}
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               )}
             </div>

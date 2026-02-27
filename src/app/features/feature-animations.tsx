@@ -110,49 +110,69 @@ export function AnalyticsAnimation() {
   );
 }
 
-export function TimerAnimation() {
-  const [time, setTime] = useState(60);
+export function JiraIntegrationAnimation() {
+  const [phase, setPhase] = useState<"idle" | "import" | "sync" | "done">("idle");
 
   useEffect(() => {
     let isMounted = true;
-    let interval: NodeJS.Timeout;
-    
     const play = async () => {
-      setTime(60);
-      interval = setInterval(() => {
-        if (!isMounted) return;
-        setTime((t) => (t > 0 ? t - 1 : 60));
-      }, 50); // Fast countdown for effect
+      while (isMounted) {
+        setPhase("idle");
+        await new Promise((r) => setTimeout(r, 1000));
+        if (!isMounted) break;
+
+        setPhase("import");
+        await new Promise((r) => setTimeout(r, 1200));
+        if (!isMounted) break;
+
+        setPhase("sync");
+        await new Promise((r) => setTimeout(r, 1200));
+        if (!isMounted) break;
+
+        setPhase("done");
+        await new Promise((r) => setTimeout(r, 2000));
+      }
     };
-    
     play();
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
+    return () => { isMounted = false; };
   }, []);
 
   return (
     <div className="absolute inset-0 flex items-end justify-center pb-4 sm:pb-8 pointer-events-none">
-       <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 h-48 bg-fuchsia-500/5 rounded-full blur-3xl"></div>
-       <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-fuchsia-100 dark:border-fuchsia-900/30 flex items-center justify-center relative z-10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm shadow-md translate-y-2">
-         <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-           <circle
-             cx="50"
-             cy="50"
-             r="46"
-             fill="none"
-             stroke="currentColor"
-             strokeWidth="8"
-             className="text-fuchsia-500 transition-all duration-75"
-             strokeDasharray="289"
-             strokeDashoffset={289 - (time / 60) * 289}
-           />
-         </svg>
-         <span className="text-xl sm:text-2xl font-bold font-mono text-fuchsia-600 dark:text-fuchsia-400">
-           00:{time.toString().padStart(2, '0')}
-         </span>
-       </div>
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl"></div>
+      <div className="flex items-center gap-4 sm:gap-6 z-10">
+        {/* Jira stack */}
+        <div className="flex flex-col gap-1.5">
+          <div className="w-20 h-7 sm:w-24 sm:h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-800/50 flex items-center px-2 gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-blue-500"></div>
+            <div className="h-1.5 w-10 bg-blue-200 dark:bg-blue-800 rounded"></div>
+          </div>
+          <div className="w-20 h-7 sm:w-24 sm:h-8 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-800/50 flex items-center px-2 gap-1.5">
+            <div className="w-3 h-3 rounded-sm bg-blue-500"></div>
+            <div className="h-1.5 w-8 bg-blue-200 dark:bg-blue-800 rounded"></div>
+          </div>
+        </div>
+
+        {/* Arrow / sync area */}
+        <div className="flex flex-col items-center gap-1">
+          <div className={`text-xs font-bold transition-all duration-500 ${phase === "import" ? "text-blue-500 opacity-100 translate-x-2" : phase === "sync" ? "text-indigo-500 opacity-100 -translate-x-2" : "opacity-0"}`}>
+            {phase === "import" ? "→" : "←"}
+          </div>
+          <div className={`w-8 h-0.5 rounded transition-all duration-500 ${phase === "import" ? "bg-blue-400 scale-x-100" : phase === "sync" ? "bg-indigo-400 scale-x-100" : "bg-gray-200 dark:bg-zinc-700 scale-x-50"}`}></div>
+        </div>
+
+        {/* AgileKit stack */}
+        <div className="flex flex-col gap-1.5">
+          <div className={`w-20 h-7 sm:w-24 sm:h-8 rounded-lg border flex items-center px-2 gap-1.5 transition-all duration-500 ${phase === "done" ? "bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-800/50" : "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700"}`}>
+            <div className="h-1.5 w-10 bg-gray-200 dark:bg-zinc-700 rounded"></div>
+            {phase === "done" && <Check className="w-3 h-3 text-green-500" />}
+          </div>
+          <div className={`w-20 h-7 sm:w-24 sm:h-8 rounded-lg border flex items-center px-2 gap-1.5 transition-all duration-500 ${phase === "sync" || phase === "done" ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-800/50" : "bg-white dark:bg-zinc-800 border-gray-200 dark:border-zinc-700"}`}>
+            {(phase === "sync" || phase === "done") && <span className="text-[10px] font-bold text-indigo-500">5 SP</span>}
+            <div className="h-1.5 w-8 bg-gray-200 dark:bg-zinc-700 rounded"></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -244,55 +264,60 @@ export function ScalesAnimation() {
   );
 }
 
-export function PlayerManagementAnimation() {
-  const [avatars, setAvatars] = useState<number[]>([]);
+export function TimeToConsensusAnimation() {
+  const [seconds, setSeconds] = useState(0);
+  const [dots, setDots] = useState<boolean[]>([false, false, false, false]);
+  const [consensus, setConsensus] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     const play = async () => {
       while (isMounted) {
-        setAvatars([]);
-        await new Promise((r) => setTimeout(r, 1000));
+        setSeconds(0);
+        setDots([false, false, false, false]);
+        setConsensus(false);
+        await new Promise((r) => setTimeout(r, 800));
         if (!isMounted) break;
 
-        setAvatars([1]);
-        await new Promise((r) => setTimeout(r, 500));
+        for (let s = 1; s <= 12; s++) {
+          if (!isMounted) break;
+          setSeconds(s);
+          if (s === 3) setDots([true, false, false, false]);
+          if (s === 6) setDots([true, true, false, false]);
+          if (s === 8) setDots([true, true, true, false]);
+          if (s === 11) setDots([true, true, true, true]);
+          await new Promise((r) => setTimeout(r, 150));
+        }
         if (!isMounted) break;
 
-        setAvatars([1, 2]);
-        await new Promise((r) => setTimeout(r, 700));
-        if (!isMounted) break;
-
-        setAvatars([1, 2, 3]);
+        setConsensus(true);
         await new Promise((r) => setTimeout(r, 2500));
       }
     };
     play();
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, []);
 
-  const colors = [
-    "bg-indigo-500 text-indigo-50",
-    "bg-violet-500 text-violet-50",
-    "bg-purple-500 text-purple-50",
-  ];
-  const initials = ["JD", "AB", "RW"];
+  const formatTime = (s: number) => `0:${s.toString().padStart(2, "0")}`;
 
   return (
-    <div className="absolute inset-0 flex items-end justify-center sm:justify-end pr-0 sm:pr-10 pb-4 sm:pb-8 pointer-events-none overflow-hidden">
-       <div className="absolute right-0 bottom-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl"></div>
-       <div className="flex -space-x-4 z-10">
-        {avatars.map((a, i) => (
-          <div
-            key={a}
-            className={`w-14 h-14 rounded-full ${colors[i]} border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-lg animate-in fade-in zoom-in slide-in-from-right-4 duration-300`}
-            style={{ zIndex: 10 - a }}
-          >
-            <span className="text-sm font-bold">{initials[i]}</span>
-          </div>
-        ))}
+    <div className="absolute inset-0 flex items-end justify-center pb-4 sm:pb-8 pointer-events-none">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl"></div>
+      <div className="flex flex-col items-center gap-3 z-10">
+        <span className={`text-3xl sm:text-4xl font-bold font-mono transition-colors duration-300 ${consensus ? "text-green-500" : "text-rose-500"}`}>
+          {formatTime(seconds)}
+        </span>
+        <div className="flex gap-2">
+          {dots.map((filled, i) => (
+            <div
+              key={i}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${filled ? (consensus ? "bg-green-500 scale-110" : "bg-rose-400") : "bg-gray-200 dark:bg-zinc-700"}`}
+            ></div>
+          ))}
+        </div>
+        <span className={`text-xs font-bold uppercase tracking-widest transition-all duration-500 ${consensus ? "text-green-500 opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}>
+          Consensus
+        </span>
       </div>
     </div>
   );
@@ -344,54 +369,73 @@ export function IssuesAnimation() {
   );
 }
 
-export function AutoCompleteAnimation() {
-  const [count, setCount] = useState(3);
-  const [revealed, setRevealed] = useState(false);
+export function VoterAlignmentAnimation() {
+  const [phase, setPhase] = useState<"scattered" | "converging" | "aligned">("scattered");
 
   useEffect(() => {
     let isMounted = true;
     const play = async () => {
       while (isMounted) {
-        setCount(3);
-        setRevealed(false);
+        setPhase("scattered");
+        await new Promise((r) => setTimeout(r, 1200));
+        if (!isMounted) break;
+
+        setPhase("converging");
         await new Promise((r) => setTimeout(r, 1000));
         if (!isMounted) break;
 
-        setCount(2);
-        await new Promise((r) => setTimeout(r, 1000));
-        if (!isMounted) break;
-
-        setCount(1);
-        await new Promise((r) => setTimeout(r, 1000));
-        if (!isMounted) break;
-
-        setRevealed(true);
+        setPhase("aligned");
         await new Promise((r) => setTimeout(r, 2500));
       }
     };
     play();
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, []);
 
+  const scattered = [
+    { top: "12%", left: "10%" },
+    { top: "8%", left: "78%" },
+    { top: "70%", left: "5%" },
+    { top: "75%", left: "85%" },
+    { top: "40%", left: "90%" },
+    { top: "65%", left: "45%" },
+  ];
+
+  const center = { top: "42%", left: "46%" };
+
+  const getPos = (i: number) => {
+    if (phase === "aligned") return center;
+    if (phase === "converging") {
+      const s = scattered[i];
+      return {
+        top: `${(parseFloat(s.top) + parseFloat(center.top)) / 2}%`,
+        left: `${(parseFloat(s.left) + parseFloat(center.left)) / 2}%`,
+      };
+    }
+    return scattered[i];
+  };
+
   return (
-    <div className="absolute inset-0 flex items-end justify-center sm:justify-end pr-0 sm:pr-8 pb-4 sm:pb-8 pointer-events-none">
-      <div className="absolute right-0 bottom-0 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl"></div>
-      <div className="flex flex-col items-center gap-4 z-10">
-        {!revealed ? (
-          <div className="w-16 h-16 rounded-full bg-white dark:bg-zinc-800 border-4 border-rose-100 dark:border-rose-900/30 flex items-center justify-center shadow-lg animate-in zoom-in duration-300">
-            <span className="text-3xl font-bold text-rose-500">{count}</span>
-          </div>
-        ) : (
-          <div className="flex gap-2 animate-in slide-in-from-bottom-4 fade-in duration-500">
-            {[5, 5, 8].map((v, i) => (
-              <div key={i} className="w-10 h-14 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg flex items-center justify-center font-bold text-lg text-gray-900 dark:text-white shadow-md">
-                {v}
-              </div>
-            ))}
-          </div>
-        )}
+    <div className="absolute inset-0 flex items-end justify-center pb-4 sm:pb-8 pointer-events-none">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-48 h-48 bg-fuchsia-500/5 rounded-full blur-3xl"></div>
+      <div className="relative w-36 h-28 sm:w-44 sm:h-36 z-10">
+        {/* Background grid */}
+        <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-px opacity-20">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={i} className="border border-gray-300 dark:border-zinc-700 rounded-sm"></div>
+          ))}
+        </div>
+        {/* Dots */}
+        {scattered.map((_, i) => {
+          const pos = getPos(i);
+          return (
+            <div
+              key={i}
+              className={`absolute w-3 h-3 rounded-full transition-all duration-700 ease-in-out ${phase === "aligned" ? "bg-green-500 scale-125" : "bg-rose-400"}`}
+              style={{ top: pos.top, left: pos.left }}
+            ></div>
+          );
+        })}
       </div>
     </div>
   );

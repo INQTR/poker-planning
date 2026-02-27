@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Check, X, ArrowRight, Play } from "lucide-react";
+import { Check, ArrowRight, Play } from "lucide-react";
 import { PricingSection } from "@/components/homepage";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
@@ -12,112 +12,144 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const comparisonFeatures = [
-  { name: "Team members", free: "Unlimited", pro: "Unlimited" },
-  { name: "Planning sessions", free: "Unlimited", pro: "Unlimited" },
-  { name: "Real-time collaboration", free: true, pro: true },
-  { name: "Session history", free: "Unlimited (for now)", pro: "Full history" },
-  { name: "Analytics dashboard", free: false, pro: true },
-  { name: "Export reports", free: "CSV only", pro: "CSV + JSON + Analytics" },
-  { name: "Jira & GitHub integrations", free: false, pro: true },
+const comparisonCategories = [
+  {
+    category: "Core Planning",
+    features: [
+      { name: "Team members", free: "Unlimited", pro: "Unlimited" },
+      { name: "Planning sessions", free: "Unlimited", pro: "Unlimited" },
+      { name: "Real-time voting & whiteboard", free: true, pro: true },
+      { name: "Spectator mode", free: true, pro: true },
+      { name: "Session timer", free: true, pro: true },
+    ],
+  },
+  {
+    category: "History & Retention",
+    features: [
+      { name: "Session history", free: "5-day rolling", pro: "Unlimited" },
+      { name: "Issue & vote data retention", free: "5 days", pro: "Unlimited" },
+    ],
+  },
+  {
+    category: "Analytics & Insights",
+    features: [
+      { name: "Basic results summary", free: true, pro: true },
+      { name: "Time-to-consensus tracking", free: false, pro: true },
+      { name: "Voter alignment matrix", free: false, pro: true },
+      { name: "Sprint predictability score", free: false, pro: true },
+      { name: "Estimation accuracy trends", free: false, pro: true },
+      { name: "Automated session summaries", free: false, pro: true },
+    ],
+  },
+  {
+    category: "Exports & Integrations",
+    features: [
+      { name: "CSV export", free: true, pro: true },
+      { name: "JSON & analytics export", free: false, pro: true },
+      { name: "Two-way Jira Cloud sync", free: false, pro: true },
+      { name: "GitHub integration", free: false, pro: true },
+    ],
+  },
+  {
+    category: "Support",
+    features: [
+      { name: "Community support", free: true, pro: true },
+      { name: "Priority email support", free: false, pro: true },
+    ],
+  },
 ];
 
 const faqs = [
   {
     question: "Do all team members need a Pro account?",
     answer:
-      "No. Only the room owner needs Pro to enable advanced features for that room. Other participants can join and use those features for free.",
+      "No! Only the room owner will need Pro to enable advanced features for that room. Other participants will still be able to join and use those features for free.",
   },
   {
-    question: "What happens when Pro launches?",
+    question: "What happens to my past sessions on the Free tier?",
     answer:
-      "Right now everything is free with no limits. When Pro launches, free rooms will keep a rolling 5-day history. If your Pro subscription ends, you get a 14-day grace period before the free retention policy kicks in.",
+      "Until paid plans launch, current retention rules stay as they are today. If we introduce a shorter free-tier history window in the future, we will publish that change on this page before it takes effect.",
   },
   {
     question: "Can I cancel my Pro subscription anytime?",
     answer:
-      "Yes. You can cancel anytime from your dashboard. If you cancel, your rooms enter a 14-day grace period before free retention rules apply.",
+      "Paid checkout is not live yet. Before Pro launches, we will publish the final cancellation flow, billing cadence, and any downgrade rules on this page and at checkout.",
   },
   {
-    question: "What payment methods do you accept?",
+    question: "Is there a free trial for Pro?",
     answer:
-      "All major credit cards, PayPal, and local payment methods via Paddle. Paddle handles secure payments in 29 currencies.",
-  },
-  {
-    question: "Is there a free trial?",
-    answer:
-      "The Free tier has unlimited usage. When Pro launches, existing accounts will receive 6 months of free Pro access to evaluate the new features.",
-  },
-  {
-    question: "How does billing work?",
-    answer:
-      "Payments are processed by Paddle, our Merchant of Record. They handle all billing, invoices, and tax compliance globally.",
+      "The Free tier has unlimited usage for core features. When Pro fully launches, existing active accounts will receive early access to evaluate the new features.",
   },
 ];
 
 export function PricingContent() {
   return (
-    <div className="bg-white dark:bg-black min-h-screen">
+    <div className="bg-white dark:bg-black min-h-screen selection:bg-primary/10 selection:text-primary">
       <Navbar />
 
-      <main className="relative isolate overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <svg
-            className="absolute inset-0 h-full w-full stroke-gray-200 dark:stroke-white/5 [mask-image:radial-gradient(100%_100%_at_top_center,white,transparent)]"
-            aria-hidden="true"
-          >
-            <defs>
-              <pattern
-                id="pricing-pattern"
-                width={40}
-                height={40}
-                x="50%"
-                y={-1}
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M.5 40V.5H40" fill="none" />
-              </pattern>
-            </defs>
-            <rect
-              width="100%"
-              height="100%"
-              strokeWidth={0}
-              fill="url(#pricing-pattern)"
-            />
-          </svg>
-          <div
-            className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-            aria-hidden="true"
-          >
-            <div
-              className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-purple-600 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
-          </div>
-        </div>
-
+      <main className="relative isolate overflow-hidden bg-white dark:bg-black">
         {/* Hero Section */}
-        <section className="relative pt-32 pb-8 sm:pt-40 sm:pb-12">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-                Better planning, forever free
+        <section className="relative pt-32 pb-24 sm:pt-40 sm:pb-32 overflow-hidden bg-white dark:bg-black">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+          
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8 relative z-10">
+            <div className="mx-auto max-w-4xl text-center">
+              <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
+                Simple pricing,<br />
+                <span className="text-gray-300 dark:text-zinc-700">infinite value.</span>
               </h1>
-              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                AgileKit is 100% free for teams of any size. Upgrade to Pro to
-                unlock full history, analytics, integrations, and support the
-                project you love.
+
+              <p className="mt-8 text-xl sm:text-2xl leading-relaxed text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-light">
+                AgileKit is completely free for core planning sessions today.
+                Pro is in development and is planned to add deeper insights,
+                longer retention, and workflow integrations.
               </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <span>No credit card required</span>
-                <span className="hidden sm:inline">•</span>
-                <span>Cancel anytime</span>
-                <span className="hidden sm:inline">•</span>
-                <span>Open source</span>
+
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-base font-medium text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-gray-900 dark:text-white" />
+                  <span>No credit card required for Free</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-gray-900 dark:text-white" />
+                  <span>Pro checkout not live yet</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-gray-900 dark:text-white" />
+                  <span>Open source</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Status Banner */}
+        <section className="border-y border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/50 dark:bg-zinc-900/10">
+          <div className="mx-auto max-w-[90rem] px-6 py-12 lg:px-8">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="max-w-2xl">
+                <p className="text-sm font-bold tracking-widest text-primary uppercase mb-2">
+                  Launch status
+                </p>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
+                  Paid checkout is not live yet
+                </h2>
+                <p className="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
+                  We are preparing the site for payment-provider approval
+                  before enabling any live checkout. Exact launch pricing,
+                  final billing terms, and any Pro-specific retention rules
+                  will be published here before checkout goes live.
+                </p>
+              </div>
+              <div className="shrink-0 flex flex-col gap-4 w-full lg:w-auto">
+                <div className="rounded-2xl border border-gray-200/50 bg-white p-6 text-center text-base font-medium text-gray-600 dark:border-zinc-800/50 dark:bg-zinc-900/50 dark:text-gray-400">
+                  Custom or enterprise pricing is not currently offered.
+                </div>
+                <div className="flex flex-wrap justify-center gap-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <Link href="/refund-policy" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Refund policy</Link>
+                  <Link href="/terms" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Terms</Link>
+                  <a href="mailto:ivanchenko.b@gmail.com" className="hover:text-gray-900 dark:hover:text-white transition-colors underline underline-offset-4">Contact billing</a>
+                </div>
               </div>
             </div>
           </div>
@@ -127,170 +159,191 @@ export function PricingContent() {
         <PricingSection />
 
         {/* Comparison Table */}
-        <section className="py-24 sm:py-32 bg-gray-50 dark:bg-zinc-950/50">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Compare plans
-              </h2>
-              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                See exactly what you get with each plan
+        <section className="py-24 sm:py-32 bg-gray-50/50 dark:bg-zinc-900/10 border-y border-gray-200/50 dark:border-zinc-800/50">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="mb-16 max-w-2xl">
+              <p className="text-sm font-bold tracking-widest text-primary uppercase mb-4">
+                Compare Plans
               </p>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
+                Everything you need,<br />
+                <span className="text-gray-400 dark:text-zinc-600">nothing you don&apos;t.</span>
+              </h2>
             </div>
 
-            <div className="mx-auto max-w-3xl">
-              <div className="overflow-hidden rounded-2xl ring-1 ring-gray-200 dark:ring-zinc-800">
-                {/* Header */}
-                <div className="grid grid-cols-3 bg-gray-100 dark:bg-zinc-900">
-                  <div className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">
-                    Feature
-                  </div>
-                  <div className="px-6 py-4 text-center text-sm font-semibold text-gray-900 dark:text-white">
-                    Free
-                  </div>
-                  <div className="px-6 py-4 text-center text-sm font-semibold text-primary">
-                    Pro
-                  </div>
+            <div className="overflow-hidden rounded-[2rem] border border-gray-200/50 dark:border-zinc-800/50 bg-white dark:bg-black shadow-sm">
+              {/* Header */}
+              <div className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-3 bg-gray-50/80 dark:bg-zinc-900/80 border-b border-gray-200/50 dark:border-zinc-800/50">
+                <div className="px-6 sm:px-8 py-6 text-sm font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase">
+                  Feature
                 </div>
-
-                {/* Rows */}
-                {comparisonFeatures.map((feature, index) => (
-                  <div
-                    key={feature.name}
-                    className={`grid grid-cols-3 ${
-                      index % 2 === 0
-                        ? "bg-white dark:bg-surface-1"
-                        : "bg-gray-50 dark:bg-zinc-950/50"
-                    }`}
-                  >
-                    <div className="px-6 py-4 text-sm text-gray-900 dark:text-gray-300">
-                      {feature.name}
-                    </div>
-                    <div className="px-6 py-4 text-center">
-                      {typeof feature.free === "boolean" ? (
-                        feature.free ? (
-                          <Check className="mx-auto h-5 w-5 text-green-600 dark:text-green-500" />
-                        ) : (
-                          <X className="mx-auto h-5 w-5 text-gray-400 dark:text-gray-600" />
-                        )
-                      ) : (
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {feature.free}
-                        </span>
-                      )}
-                    </div>
-                    <div className="px-6 py-4 text-center">
-                      {typeof feature.pro === "boolean" ? (
-                        feature.pro ? (
-                          <Check className="mx-auto h-5 w-5 text-green-600 dark:text-green-500" />
-                        ) : (
-                          <X className="mx-auto h-5 w-5 text-gray-400 dark:text-gray-600" />
-                        )
-                      ) : (
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {feature.pro}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                <div className="px-4 sm:px-8 py-6 text-center text-base sm:text-lg font-bold tracking-tight text-gray-900 dark:text-white border-l border-gray-200/50 dark:border-zinc-800/50">
+                  Free
+                </div>
+                <div className="px-4 sm:px-8 py-6 text-center text-base sm:text-lg font-bold tracking-tight text-white bg-gray-900 dark:bg-white dark:text-black border-l border-gray-900 dark:border-white">
+                  Pro
+                </div>
               </div>
+
+              {/* Category groups */}
+              {comparisonCategories.map((group, groupIndex) => (
+                <div key={group.category}>
+                  {/* Category header */}
+                  <div className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-3 border-b border-gray-200/50 dark:border-zinc-800/50 bg-gray-50/60 dark:bg-zinc-900/40">
+                    <div className="px-6 sm:px-8 py-4 col-span-3 sm:col-span-1">
+                      <span className="text-xs font-bold tracking-widest text-primary uppercase">
+                        {group.category}
+                      </span>
+                    </div>
+                    <div className="hidden sm:block border-l border-gray-200/50 dark:border-zinc-800/50" />
+                    <div className="hidden sm:block border-l border-gray-200/50 dark:border-zinc-800/50" />
+                  </div>
+
+                  {/* Feature rows */}
+                  <div className="divide-y divide-gray-200/50 dark:divide-zinc-800/50">
+                    {group.features.map((feature) => {
+                      const isProExclusive =
+                        feature.free === false ||
+                        (typeof feature.free === "string" &&
+                          typeof feature.pro === "string" &&
+                          feature.free !== feature.pro);
+
+                      return (
+                        <div
+                          key={feature.name}
+                          className="grid grid-cols-[1fr_120px_120px] sm:grid-cols-3 transition-colors hover:bg-gray-50/50 dark:hover:bg-zinc-900/30"
+                        >
+                          <div className="px-6 sm:px-8 py-4 sm:py-5 text-sm sm:text-base font-medium text-gray-900 dark:text-gray-200 flex items-center">
+                            {feature.name}
+                          </div>
+                          <div className="px-4 sm:px-8 py-4 sm:py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50">
+                            {typeof feature.free === "boolean" ? (
+                              feature.free ? (
+                                <Check className="h-5 w-5 sm:h-6 sm:w-6 text-gray-900 dark:text-white" />
+                              ) : (
+                                <span className="text-gray-300 dark:text-zinc-700 text-lg">
+                                  &mdash;
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-sm sm:text-base font-light text-gray-600 dark:text-gray-400">
+                                {feature.free}
+                              </span>
+                            )}
+                          </div>
+                          <div
+                            className={`px-4 sm:px-8 py-4 sm:py-5 text-center flex items-center justify-center border-l border-gray-200/50 dark:border-zinc-800/50 ${
+                              isProExclusive
+                                ? "bg-gray-900/[0.03] dark:bg-white/[0.03]"
+                                : ""
+                            }`}
+                          >
+                            {typeof feature.pro === "boolean" ? (
+                              feature.pro ? (
+                                <div
+                                  className={`flex items-center justify-center rounded-full ${
+                                    isProExclusive
+                                      ? "w-7 h-7 sm:w-8 sm:h-8 bg-gray-900 dark:bg-white"
+                                      : ""
+                                  }`}
+                                >
+                                  <Check
+                                    className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                                      isProExclusive
+                                        ? "text-white dark:text-black"
+                                        : "text-gray-900 dark:text-white"
+                                    }`}
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-gray-300 dark:text-zinc-700 text-lg">
+                                  &mdash;
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">
+                                {feature.pro}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Separator between groups */}
+                  {groupIndex < comparisonCategories.length - 1 && (
+                    <div className="border-b-2 border-gray-200/80 dark:border-zinc-800/80" />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="py-24 sm:py-32 bg-gray-50 dark:bg-zinc-950/50">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-                Frequently asked questions
-              </h2>
-              <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
-                Everything you need to know about pricing
-              </p>
-            </div>
+        <section className="py-24 sm:py-32 bg-white dark:bg-black">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="grid lg:grid-cols-12 gap-16">
+              <div className="lg:col-span-5">
+                <p className="text-sm font-bold tracking-widest text-primary uppercase mb-4">
+                  FAQ
+                </p>
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1] mb-6">
+                  Frequently asked questions.
+                </h2>
+                <p className="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
+                  Everything you need to know about AgileKit pricing and plans.
+                  Can&apos;t find what you&apos;re looking for? Reach out to our team.
+                </p>
+              </div>
 
-            <div className="mx-auto max-w-3xl">
-              <Accordion className="space-y-4">
-                {faqs.map((faq, index) => (
-                  <AccordionItem
-                    key={faq.question}
-                    value={`item-${index}`}
-                    className="bg-white dark:bg-surface-1 rounded-xl px-6 border-0 ring-1 ring-gray-200 dark:ring-zinc-800"
-                  >
-                    <AccordionTrigger className="text-base font-semibold text-gray-900 dark:text-white hover:no-underline py-5">
-                      {faq.question}
-                    </AccordionTrigger>
-                    <AccordionContent className="text-base text-gray-600 dark:text-gray-300 pb-5">
-                      {faq.answer}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
+              <div className="lg:col-span-7">
+                <Accordion className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <AccordionItem
+                      key={faq.question}
+                      value={`item-${index}`}
+                      className="bg-gray-50/50 dark:bg-zinc-900/10 rounded-3xl px-8 border border-gray-200/50 dark:border-zinc-800/50"
+                    >
+                      <AccordionTrigger className="text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:no-underline py-6">
+                        {faq.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-base font-light leading-relaxed text-gray-600 dark:text-gray-400 pb-6">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Final CTA */}
-        <section className="relative py-24 sm:py-32 bg-gray-900 dark:bg-black overflow-hidden">
-          <div className="absolute inset-0 -z-10">
-            <svg
-              className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-white/10 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]"
-              aria-hidden="true"
-            >
-              <defs>
-                <pattern
-                  id="cta-pattern"
-                  width={200}
-                  height={200}
-                  x="50%"
-                  y={-1}
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path d="M100 200V.5M.5 .5H200" fill="none" />
-                </pattern>
-              </defs>
-              <rect
-                width="100%"
-                height="100%"
-                strokeWidth={0}
-                fill="url(#cta-pattern)"
-              />
-            </svg>
-            <div className="absolute inset-x-0 top-10 -z-10 transform-gpu overflow-hidden blur-3xl">
-              <div
-                className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-purple-600 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-                style={{
-                  clipPath:
-                    "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
+        <section className="relative py-24 sm:py-32 bg-gray-50/50 dark:bg-zinc-900/10 border-t border-gray-200/50 dark:border-zinc-800/50">
+          <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
+            <div className="mx-auto max-w-4xl text-center">
+              <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[0.95]">
                 Ready to plan better?
               </h2>
-              <p className="mt-6 text-lg text-gray-300">
-                Start using AgileKit for faster, more accurate sprint
-                estimation — completely free.
+              <p className="mt-8 text-xl sm:text-2xl text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                Start using AgileKit for faster, more accurate sprint estimation
+                — jump right in, completely free.
               </p>
-              <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/room/new"
-                  className="group inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-primary/90 hover:scale-105"
+                  className="inline-flex h-16 items-center justify-center gap-2 bg-black dark:bg-white px-12 text-lg font-bold tracking-tight text-white dark:text-black hover:scale-105 transition-transform duration-200 rounded-2xl w-full sm:w-auto"
                 >
                   Start planning for free
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
                 <Link
                   href="/demo"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20 hover:scale-105"
+                  className="inline-flex h-16 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-12 text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"
                 >
-                  <Play className="h-5 w-5" />
+                  <Play className="h-5 w-5" fill="currentColor" />
                   View demo
                 </Link>
               </div>

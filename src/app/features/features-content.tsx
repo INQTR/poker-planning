@@ -7,8 +7,6 @@ import {
   Timer,
   BarChart3,
   Layout,
-  PlayCircle,
-  UserPlus,
   FileText,
   Moon,
   Smartphone,
@@ -20,8 +18,6 @@ import {
   Database,
   Palette,
   FileDown,
-  History,
-  Settings,
   TrendingUp,
   Target,
   Layers,
@@ -31,15 +27,15 @@ import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { GithubIcon } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { 
+import {
   RealtimeVotingAnimation,
   AnalyticsAnimation,
-  TimerAnimation,
+  JiraIntegrationAnimation,
   CanvasAnimation,
   ScalesAnimation,
-  PlayerManagementAnimation,
+  TimeToConsensusAnimation,
   IssuesAnimation,
-  AutoCompleteAnimation
+  VoterAlignmentAnimation,
 } from "./feature-animations";
 
 // Features that are available now
@@ -84,26 +80,28 @@ const coreFeatures = [
     visual: IssuesAnimation,
   },
   {
-    name: "Auto-Complete Voting",
-    description: "3-second countdown auto-reveal when all participants vote",
-    icon: PlayCircle,
-    gradient: "from-rose-500 to-pink-600",
-    visual: AutoCompleteAnimation,
-  },
-  {
-    name: "Player Management",
-    description: "Join and leave rooms freely, with spectator mode support",
-    icon: UserPlus,
-    gradient: "from-indigo-500 to-violet-600",
-    visual: PlayerManagementAnimation,
-  },
-  {
-    name: "Synchronized Timer",
+    name: "Jira Cloud Integration",
     description:
-      "Server-synced countdown with start, pause, and reset controls",
+      "Two-way sync — import sprints, push estimates back automatically",
+    icon: Link2,
+    gradient: "from-blue-500 to-indigo-600",
+    visual: JiraIntegrationAnimation,
+  },
+  {
+    name: "Time-to-Consensus Tracking",
+    description:
+      "Measure how long your team takes to reach agreement on each story",
     icon: Timer,
+    gradient: "from-rose-500 to-pink-600",
+    visual: TimeToConsensusAnimation,
+  },
+  {
+    name: "Voter Alignment Matrix",
+    description:
+      "Visualize voting patterns and spot persistent disagreements",
+    icon: Target,
     gradient: "from-fuchsia-500 to-purple-600",
-    visual: TimerAnimation,
+    visual: VoterAlignmentAnimation,
   },
 ];
 
@@ -116,16 +114,33 @@ const quickFeatures = [
   { name: "Spectator Mode", icon: Eye },
 ];
 
-const comingSoonFeatures = [
+const recentlyShipped = [
   {
-    name: "Session History",
-    description: "View and analyze past planning sessions",
-    icon: History,
+    name: "Sprint Predictability Score",
+    description:
+      "Track estimation accuracy over time with predictability health metrics",
+    icon: TrendingUp,
   },
   {
-    name: "Jira Integration",
-    description: "Import and sync issues directly from Jira",
-    icon: Settings,
+    name: "Enhanced Data Exports",
+    description:
+      "Export full session data as CSV or JSON with analytics included",
+    icon: FileDown,
+  },
+];
+
+const upNextFeatures = [
+  {
+    name: "GitHub Integration",
+    description:
+      "Import issues from repositories and push estimates to GitHub Projects",
+    icon: Code2,
+  },
+  {
+    name: "Automated Session Summaries",
+    description:
+      "Auto-generated session reports delivered to participants via email",
+    icon: FileText,
   },
 ];
 
@@ -463,11 +478,11 @@ export function FeaturesContent() {
                   <Shield className="h-8 w-8 text-gray-900 dark:text-white" />
                 </div>
                 <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
-                  Zero Tracking
+                  Privacy Controls
                 </h3>
                 <p className="text-lg font-light leading-relaxed text-gray-600 dark:text-gray-400">
-                  No analytics, no cookies, no data collection. Your privacy is
-                  our priority.
+                  Essential cookies keep sign-in and preferences working.
+                  Optional analytics stay off unless you opt in.
                 </p>
               </div>
 
@@ -487,7 +502,7 @@ export function FeaturesContent() {
           </div>
         </section>
 
-        {/* Coming Soon */}
+        {/* Roadmap */}
         <section className="py-24 sm:py-32 bg-white dark:bg-black">
           <div className="mx-auto max-w-[90rem] px-6 lg:px-8">
             <div className="mb-16">
@@ -495,13 +510,45 @@ export function FeaturesContent() {
                 Roadmap
               </p>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
-                Coming Soon.<br />
-                <span className="text-gray-400 dark:text-zinc-600">What&apos;s next.</span>
+                Shipping fast.<br />
+                <span className="text-gray-400 dark:text-zinc-600">Here&apos;s what&apos;s new.</span>
               </h2>
             </div>
 
+            {/* Recently Shipped */}
+            <h3 className="text-xs font-bold tracking-widest text-primary uppercase mb-6">
+              Recently Shipped
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+              {recentlyShipped.map((feature) => (
+                <div
+                  key={feature.name}
+                  className="rounded-3xl bg-gray-50/50 dark:bg-zinc-900/10 p-8 border border-gray-200/50 dark:border-zinc-800/50"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex h-12 w-12 items-center justify-center bg-white dark:bg-zinc-900 border border-gray-200/50 dark:border-zinc-800/50 rounded-2xl">
+                      <feature.icon className="h-5 w-5 text-gray-900 dark:text-white" />
+                    </div>
+                    <span className="px-4 py-2 rounded-full bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-sm font-bold tracking-wide">
+                      Shipped
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
+                    {feature.name}
+                  </h3>
+                  <p className="text-base font-light leading-relaxed text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Up Next */}
+            <h3 className="text-xs font-bold tracking-widest text-primary uppercase mb-6">
+              Up Next
+            </h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {comingSoonFeatures.map((feature) => (
+              {upNextFeatures.map((feature) => (
                 <div
                   key={feature.name}
                   className="rounded-3xl bg-gray-50/50 dark:bg-zinc-900/10 p-8 border border-gray-200/50 dark:border-zinc-800/50"
@@ -511,7 +558,7 @@ export function FeaturesContent() {
                       <feature.icon className="h-5 w-5 text-gray-900 dark:text-white" />
                     </div>
                     <span className="px-4 py-2 rounded-full bg-gray-200/50 dark:bg-zinc-800/50 text-gray-900 dark:text-white text-sm font-bold tracking-wide">
-                      Soon
+                      Planned
                     </span>
                   </div>
                   <h3 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white mb-3">
