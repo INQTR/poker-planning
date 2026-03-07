@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.7.1](https://github.com/INQTR/poker-planning/compare/agilekit-v2.7.0...agilekit-v2.7.1) (2026-03-07)
+
+
+### Miscellaneous
+
+* **deps:** bump @hono/node-server from 1.19.9 to 1.19.10 ([#163](https://github.com/INQTR/poker-planning/issues/163)) ([9eb4488](https://github.com/INQTR/poker-planning/commit/9eb44887efd959cf3f2813ab537e6679bce9b657))
+* **deps:** bump express-rate-limit from 8.2.1 to 8.3.0 ([#164](https://github.com/INQTR/poker-planning/issues/164)) ([9d653ef](https://github.com/INQTR/poker-planning/commit/9d653efd30cd74cd078fe8d33f1ecd464eb92af6))
+* **deps:** bump hono from 4.12.2 to 4.12.5 ([#162](https://github.com/INQTR/poker-planning/issues/162)) ([a632895](https://github.com/INQTR/poker-planning/commit/a6328959ec02ba0e60e68a0d8842025d5f37ff14))
+
 ## [2.7.0](https://github.com/INQTR/poker-planning/compare/agilekit-v2.6.0...agilekit-v2.7.0) (2026-02-27)
 
 
