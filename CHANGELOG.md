@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.2](https://github.com/INQTR/poker-planning/compare/agilekit-v2.7.1...agilekit-v2.7.2) (2026-03-12)
+
+
+### Miscellaneous
+
+* **deps:** bump hono from 4.12.5 to 4.12.7 ([#166](https://github.com/INQTR/poker-planning/issues/166)) ([73cc560](https://github.com/INQTR/poker-planning/commit/73cc560b87e7bf0d3c56744d190600c9bae3182a))
+
 ## [2.7.1](https://github.com/INQTR/poker-planning/compare/agilekit-v2.7.0...agilekit-v2.7.1) (2026-03-07)
 
 
