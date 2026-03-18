@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.7.3](https://github.com/spokvulcan/poker-planning/compare/agilekit-v2.7.2...agilekit-v2.7.3) (2026-03-18)
+
+
+### Miscellaneous
+
+* **deps:** bump kysely from 0.28.10 to 0.28.12 ([#169](https://github.com/spokvulcan/poker-planning/issues/169)) ([899a756](https://github.com/spokvulcan/poker-planning/commit/899a756d3e99e1abf5c4895c120093aa42d4cc73))
+* **deps:** bump next from 16.1.6 to 16.1.7 ([#168](https://github.com/spokvulcan/poker-planning/issues/168)) ([077bfc7](https://github.com/spokvulcan/poker-planning/commit/077bfc7eb4077c32b24e6734fec2541b194d1a11))
+* update GitHub URLs from INQTR to spokvulcan ([393e178](https://github.com/spokvulcan/poker-planning/commit/393e17810b25333abc8232c1d3043b7e0a14d483))
+
 ## [2.7.2](https://github.com/spokvulcan/poker-planning/compare/agilekit-v2.7.1...agilekit-v2.7.2) (2026-03-12)
 
 
