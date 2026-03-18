@@ -206,7 +206,7 @@ export function FeaturesContent() {
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <a
-                  href="https://github.com/INQTR/poker-planning"
+                  href="https://github.com/spokvulcan/poker-planning"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex h-16 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-12 text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"
@@ -594,7 +594,7 @@ export function FeaturesContent() {
                   <ArrowRight className="h-5 w-5" />
                 </Link>
                 <a
-                  href="https://github.com/INQTR/poker-planning"
+                  href="https://github.com/spokvulcan/poker-planning"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex h-16 items-center justify-center gap-2 bg-white dark:bg-zinc-950 border-2 border-gray-200 dark:border-zinc-800 px-12 text-lg font-bold tracking-tight text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors rounded-2xl w-full sm:w-auto"

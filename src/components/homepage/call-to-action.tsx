@@ -25,7 +25,7 @@ export const CallToAction = () => {
                 <ArrowRight className="h-5 w-5" />
               </Link>
               <a
-                href="https://github.com/INQTR/poker-planning"
+                href="https://github.com/spokvulcan/poker-planning"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex h-16 w-full sm:w-auto items-center justify-center bg-transparent border-2 border-white/20 dark:border-black/20 px-12 text-lg font-bold tracking-tight text-white dark:text-black hover:bg-white/10 dark:hover:bg-black/10 transition-colors rounded-2xl"

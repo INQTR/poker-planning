@@ -129,7 +129,7 @@ export class HomePage {
     await expect(this.githubLink).toBeVisible();
     await expect(this.githubLink).toHaveAttribute(
       "href",
-      "https://github.com/INQTR/poker-planning"
+      "https://github.com/spokvulcan/poker-planning"
     );
     await expect(this.githubLink).toHaveAttribute("target", "_blank");
     await expect(this.githubLink).toHaveAttribute("rel", "noopener noreferrer");

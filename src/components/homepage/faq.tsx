@@ -71,7 +71,7 @@ export function FAQ() {
             <div className="p-8 bg-white dark:bg-black rounded-3xl border border-gray-200/50 dark:border-zinc-800/50">
               <p className="text-base text-gray-900 dark:text-gray-100 font-medium mb-2">Still have questions?</p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">Reach out to us on GitHub or check our detailed documentation.</p>
-              <a href="https://github.com/INQTR/poker-planning" target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 bg-gray-100 dark:bg-zinc-800 px-6 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors rounded-xl">
+              <a href="https://github.com/spokvulcan/poker-planning" target="_blank" rel="noopener noreferrer" className="inline-flex h-12 items-center justify-center gap-2 bg-gray-100 dark:bg-zinc-800 px-6 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors rounded-xl">
                 View GitHub
               </a>
             </div>

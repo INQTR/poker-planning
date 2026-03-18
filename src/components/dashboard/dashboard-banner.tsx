@@ -22,7 +22,7 @@ export function DashboardBanner() {
         </div>
         <div className="flex shrink-0 w-full sm:w-auto">
           <a 
-            href="https://github.com/INQTR/poker-planning/issues/new" 
+            href="https://github.com/spokvulcan/poker-planning/issues/new" 
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-indigo-600 text-white hover:bg-indigo-600/90 h-8 px-3 w-full sm:w-auto shadow-sm"

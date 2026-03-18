@@ -15,7 +15,7 @@ export function useGitHubStats(): GitHubStats {
     async function fetchGitHubStats() {
       try {
         const response = await fetch(
-          "https://api.github.com/repos/INQTR/poker-planning",
+          "https://api.github.com/repos/spokvulcan/poker-planning",
         );
         if (!response.ok) {
           throw new Error("Failed to fetch GitHub stats");

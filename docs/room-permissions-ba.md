@@ -9,7 +9,7 @@ Currently, all room members have equal permissions. Any participant can reveal c
 - **No accountability** - anyone can modify/delete issues without restriction
 - **No ownership** - if a disruptive user joins, they have full control equal to the creator
 
-> Ref: [GitHub Issue #142](https://github.com/INQTR/poker-planning/issues/142)
+> Ref: [GitHub Issue #142](https://github.com/spokvulcan/poker-planning/issues/142)
 
 ---
 

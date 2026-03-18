@@ -14,10 +14,10 @@ const navigation = {
     { name: "About", href: "/about" },
     { name: "Blog", href: "/blog" },
     { name: "Changelog", href: "/changelog" },
-    { name: "Open Source", href: "https://github.com/INQTR/poker-planning" },
+    { name: "Open Source", href: "https://github.com/spokvulcan/poker-planning" },
     {
       name: "Contribute",
-      href: "https://github.com/INQTR/poker-planning/blob/main/CONTRIBUTING.md",
+      href: "https://github.com/spokvulcan/poker-planning/blob/main/CONTRIBUTING.md",
     },
   ],
   legal: [
@@ -26,7 +26,7 @@ const navigation = {
     { name: "Refund Policy", href: "/refund-policy" },
     {
       name: "License",
-      href: "https://github.com/INQTR/poker-planning/blob/main/LICENSE",
+      href: "https://github.com/spokvulcan/poker-planning/blob/main/LICENSE",
     },
   ],
   social: [
@@ -41,7 +41,7 @@ const navigation = {
     },
     {
       name: "GitHub",
-      href: "https://github.com/INQTR/poker-planning",
+      href: "https://github.com/spokvulcan/poker-planning",
       icon: (props: SVGProps<SVGSVGElement>) => (
         <svg fill="currentColor" viewBox="0 0 24 24" {...props}>
           <path

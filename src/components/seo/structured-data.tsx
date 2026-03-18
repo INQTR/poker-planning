@@ -18,7 +18,7 @@ export function WebApplicationSchema() {
     author: {
       "@type": "Organization",
       name: "AgileKit",
-      url: "https://github.com/INQTR/poker-planning",
+      url: "https://github.com/spokvulcan/poker-planning",
     },
     screenshot: `${baseUrl}/og-image.png`,
     featureList: [
@@ -47,7 +47,7 @@ export function OrganizationSchema() {
     name: "AgileKit",
     url: baseUrl,
     logo: `${baseUrl}/logo.svg`,
-    sameAs: ["https://github.com/INQTR/poker-planning"],
+    sameAs: ["https://github.com/spokvulcan/poker-planning"],
   };
 
   return (

@@ -46,7 +46,7 @@ const navSecondary: { title: string; url: string; icon: typeof Settings; externa
   },
   {
     title: "Help",
-    url: "https://github.com/INQTR/poker-planning/issues",
+    url: "https://github.com/spokvulcan/poker-planning/issues",
     icon: HelpCircle,
     external: true,
   },

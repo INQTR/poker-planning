@@ -2,12 +2,12 @@
 
 [![Live Demo](https://img.shields.io/badge/demo-agilekit.app-blue?style=flat-square)](https://agilekit.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/INQTR/poker-planning?style=flat-square)](https://github.com/INQTR/poker-planning/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/INQTR/poker-planning?style=flat-square)](https://github.com/INQTR/poker-planning/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/spokvulcan/poker-planning?style=flat-square)](https://github.com/spokvulcan/poker-planning/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/spokvulcan/poker-planning?style=flat-square)](https://github.com/spokvulcan/poker-planning/network/members)
 
 **The open-source planning poker tool that's completely free, requires no registration, and makes agile estimation simple for remote Scrum teams.**
 
-[**Try AgileKit Now**](https://agilekit.app) | [Report Bug](https://github.com/INQTR/poker-planning/issues) | [Request Feature](https://github.com/INQTR/poker-planning/issues)
+[**Try AgileKit Now**](https://agilekit.app) | [Report Bug](https://github.com/spokvulcan/poker-planning/issues) | [Request Feature](https://github.com/spokvulcan/poker-planning/issues)
 
 ![AgileKit Planning Poker Room - Free Scrum Estimation Tool](public/agilekit_light.png#gh-light-mode-only "AgileKit Planning Poker Room")
 ![AgileKit Planning Poker Room - Free Scrum Estimation Tool](public/agilekit_dark.png#gh-dark-mode-only "AgileKit Planning Poker Room")
@@ -40,7 +40,7 @@ Visit [agilekit.app](https://agilekit.app), create a room, and share the link wi
 
 ```bash
 # Clone the repository
-git clone https://github.com/INQTR/poker-planning.git
+git clone https://github.com/spokvulcan/poker-planning.git
 cd poker-planning
 
 # Install dependencies
@@ -55,7 +55,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-> **Note:** The repository is named `poker-planning` while the product is branded as **AgileKit**. This reflects our [evolution from a single-purpose tool to a broader Agile toolkit](https://github.com/INQTR/poker-planning/discussions/87).
+> **Note:** The repository is named `poker-planning` while the product is branded as **AgileKit**. This reflects our [evolution from a single-purpose tool to a broader Agile toolkit](https://github.com/spokvulcan/poker-planning/discussions/87).
 
 ### Prerequisites
 
@@ -163,7 +163,7 @@ See our [Privacy Policy](https://agilekit.app/privacy) for details.
 
 This project follows [Semantic Versioning](https://semver.org/) and uses [Conventional Commits](https://www.conventionalcommits.org/) for automated releases.
 
-- View all releases on the [Releases page](https://github.com/INQTR/poker-planning/releases)
+- View all releases on the [Releases page](https://github.com/spokvulcan/poker-planning/releases)
 - See [CHANGELOG.md](CHANGELOG.md) for version history
 - See [docs/releasing.md](docs/releasing.md) for release process details
 
