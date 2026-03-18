@@ -529,6 +529,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                   </AccordionContent>
                 </AccordionItem>
                 
+                {!isDemoMode && (
                 <AccordionItem value="integrations" className="border border-gray-200/50 dark:border-border rounded-lg px-4 bg-white dark:bg-surface-2/30 shadow-sm">
                   <AccordionTrigger className="text-sm font-medium py-3.5 hover:no-underline text-gray-700 dark:text-gray-300">
                     <div className="flex items-center gap-3">
@@ -540,6 +541,7 @@ export const RoomSettingsPanel: FC<RoomSettingsPanelProps> = ({
                     <IntegrationSettingsSection roomId={roomData.room._id} />
                   </AccordionContent>
                 </AccordionItem>
+                )}
               </Accordion>
             </div>
 
