@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.4](https://github.com/spokvulcan/poker-planning/compare/agilekit-v2.7.3...agilekit-v2.7.4) (2026-03-18)
+
+
+### Bug Fixes
+
+* hide integrations section in demo mode to prevent auth error ([4b4e563](https://github.com/spokvulcan/poker-planning/commit/4b4e5638141fe7818a39ce03b386c1bab738535b))
+
 ## [2.7.3](https://github.com/spokvulcan/poker-planning/compare/agilekit-v2.7.2...agilekit-v2.7.3) (2026-03-18)
 
 
